@@ -1,0 +1,42 @@
+.btn {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 21px;
+    color: var(--color-btn);
+    border: 2px solid var(--color-btn);
+    transition: all .3s;
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.btn[disabled] {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+}
+
+.btn:hover {
+    background: var(--color-btn);
+    color: var(--color-white);
+}
+
+.file_btn {
+    cursor: pointer;
+}
+
+.file_btn i {
+    font-size: 20px;
+}
+
+
+@media (max-width: 1024px) {
+    .btn {
+        padding: 7px 20px;
+        line-height: 20px;
+    }
+}

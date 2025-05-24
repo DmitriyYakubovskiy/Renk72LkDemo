@@ -1,0 +1,30 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Вид договора</div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid">
+            <div class="select-block" name="container-@nameof(Model.Bid.Step3.TypeOfContract)">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Bid.Step3.TypeOfContract))
+                    {
+                        <span>Укажите вид договора</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.Bid.Step3?.TypeOfContract</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    @foreach (TypeOfContract type in Enum.GetValues(typeof(TypeOfContract)))
+                    {
+                        <li><a href="#">@type.GetDescription()</a></li>
+                    }
+                </ul>
+                <input type="hidden" id="type_of_contract" name="@nameof(Model.Bid.Step3.TypeOfContract)"
+                       value="@Model?.Bid.Step3?.TypeOfContract">
+
+            </div>
+        </div>
+    </div>
+</div>

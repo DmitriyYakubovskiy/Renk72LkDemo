@@ -1,0 +1,91 @@
+﻿@model LoginModel
+@{
+    ViewData["Title"] = "Вход в личный кабинет";
+}
+
+<div class="container container--vh">
+    <section class="section section--center">
+        <form id="loginForm" method="post" role="form" class="form">
+            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+            <h1 class="form__title">Вход в личный кабинет</h1>
+
+            @if (TempData["Status"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Status"]
+                </div>
+            }
+            @Html.AntiForgeryToken()
+
+            <div id="container-@nameof(Model.Login)" class="form-group">
+                <input type="text" placeholder="Логин или почта" class="form-group__input" id="login" name="login" value="@Html.DisplayFor(m => m.Login)">
+            </div>
+
+            <div id="container-@nameof(Model.Password)" class="form-group">
+                <input type="password" placeholder="Пароль" class="form-group__input" id="password" name="password">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Отправить</button>
+            </div>
+
+            <div class="form-group" style="margin: 0">
+                <a class="form__note" href="@Url.Action("ForgotPassword", "Account")">Напомнить пароль и логин?</a>
+            </div>
+        </form>
+
+        <br>
+        <p>
+            <a href="@Url.Action("Register", "Account")">Зарегистрируйтесь</a>, если Вы ранее не пользовались Личным кабинетом.<br>
+            <a href="#">Инструкция по работе с Личным кабинетом <i class="fas fa-arrow-alt-circle-down"></i></a>
+        </p>
+        <p>Личный кабинет клиента ООО «РЭНК» предназначен для управления услугами и получения необходимой информации. Для доступа в Личный кабинет необходимо пройти процедуру регистрации на сайте и активации полученной учетной записи путем получения идентификатора и пароля.</p>
+    </section>
+</div>
+
+<script>
+    $('.form').on('submit',function(event){
+        event.preventDefault();
+        var formData = $(this);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "login",
+            type:"POST",
+            data:formData.serialize(),
+            success:function(data){
+                $('.form').append('<div class="alert alert-success alert-profile"><i class="fas fa-exclamation-circle"></i> Успешно</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('500', function(){
+                        $(this).remove();
+                    });
+                }, 5000);
+                window.location = '/';
+            },
+            error: function (err) {
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.form').append('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                            $(`#container-${fieldName} .form-group__error`).remove();
+                            $(`#container-${fieldName}`).append(`<div class="form-group__error">${message}</div>`);
+                            $(`#container-${fieldName}`).find('.form-group__input').removeClass('is-active').addClass('is-active');
+                        });
+                    });
+                }
+            }
+        });
+    });
+</script>

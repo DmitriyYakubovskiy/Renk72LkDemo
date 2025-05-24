@@ -1,0 +1,6 @@
+﻿@font-face {
+    font-family: "DejaVu Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: local("DejaVu Sans"), local("DejaVu Sans"), url("../fonts/dejavusans.woff") format("truetype");
+}

@@ -1,0 +1,83 @@
+﻿@{
+    Layout = null;
+}
+
+@model BidModel[]
+
+@foreach (var bid in Model)
+{
+    <div id="bid-@bid.Id">
+        <a href="@Url.Action("GetById", new { id = bid.Id })"
+           class="request @(bid.TicketStatus == 3 ? "request--success" : "") @(bid.TicketStatus == 4 ? "request--agreed" : "") @(new[] { 2, 5 }.Contains(bid.TicketStatus!.Value) ? "request--close" : "")">
+            <div class="request__left">
+                <div class="request__title"><span>№ @bid.Id</span> @bid.Name</div>
+                <div class="request__list">
+                    <div class="request__info">
+                        <span class="request__name">Тип:</span>
+                        <span class="request__text">@bid.UserRole</span>
+                    </div>
+                    <div class="request__info">
+                        <span class="request__name">Услуга:</span>
+                        <span class="request__text">@bid.Service</span>
+                    </div>
+                    <div class="request__info">
+                        <span class="request__name">ФИО: @bid?.User?.Surname @bid?.User?.Name</span>
+                    </div>
+                </div>
+            </div>
+            <div class="request__right">
+                <div class="request__status">
+                    @switch (bid?.TicketStatus)
+                    {
+                        case 0:
+                            <i class="far fa-envelope"></i>
+                            <span>В ожидании</span>
+                            break;
+                        case 1:
+                            <i class="far fa-envelope-open"></i>
+                            <span>На согласовании</span>
+                            break;
+                        case 2:
+                            <i class="far fa-window-close"></i>
+                            <span>Закрыто</span>
+                            break;
+                        case 3:
+                            <i class="fas fa-briefcase"></i>
+                            <span>В работе</span>
+                            break;
+                        case 4:
+                            <i class="fas fa-check-circle"></i>
+                            <span>Фактическое подключение</span>
+                            break;
+                        case 5:
+                            <i class="far fa-window-close"></i>
+                            <span>Аннулирована</span>
+                            break;
+                        case 6:
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Замечания</span>
+                            break;
+                        case 7:
+                            <i class="fas fa-money-bill"></i>
+                            <span>Счет на оплате</span>
+                            break;
+                        case 8:
+                            <i class="fas fa-plug"></i>
+                            <span>Выполнение ТУ заявителем</span>
+                            break;
+                        case 9:
+                            <i class="fas fa-plug"></i>
+                            <span>Выполнение ТУ сетевой организацией</span>
+                            break;
+                    }
+                </div>
+                <div class="request__data">от <span>@bid?.UpdatedAt?.ToString("dd.MM.yyyy")</span></div>
+                <input type="hidden" class="request-id" name="id" value="@bid?.Id">
+                @if (bid.TicketStatus == 2)
+                {
+                    <button type="button" onclick="archiveBid(@bid.Id)" class="request__archive">Архивировать</button>
+                }
+            </div>
+        </a>
+    </div>
+}

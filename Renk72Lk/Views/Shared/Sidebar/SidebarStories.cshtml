@@ -1,0 +1,9 @@
+﻿@model UserModel
+<table class="authorizing__table">
+    @foreach (var story in Model.Stories){
+        <tr class="authorizing__row">
+            <td class="authorizing__td">@story.LoginDateTime!.Value.ToString("dd.MM.yyyy HH:mm:ss")</td>
+            <td class="authorizing__td">@story.LoginIp</td>
+        </tr>
+    }
+</table>

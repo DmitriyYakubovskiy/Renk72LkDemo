@@ -1,0 +1,21 @@
+﻿@model (BidModel, UserModel)
+
+<div class="container">
+    <div class="row">
+        @if (TempData["status"] != null)
+        {
+            <div class="alert alert-success">
+                Операция успешно выполнена
+            </div>
+        }
+
+        @if (User.IsInRole(UserRole.Admin.GetDescription()))
+        {
+            @await Html.PartialAsync("Admin/Details")
+        }
+        else
+        {
+            @await Html.PartialAsync("Fl_IP_Ul/Details")
+        }
+    </div>
+</div>

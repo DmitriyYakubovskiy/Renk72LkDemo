@@ -1,0 +1,14 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info__bottom">
+    @if (Model.IsRepresentativeData)
+    {
+        <a id="getDataRepresentative" class="getDataRepresentative" href="javascript:;">Загрузить данные представителя</a>
+    }
+</div>
+
+<script>
+    $(document).on('click', '#getDataRepresentative', function() {
+        getDataDatabase('GET', '/Bid/GetDataRepresentative');
+    });
+</script>

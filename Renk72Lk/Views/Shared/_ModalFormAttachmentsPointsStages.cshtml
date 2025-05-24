@@ -1,0 +1,328 @@
+﻿@model CreateBidViewModel
+
+<div class="modal" data-modal="attachment_points">
+    <div class="modal__inner" data-modal-inner="attachment_points">
+        <div class="modal__close" data-modal-close="attachment_points">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="modal__main">
+            <div class="modal__title">Введите параметры точки присоединения</div>
+            <div class="modal__content attachment-points">
+                <form id="pointForm">
+                    <input type="hidden" name="id" value="@Model?.Bid?.Step4?.Id">
+
+                    <div class="form-group">
+                        <label>Укажите напряжение, кВ</label>
+                        <select name="voltage" class="form-group__input voltage" required>
+                            <option value="" disabled selected>---кВ</option>
+                            <option value="0.23">0,23 кВ</option>
+                            <option value="0.4">0,4 кВ</option>
+                            <option value="6">6 кВ</option>
+                            <option value="10">10 кВ</option>
+                        </select>
+                    </div>
+                    @if (Model?.bidServiceByInt == 15)
+                    {
+                        @if (Model.Bid.Step3?.ReasonForBid == ReasonForBid.PowerIncrease.GetDescription())
+                        {
+                            <div class="form-group">
+                                <label>
+                                    Укажите мощность, кВт
+                                    <input type="number" name="power" id="modal_power" readonly placeholder="Значение указывается в ранее присоединенных" class="form-group__input power" value="">
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label>Укажите мощность, кВт</label>
+                                <label>
+                                    Укажите мощность, кВт (Максимальная 15кВт)
+                                    <input type="number" name="power" min="1" max="15" step="1" placeholder="---кВт" class="form-group__input power">
+                                </label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>Укажите мощность, кВт</label>
+                            <label>
+                                Укажите мощность, кВт (Максимальная 150кВт)
+                                <input type="number" name="power" min="1" max="150" step="1" placeholder="---кВт" class="form-group__input power">
+                            </label>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn">Добавить точку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" data-modal="attachment_stage">
+    <div class="modal__inner" data-modal-inner="attachment_stage">
+        <div class="modal__close" data-modal-close="attachment_stage">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="modal__main">
+            <div class="modal__title">Этап строительства</div>
+            <div class="modal__content attachment-stage">
+                <form id="stageForm">
+                    <input type="hidden" name="id" value="@Model?.Bid?.Step4?.Id">
+
+                    <div class="form-group">
+                        <label>Планируемый срок проектирования</label>
+                        <input type="date" name="designPeriod" class="form-group__input date-design" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Планируемый срок ввода в эксплуатацию</label>
+                        <input type="date" name="commissioningPeriod" class="form-group__input date-commissioning" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Максимальная мощность, кВт</label>
+                        <input type="number"
+                        name="power_stage"
+                        class="form-group__input power"
+                        required
+                        min="0"
+                        step="0.01"
+                        placeholder="Будет взято из последней точки"
+                        @(Model?.Bid.UserRole == UserType.NaturalPerson.GetDescription() ? "readonly" : "")>
+                    </div>
+
+                    <div class="modal__btn">
+                        <button type="submit" class="btn">Добавить этап</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public dynamic GetPowerAttributes(CreateBidViewModel model)
+    {
+        if (model?.bidServiceByInt == 15) return new { min = 1, max = 15 };
+        if (model?.bidServiceByInt == 100) return new { min = 1, max = 150 };
+        if (model?.bidServiceByInt == 999 && model?.Bid.Step3?.ReasonForBid == "Временное технологическое присоединение передвижного объекта")
+            return new { min = 1, max = 150 };
+
+        return new { min = 150, max = "" };
+    }
+}
+
+<script>
+    $('#pointForm').on('submit',function(event){
+        event.preventDefault();
+
+        const formData = {
+            id: $('input[name="id"]').val(),
+            voltage: $('[name="voltage"]').val().replace(',', '.'),
+            power: $('[name="power"]').val().replace(',', '.'),
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+                $('.preloader').show();
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Bid/AddAttachmentPoint",
+            type:"POST",
+            data: formData,
+            success: function(response) {
+                $('.preloader').hide();
+
+                const currentCount = parseInt($('#currentPoint').val());
+                const newCount = currentCount + 1;
+
+                $('#currentPoint').val(newCount);
+
+                const newRow = `
+                    <div class="connection_points__row" data-point-id="${response.id}">
+                        <div class="connection_points__col">${newCount}</div>
+                        <div class="connection_points__col">${formData.voltage}</div>
+                        <div class="connection_points__col">${formData.power}</div>
+                    </div>
+                `;
+
+                $('#pointsTable').append(newRow);
+                $('[data-modal-close="attachment_points"]').trigger('click');
+                $('#pointForm')[0].reset();
+
+                console.log('Точка успешно добавлена');
+            },
+            error: function (err) {
+                $('.preloader').hide();
+                console.log(err);
+            }
+        });
+    });
+
+    $(document).on('click', '.connection_points__del', function(e) {
+        e.preventDefault();
+        const lastRow = $('#pointsTable .connection_points__row:not(.connection_points__row--header):first');
+        const pointId = lastRow.data('point-id');
+
+        const formData = {
+            id: pointId
+        };
+
+        $('.preloader').show();
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Bid/DeleteAttachmentPoint",
+            type:"POST",
+            data: formData,
+            success: function(response) {
+                $('.preloader').hide();
+                lastRow.remove();
+
+                $('#pointsTable .connection_points__row:not(.connection_points__row--header)').each(function(index) {
+                    $(this).find('.connection_points__col:first').text(index + 1);
+                });
+
+                const currentCount = parseInt($('#currentPoint').val());
+                if(currentCount>0){
+                    $('#currentPoint').val(currentCount-1);
+                }                
+            },
+            error: function (err) {
+                $('.preloader').hide();
+                console.log(err);
+            }
+        });
+    });
+
+    $('#stageForm').on('submit', function(event) {
+        event.preventDefault();
+        const currentCountPoint = parseInt($('#currentPoint').val());
+        if(currentCountPoint<=0){
+            alert('Точка не добавлена!');
+            return;
+        }
+
+        let powerValue = $('[name="power_stage"]').val();
+        if (!powerValue && $('#pointsTable .connection_points__row').length > 1) {
+            const lastPower = $('#pointsTable .connection_points__row:not(.connection_points__row--header):last')
+                             .find('.connection_points__col:nth-child(3)').text();
+            powerValue = lastPower.replace(',', '.').replace(/[^\d.]/g, '');
+            $('[name="power_stage"]').val(powerValue);
+        }
+
+        const formData = {
+            id: $('input[name="id"]').val(),
+            designPeriod: $('[name="designPeriod"]').val(),
+            commissioningPeriod: $('[name="commissioningPeriod"]').val(),
+            power: powerValue,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+
+        const currentYear = new Date().getFullYear();
+        const maxYear = currentYear + 10; 
+
+        if (!isValidDate(formData.designPeriod) ||
+            !isValidDate(formData.commissioningPeriod)) {
+            alert('Пожалуйста, введите корректные даты (не более ' + maxYear + ' года)');
+            return;
+        }
+
+        $('.preloader').show();
+        $.ajax({
+            url: "/Bid/AddAttachmentStage",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                $('.preloader').hide();
+
+                const currentCount = parseInt($('#currentStage').val());
+                const newCount = currentCount + 1;
+
+                $('#currentStage').val(newCount);
+
+                const newRow = `
+                    <div class="connection_points__row" data-stage-id="${response.id}">
+                        <div class="connection_points__col">${newCount}</div>
+                        <div class="connection_points__col">${formatDate(response.designPeriod)}</div>
+                        <div class="connection_points__col">${formatDate(response.commissioningPeriod)}</div>
+                        <div class="connection_points__col">${response.power}</div>
+                    </div>
+                `;
+
+                $('#stagesTable').append(newRow);
+                $('[data-modal-close="attachment_stage"]').trigger('click');
+                $('#stageForm')[0].reset();
+            },
+            error: function(err) {
+                $('.preloader').hide();
+                console.error('Ошибка:', err.responseText);
+            }
+        });
+    });
+
+    $(document).on('click', '#deleteStageBtn', function(e) {
+        e.preventDefault();
+
+        const lastRow = $('#stagesTable .connection_points__row:not(.connection_points__row--header):last');
+        const stageId = lastRow.data('stage-id');
+        const formData = {
+            id: stageId,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+
+        $('.preloader').show();
+        $.ajax({
+            url: "/Bid/DeleteAttachmentStage",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                $('.preloader').hide();
+
+                lastRow.remove();
+
+                $('#stagesTable .connection_points__row:not(.connection_points__row--header)').each(function(index) {
+                    $(this).find('.connection_points__col:first').text(index + 1);
+                });
+
+                const currentCount = parseInt($('#currentStage').val());
+                if(currentCount>0){
+                    $('#currentStage').val(currentCount - 1);
+                }
+            },
+            error: function(xhr) {
+                $('.preloader').hide();
+                alert('Ошибка при удалении: ' + xhr.responseText);
+            }
+        });
+    });
+
+
+    function isValidDate(dateString) {
+        if (!dateString) return false;
+
+        const date = new Date(dateString);
+        const currentYear = new Date().getFullYear();
+        const maxYear = currentYear + 10;
+
+        return !isNaN(date.getTime()) &&
+            date.getFullYear() >0
+            date.getFullYear() <= maxYear;
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU');
+    }
+</script>

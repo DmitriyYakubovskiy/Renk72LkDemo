@@ -1,0 +1,20 @@
+﻿@model BidModel[]
+
+<div class="container">
+    <div class="row">
+        @if (TempData["Status"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Status"]
+            </div>
+        }
+        @if (User.IsInRole(UserRole.Admin.GetDescription()))
+        {
+            @await Html.PartialAsync("Admin/List")
+        }
+        else
+        {
+            @await Html.PartialAsync("FL_IP_Ul/List")
+        }
+    </div>
+</div>

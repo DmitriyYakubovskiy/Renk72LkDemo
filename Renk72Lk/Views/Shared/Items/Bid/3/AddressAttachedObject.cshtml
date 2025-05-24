@@ -1,0 +1,61 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Адрес присоединяемого объекта</div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid">
+            <div class="select-block" name="container-@nameof(Model.Bid.Step3.Region)">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Bid.Step3.Region))
+                    {
+                        <span>Выберите область</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.Bid.Step3?.Region</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    @foreach (Region region in Enum.GetValues(typeof(Region)))
+                    {
+                        <li><a href="#">@region.GetDescription()</a></li>
+                    }
+                </ul>
+                <input type="hidden" id="region" name="region" value="@Model?.Bid.Step3?.Region">
+            </div>
+        </div>
+        <div class="form-group form-bid">
+            <div class="select-block" name="container-@nameof(Model.Bid.Step3.District)">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Bid.Step3.District))
+                    {
+                        <span>Выберите район</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.Bid.Step3?.District</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    @foreach (District district in Enum.GetValues(typeof(District)))
+                    {
+                        <li><a href="#">@district.GetDescription()</a></li>
+                    }
+                </ul>
+                <input type="hidden" id="district" name="district"
+                       value="@Model?.Bid.Step3?.District">
+            </div>
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step3.AddressOfObject)">
+            <input type="text" placeholder="Укажите адрес присоединяемого объекта"
+                   class="form-group__input" id="address_of_object"
+                   name="@nameof(Model.Bid.Step3.AddressOfObject)"
+                   value="@Model?.Bid.Step3?.AddressOfObject">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step3.CadastralNumber)">
+            <input type="text" placeholder="Кадастровый номер" class="form-group__input"
+                   id="cadastral_number" name="@nameof(Model.Bid.Step3.CadastralNumber)" data-masked-kadr
+                   value="@Model?.Bid.Step3?.CadastralNumber">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Данные представителя (при наличии)</div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step2.Surname)">
+            <input type="text" placeholder="Фамилия" class="form-group__input" id="surname" name="surname" value="@Model?.Bid.Step2?.Surname">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step2.Name)">
+            <input type="text" placeholder="Имя" class="form-group__input" id="name" name="name" value="@Model?.Bid.Step2?.Name">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step2.Patronymic)">
+            <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic" value="@Model?.Bid.Step2?.Patronymic">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step2.Attorney)">
+            <input type="text" placeholder="Доверенность" class="form-group__input" id="act" name="act" value="@Model?.Bid.Step2?.Attorney">
+        </div>
+        @await Html.PartialAsync("Items/DownloadRepresentative")
+    </div>
+</div>

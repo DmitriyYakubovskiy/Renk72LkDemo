@@ -1,0 +1,16 @@
+﻿@model BidRepresentativeInfoModel
+
+<div class="container">
+    <div class="row">
+        @if (TempData["Status"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Status"]
+            </div>
+        }
+        @if (User.IsInRole(UserRole.User.GetDescription()))
+        {
+            @await Html.PartialAsync("Fl_Ul_IP/Representative", Model)
+        }
+    </div>
+</div>

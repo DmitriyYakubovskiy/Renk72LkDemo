@@ -1,0 +1,13 @@
+﻿@model IContactData
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">КОНТАКТНЫЕ ДАННЫЕ</div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid" name="container-@nameof(Model.PhoneNumber)">
+            <input type="text" placeholder="Телефон" data-masked-phone="" class="form-group__input" id="phone" name="@nameof(Model.PhoneNumber)" value="@Model?.PhoneNumber">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Email)">
+            <input type="email" placeholder="Электронная почта" class="form-group__input" id="email" name="email" value="@Model?.Email">
+        </div>
+    </div>
+</div>

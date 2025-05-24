@@ -1,0 +1,11 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Характер нагрузки</div>
+    <div class="lk-block-info__container">
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.NatureLoad)">
+            <input type="text" placeholder="Вид экономической деятельности"
+                   class="form-group__input" id="nature_load" name="@nameof(Model.Bid.Step4.NatureLoad)" value="@Model?.Bid.Step4?.NatureLoad">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,318 @@
+﻿@model (BidModel, UserModel)
+
+<section class="section">
+    @{
+        var userBidId = Model.Item1?.Id;
+    }
+    <h1 class="section__title">Обращение №@Model.Item1?.Id</h1>
+    <div class="section__row section__row--reverse">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="request">
+                    <div class="request__wrap">
+                        <div class="request__title"><span>№ @Model.Item1?.Id</span> @Model.Item1?.Name</div>
+                        <div class="request__list">
+                            <div class="request__info">
+                                <span class="request__name">Организация:</span>
+                                <span class="request__text">@Model.Item1?.Department</span>
+                            </div>
+                            <div class="request__info">
+                                <span class="request__name">Услуга:</span>
+                                <span class="request__text">@Model.Item1?.Service</span>
+                            </div>
+                            <div class="request__info">
+                                <span class="request__name">ФИО: @Model.Item1?.User?.Surname @Model.Item1?.User?.Name</span>
+                            </div>
+                            @if (Model.Item1?.TicketStatus == 3)
+                            {
+                                <div class="request__info">
+                                    <span class="request__name">Заявка доступна Газпрому</span>
+                                </div>
+                            }
+                            <form method="POST" id="changeTicketStatusForm" class="form-status-ticket">
+                                @Html.AntiForgeryToken()
+                                <div class="request__status select-block block">
+                                    <div class="select-block__title">
+                                        @switch (Model.Item1?.TicketStatus)
+                                        {
+                                            case 1:
+                                                <span>На согласовании</span>
+                                                break;
+                                            case 2:
+                                                <span>Закрыто</span>
+                                                break;
+                                            case 3:
+                                                <span>В работе</span>
+                                                break;
+                                            case 6:
+                                                <span>Замечания</span>
+                                                break;
+                                            case 0:
+                                                <span>В ожидании</span>
+                                                break;
+                                            case 4:
+                                                <span>Фактическое подключение</span>
+                                                break;
+                                            case 5:
+                                                <span>Аннулирована</span>
+                                                break;
+                                            case 7:
+                                                <span>Счет на оплате</span>
+                                                break;
+                                            case 8:
+                                                <span>Выполнение ТУ заявителем</span>
+                                                break;
+                                            case 9:
+                                                <span>Выполнение ТУ сетевой организацией</span>
+                                                break;
+                                            default:
+                                                <span>Неизвестный статус</span>
+                                                break;
+                                        }
+                                    </div>
+                                    <ul class="select-block__list scrollbar">
+                                        <li class="status-check"><a data-status="1" href="#">На согласовании</a></li>
+                                        <li class="status-check"><a data-status="3" href="#">В работе</a></li>
+                                        <li class="status-check"><a data-status="6" href="#">Замечания</a></li>
+                                        <li class="status-check"><a data-status="7" href="#">Cчет на оплате</a></li>
+                                        <li class="status-check"><a data-status="8" href="#">Выполнение ТУ заявителем</a></li>
+                                        <li class="status-check"><a data-status="9" href="#">Выполнение ТУ сетевой организацией</a></li>
+                                        <li class="status-check"><a data-status="4" href="#">Фактическое подключение</a></li>
+                                        <li class="status-check"><a data-status="2" href="#">Закрыто</a></li>
+                                        <li class="status-check"><a data-status="5" href="#">Аннулирована</a></li>
+                                    </ul>
+                                    <input type="hidden" class="input-status" name="ticketStatus" value="">
+                                </div>
+                            </form>
+                            <div class="request__btn">
+                                <a href="@Model.Item1?.DocumentFile?.FilePath" target="_blank" class="btn">Скачать заявление</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @await Html.PartialAsync("Items/Bid/Details/Files")
+            </div>
+        </div>
+        <div class="content">
+            <div class="chat">
+                <div class="chat__window">
+                    @foreach (var message in Model.Item1!.Messages)
+                    {
+                        <div class="chat__message @(message.UserId == Model.Item2?.Id ? "chat__message--revers" : "")">
+                            <div>
+                                <button type="button" onclick="deleteMessage(@message.Id)" class="btn btn-delete">x</button>
+                            </div>
+                            @message.Message
+                            @if (!String.IsNullOrEmpty(message?.File?.FileName))
+                            {
+                                <div class="chat-attachment">
+                                    <a href="@message.File.FilePath" class="chat-attachment__item" target="_blank">
+                                        <div class="chat-attachment__icon">
+                                            <i class="far fa-file-excel"></i>
+                                        </div>
+                                        <div class="chat-attachment__name">
+                                            @message.File.FileName
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                            <div class="chat__user">
+                                @message?.User?.Surname @message?.User?.Name @message?.User?.Patronymic
+                                <div class="chat__data">@message?.CreatedAt!.Value.ToString("dd.MM.yyyy, HH:mm:ss")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (Model.Item1?.IsArchive == 0)
+                {
+                    <form class="form-message chat__textarea" style="width: 100%" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="UserId" value="@Model.Item2?.Id" />
+                        <input type="hidden" name="BidId" value="@Model.Item1?.Id" />
+                        <textarea type="text" class="textarea-mesage" placeholder="Напишите сообщение…" name="Text"></textarea>
+                        <div class="chat__btn chat__btn-user">
+                            <input type="file" multiple class="form-group__file" id="doc_name" name="DocFiles" />
+                            <button class="btn" type="submit">Отправить сообщение</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="https://www.cryptopro.ru/sites/default/files/products/cades/cadesplugin_api.js"></script>
+<script src="~/js/angular.min.js"></script>
+<script src="~/js/cryptohelper.js"></script>
+<script src="~/js/crypto.js"></script>
+<script>
+    function сhangeEnrStatus(id, status) {
+        event.preventDefault();
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: '@Url.Action("ChangeEnrStatus", "Chat")',
+            type: 'POST',
+            data: { id: id, status: status },
+            success: function (result) {
+                getMessage();
+                autoScroll();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    $('.status-check a').on('click', function (e) {
+        e.preventDefault();
+        var status = $(this).data('status');
+        $('.input-status').val(status);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ChangeTicketStatus", "Bid")',
+            data: {
+                id: '@userBidId',
+                ticketStatus: status
+            },
+            success: function (data) {
+                console.log('Статус тикета изменен успешно');
+                location.reload();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+
+    $('.form-message').on('submit',function(event){
+        event.preventDefault();
+        var th = $(this);
+        var formData = new FormData(this);
+    var formDataObject = {};
+
+    formData.forEach((value, key) => {
+      formDataObject[key] = value;
+    });
+
+    console.log('FormData в виде объекта:', formDataObject);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Chat/SendMessage",
+            type:"POST",
+            cache:false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success:function(data){
+                th.trigger('reset');
+                console.log('Успешно');
+                $('.chat__btn .btn').before('<div class="alert alert-success alert-chat"><i class="fas fa-check-circle"></i> Сообщение отправлено</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 1000);
+                getMessage();
+                autoScroll();
+            },
+            error: function (err) {
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            } else{
+                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> Заполните поле</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    });
+
+
+    $(document).on('input', '.textarea-mesage', function(){
+        $(this).removeClass('is-active');
+        $('.form-group__error').remove();
+
+    });
+
+    setInterval(()=> {
+        getMessage();
+    }, 4000);
+
+    function getMessage() {
+        var th = $('.form-message');
+        $.ajax({
+            url: "/Bid/"+@userBidId,
+            type:"GET",
+            success:function(data){
+                $(".chat__window").html($(data).find('.chat__message'));
+            },
+        });
+    }
+
+    function deleteMessage(id) {
+            if (confirm('Вы уверены, что хотите удалить это сообщение?')) {
+                $.ajaxSetup({
+                    beforeSend: function(xhr) {
+                        var token = $('input[name="__RequestVerificationToken"]').val();
+                        xhr.setRequestHeader("RequestVerificationToken", token);
+                    }
+                });
+                $.ajax({
+                    url: '@Url.Action("Delete", "Chat")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (result) {
+                        getMessage();
+                        autoScroll();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Произошла ошибка при удалении сообщения: ' + error);
+                    }
+                });
+            }
+        }
+
+    function autoScroll() {
+        $('.chat__window').animate({
+            scrollTop: $('.chat__window')[0].scrollHeight},
+        1000 );
+    }
+    autoScroll();
+
+    $(document).on('change', '.uk-select', function(){
+        $('.uk-list-title').addClass('active');
+    });
+
+</script>

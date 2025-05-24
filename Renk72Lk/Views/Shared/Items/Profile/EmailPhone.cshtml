@@ -1,0 +1,26 @@
+﻿@model IContactData
+
+<div class="lk-block-user">
+    <div class="lk-block-user__row" name="container-@nameof(Model.PhoneNumber)">
+        <div class="lk-block-user__data">Мобильный телефон:</div>
+        <div class="lk-block-user__lock">
+            <input class="lk-block-user__input lk-block-user__input_wt form-group__input is-disabled" type="text" id="phone" name="@nameof(Model.PhoneNumber)" value="@Model?.PhoneNumber" data-masked-phone>
+            <div class="lk-block-user__icon">
+                <i class="fas fa-lock"></i>
+                <i class="fas fa-lock-open"></i>
+            </div>
+        </div>
+        <button type="button" class="lk-block-user__refactor">Изменить</button>
+    </div>
+    <div class="lk-block-user__row" name="container-@nameof(Model.Email)">
+        <div class="lk-block-user__data">Электронная почта:</div>
+        <div class="lk-block-user__lock">
+            <input class="lk-block-user__input lk-block-user__input_wt form-group__input is-disabled" type="email" id="email" name="email" value="@Model?.Email" placeholder="email@mail.ru">
+            <div class="lk-block-user__icon">
+                <i class="fas fa-lock"></i>
+                <i class="fas fa-lock-open"></i>
+            </div>
+        </div>
+        <button type="button" class="lk-block-user__refactor">Изменить</button>
+    </div>
+</div>

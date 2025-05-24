@@ -1,0 +1,35 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Дополнительная информация</div>
+    <div class="lk-block-info__container">
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.CountOfTransformers)">
+            <input type="text" placeholder="Количество присоединяемых к сети трансформаторов"
+                   class="form-group__input" id="count_of_transformers" name="@nameof(Model.Bid.Step4.CountOfTransformers)" value="@Model?.Bid.Step4?.CountOfTransformers">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.TransformersPower)">
+            <input type="text" placeholder="Мощность присоединяемых к сети трансформаторов" class="form-group__input"
+                   id="transformers_power" name="@nameof(Model.Bid.Step4.TransformersPower)" value="@Model?.Bid.Step4?.TransformersPower">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.CountOfGenerators)">
+            <input type="text" placeholder="Количество генераторов" class="form-group__input"
+                   id="count_of_generators" name="@nameof(Model.Bid.Step4.CountOfGenerators)"
+                   value="@Model?.Bid.Step4?.CountOfGenerators">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.GeneratorsPower)">
+            <input type="text" placeholder="Мощность генераторов" class="form-group__input"
+                   id="generators_power" name="@nameof(Model.Bid.Step4.GeneratorsPower)" value="@Model?.Bid.Step4?.GeneratorsPower">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.TypeOfLoad)">
+            <input type="text" placeholder="Заявляемый характер нагрузки" class="form-group__input"
+                   id="type_of_load" name="@nameof(Model.Bid.Step4.TypeOfLoad)" value="@Model?.Bid.Step4?.TypeOfLoad">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.TechMin)">
+            <input type="text" placeholder="Величина технологического минимума" class="form-group__input" id="tech_min" name="@nameof(Model.Bid.Step4.TechMin)" value="@Model?.Bid.Step4?.TechMin">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.JustificationTechMin)">
+            <input type="text" placeholder="Обоснование технологического минимума" class="form-group__input"
+                   id="justification_tech_min" name="@nameof(Model.Bid.Step4.JustificationTechMin)" value="@Model?.Bid.Step4?.JustificationTechMin">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+﻿@model UserModel
+
+<section class="section">
+    @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+    {
+        <h1 class="section__title">Личный кабинет Физического лица</h1>
+    }
+
+    <div class="section__row">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="sidebar__list">
+                    @await Html.PartialAsync("Sidebar/SidebarMenu")
+                </div>
+                <div class="authorizing">
+                    <div class="authorizing__title">Последние авторизации</div>
+                    <div class="authorizing__note">
+                        <i class="fas fa-question-circle"></i>
+                        Измените пароль, если заметили авторизацию с чужого IP адреса!
+                    </div>
+                    @await Html.PartialAsync("Sidebar/SidebarStories", Model)
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <h2 class="content__title">Настройка профиля</h2>
+            @if (TempData["Status"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Status"]
+                </div>
+            }
+            <form class="form-profile" role="form" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input class="hidden" asp-for="UserName" value="@Model.UserName" />
+                <input class="hidden" asp-for="Email" value="@Model.Email" />
+
+                @await Html.PartialAsync("Items/Profile/PhonePassword")
+                @await Html.PartialAsync("Items/Profile/SNP", Model)
+                @await Html.PartialAsync("Items/Passport", ((IPassportData)Model, true))
+                @await Html.PartialAsync("Items/AddressMore", (new AddressesViewModel() { ActualAddress = Model.ActualAddress, RegistrationAddress = Model.RegistrationAddress }, true))
+
+                <div class="lk-block-btn">
+                    <button type="submit" name="modal_1" value="modal_1" class="btn">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    $('.form-profile').on('submit',function(event){
+        event.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Home/UpdateProfile",
+            type:"POST",
+            data:formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                console.log('Успешно')
+                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+            },
+            error: function (err) {
+                console.log(err);
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            $(`[name='container-${fieldName}']`).each(function() {
+
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                if($(this).find('.lk-block-info__hellp').length > 0) $(this).find('.lk-block-info__hellp').after(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else if($(this).find('.lk-block-user__lock').length > 0) $(this).find('.lk-block-user__lock').prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else if($(this).attr('id')==="date_of_birth_box") $(this).prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                $(this).removeClass('error').addClass('error');
+                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
+                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                            });
+                        });
+                    });
+                }
+
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Неверные данные</div>');
+                    setTimeout(() => {
+                        $('.alert').slideUp('400', function(){
+                            $(this).remove();
+                        });
+                    }, 3000);
+            }
+        });
+    });
+</script>

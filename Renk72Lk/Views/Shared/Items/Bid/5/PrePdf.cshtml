@@ -1,0 +1,80 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header"> Подготовленное заявление</div>
+    <div class="lk-block-info__container">
+        <div class="form-group">
+            <span>Проверьте правильно ли заполнено заявление, в случае ошибок пройдите к шагу 1 и внесите правки.</span>
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step5.IsAgreePreviewPDF)">
+            <a onclick="generatePdf()" id="urldownloadprepdf" target="_blank" class="btn">Просмотреть заявление</a>
+            <input type="checkbox" id="agree-prepdf" name="@nameof(Model.Bid.Step5.IsAgreePreviewPDF)" value="@Model?.Bid.Step5?.IsAgreePreviewPDF" class="checkbox__input" data-input-prepdf>
+            <label for="agree-prepdf" class="checkbox__label">
+                <span class="checkbox__icon">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span>с данными, внесенными в заявку, согласен(а)</a></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+    function generatePdf() {
+        var url = '/Bid/SaveBid5ForPrePdf';
+        var form = document.querySelector('.form-bid');
+        var formData = new FormData(form);
+        console.log(Array.from(formData.entries()));
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: url,
+            type: "POST",
+            cache:false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success: function(data) {
+                window.open(data.url, '_blank');
+            },
+            error: function(err) {
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i>' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                            $(`[name='container-${fieldName}']`).each(function() {
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                $(this).removeClass('error').addClass('error');
+                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
+                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                            });
+                        });
+                    });
+                }
+
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Ошибка отправки</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+        });
+    }
+</script>

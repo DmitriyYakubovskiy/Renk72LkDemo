@@ -1,0 +1,166 @@
+.form-group {
+    width: 100%;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    position: relative;
+}
+
+.form-group--bold {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.form-group--center {
+    text-align: center;
+}
+
+.form-group .checkbox {
+    margin-top: 15px;
+}
+
+.form-group.error .form-group__input {
+    border-color: var(--color-red);
+}
+
+.form-group.error .select-block__title {
+    border-color: var(--color-red);
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group__hellp {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group__title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.form-group__wrap {
+    position: relative;
+}
+
+.form-group__input {
+    width: 100%;
+    border-radius: 5px;
+    padding: 0 20px 0 10px;
+    height: 40px;
+    line-height: 38px;
+    border: 1px solid var(--color-grey);
+}
+
+textarea.form-group__input {
+    height: 100px;
+    line-height: 18px;
+}
+
+.form-group__box {
+    position: relative;
+}
+
+.form-group__error {
+    color: var(--color-red);
+    font-size: 12px;
+    line-height: 1;
+    position: absolute;
+    transform: translateY(calc(-100%));
+    top: 0;
+    padding-bottom: 1px;
+}
+
+.form-group__error_home {
+    top: inherit;
+    right: 0;
+}
+
+.form-group__icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    pointer-events: none;
+}
+
+.form-group__icon_legacy {
+    transform: translateY(calc(-50% + 9px));
+}
+
+.form-group_row {
+    display: flex;
+}
+
+.form-group_row .form-group {
+    max-width: 33.3333%;
+    width: 100%;
+    margin-right: 28px;
+    min-width: 310px;
+}
+
+.var_form_content {
+    margin-bottom: 30px;
+}
+
+.var_form_content__title {
+    margin-bottom: 15px;
+}
+
+.var_form_content__item {
+    margin-bottom: 15px;
+}
+
+.var_form_content ul {
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.var_form_content .checkbox__text {
+    color: var(--color-dark);
+}
+
+.password-control {
+    position: absolute;
+    top: 11px;
+    right: 6px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(/img/view.svg) 0 0 no-repeat;
+}
+
+.password-control.view {
+    background: url(/img/no-view.svg) 0 0 no-repeat;
+
+}
+
+@media (max-width: 1024px) {
+    .form-group--bold {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-group_row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .form-group_row .form-group {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .var_form_content {
+        margin-bottom: 10px;
+    }
+}
+

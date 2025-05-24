@@ -1,0 +1,49 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Причина обращения</div>
+    <div class="lk-block-info__container">
+        <div class="form-group">
+            <div class="select-block" name="container-@nameof(Model.Bid.Step3.ReasonForBid)">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Bid.Step3.ReasonForBid))
+                    {
+                        <span>Укажите причину обращения</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.Bid.Step3?.ReasonForBid</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    @foreach (ReasonForBid reason in Enum.GetValues(typeof(ReasonForBid)))
+                    {
+                        <li><a href="#">@reason.GetDescription()</a></li>
+                    }
+                </ul>
+
+                <input type="hidden" id="reason_for_bid" name="@nameof(Model.Bid.Step3.ReasonForBid)"
+                       value="@Model?.Bid.Step3?.ReasonForBid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ChooseInfo (id,st) {
+        var elem = document.getElementById(id);
+        var elem2 =  document.getElementById("object_name");
+
+        if (st != '0') {
+            elem.style.display = "block";
+            elem2.value = "объект строительства/реконструкции";
+        } else {
+            elem.style.display = "none";
+            elem2.value = "передвижной объект";
+            let inputs = elem.querySelectorAll("textarea, input");
+            for (let input of inputs) {
+                input.value = "" ;
+            }
+        }
+    }
+</script>

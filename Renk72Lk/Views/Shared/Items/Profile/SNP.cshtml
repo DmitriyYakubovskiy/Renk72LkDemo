@@ -1,0 +1,37 @@
+﻿@model IBaseUserData
+
+<div class="lk-block-info">
+    <div class="lk-block-info__header">ФИО</div>
+    <div class="lk-block-info__container">
+        <div name="container-@nameof(Model.Surname)" class="lk-block-info__row">
+            <div class="lk-block-info__hellp">Фамилия</div>
+            <input type="text" placeholder="Фамилия" class="form-group__input" id="surname" name="surname" value="@Model?.Surname">
+        </div>
+        <div name="container-@nameof(Model.Name)" class="lk-block-info__row">
+            <div class="lk-block-info__hellp">Имя</div>
+            <input type="text" placeholder="Имя" class="form-group__input" id="name" name="name" value="@Model?.Name">
+        </div>
+        <div name="container-@nameof(Model.Patronymic)" class="lk-block-info__row">
+            <div class="lk-block-info__hellp">Отчество</div>
+            <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic" value="@Model?.Patronymic">
+        </div>
+        @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+        {
+            <div name="container-@nameof(Model.Snils)" class="lk-block-info__row">
+                <div class="lk-block-info__hellp">СНИЛС</div>
+                <input type="text" placeholder="СНИЛС" class="form-group__input" id="snils" name="snils" value="@Model?.Snils" data-masked-snils>
+            </div>
+            <div class="form-group">
+                <div class="lk-block-info__hellp">Дата рождения</div>
+                <div id="date_of_birth_box" name="container-@nameof(Model.DateOfBirth)" class="form-group__box">
+                    <input type="tel" placeholder="Дата рождения" data-position="top right" class="form-group__input datepicker-here" id="date_of_birth" asp-for="DateOfBirth" value="@Model?.DateOfBirth">
+                    <i class="form-group__icon fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <div name="container-@nameof(Model.PlaceOfBirth)" class="lk-block-info__row">
+                <div class="lk-block-info__hellp">Место рождения</div>
+                <input type="text" placeholder="Место рождения" class="form-group__input" id="place_of_birth" asp-for="PlaceOfBirth" value="@Model?.PlaceOfBirth">
+            </div>
+        }
+    </div>
+</div>

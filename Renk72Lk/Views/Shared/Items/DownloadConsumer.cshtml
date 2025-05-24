@@ -1,0 +1,11 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info__bottom">
+    <a id="getData" href="javascript:;">Загрузить из профиля</a>
+</div>
+
+<script>
+    $(document).on('click', '#getData', function() {
+        getDataDatabase('GET', '/Bid/GetDataProfile');
+    });
+</script>

@@ -1,0 +1,44 @@
+﻿@model (BidModel, UserModel)
+
+<div class="content">
+    <div class="chat">
+        <div class="chat__window">
+            @foreach (var message in Model.Item1.Messages!)
+            {
+                <div class="chat__message @(message.UserId == Model.Item2?.Id ? "chat__message--revers" : "")">
+                    @message.Message
+                    @if (!String.IsNullOrEmpty(message?.File?.FileName))
+                    {
+                        <div class="chat-attachment">
+                            <a href="@Url.Content(message.File.FilePath)" download class="chat-attachment__item" target="_blank">
+                                <div class="chat-attachment__icon">
+                                    <i class="far fa-file-excel"></i>
+                                </div>
+                                <div class="chat-attachment__name">
+                                    @message.File.FileName
+                                </div>
+                            </a>
+                        </div>
+                    }
+                    <div class="chat__user">
+                        @message?.User?.Surname @message?.User?.Name @message?.User?.Patronymic
+                        <div class="chat__data">@message?.CreatedAt!.Value.ToString("dd.MM.yyyy, HH:mm:ss")</div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.Item1?.IsArchive==0)
+        {
+            <form class="form-message chat__textarea" style="width: 100%" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="UserId" value="@Model.Item2?.Id" />
+                <input type="hidden" name="BidId" value="@Model.Item1?.Id" />
+                <textarea type="text" class="textarea-mesage" placeholder="Напишите сообщение…" name="Text"></textarea>
+                <div class="chat__btn chat__btn-user">
+                    <input type="file" multiple class="form-group__file" id="doc_name" name="DocFiles" />
+                    <button class="btn" type="submit">Отправить сообщение</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>

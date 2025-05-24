@@ -1,0 +1,38 @@
+﻿<div class="lk-block-btn lk-block-btn--center">
+    <div class="form-group form-group--center">
+        <button type="submit" class="step-next btn">Отправить заявление</button>
+        <div class="checkbox ">
+            <input type="checkbox" id="subscribe-policy" class="checkbox__input" data-input-policy checked>
+            <label for="subscribe-policy" class="checkbox__label">
+                <span class="checkbox__icon">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="checkbox__text"> Согласен(а) с условиями <a href="@Url.Action("PrivacyPolicy","Home")">обработки персональных данных</a></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeUploadedFile(fieldType) {
+        if (confirm('Вы уверены, что хотите удалить этот файл?')) {
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("RemoveUploadedFile", "BidAttachments")',
+                type: 'POST',
+                data: { fieldType: fieldType, bidId: @Model.Bid.Id },
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error.responseJSON);
+                }
+            });
+        }
+    }
+</script>

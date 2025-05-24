@@ -1,0 +1,6 @@
+@Renk72Lk_HostAddress = http://0.0.0.0:80
+
+GET {{Renk72Lk_HostAddress}}/
+Accept: application/json
+
+###

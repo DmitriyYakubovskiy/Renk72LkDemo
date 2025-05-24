@@ -1,0 +1,184 @@
+﻿@inject IConfiguration Configuration
+@{
+    ViewBag.DadateToken = Configuration["DadateToken"];
+    ViewData["Title"] = "Личный кабинет ООО «РЭНК»";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+
+    @Html.AntiForgeryToken()
+
+    <title>@ViewData["Title"]</title>
+    @await Html.PartialAsync("_Favicons")
+    <link rel="stylesheet" media="all" href="~/css/default.css?v=230532" />
+    <link rel="stylesheet" media="all" href="~/css/lk.css?v=0706" />
+    <link rel="stylesheet" media="all" href="~/css/modules/list_users.css" />
+    <link rel="stylesheet" media="all" href="~/css/modules/lk-block-info.css?v=2301271" />
+    <link rel="stylesheet" href="~/css/modules/authorizing.css" />
+    <link rel="stylesheet" media="all" href="~/css/oformlenie_zayavki.css?v=2501" />
+    <link rel="stylesheet" href="~/css/modules/chat.css?v=220805" />
+    <script src="~/js/jquery-3.7.0.min.js"></script>
+
+    <style>
+        @@font-face {
+        font-family: "DejaVu Sans";
+        font-style: normal;
+        font-weight: 400;
+        src: local("DejaVu Sans"), local("DejaVu Sans"), url("~/fonts/dejavusans.woff") format("truetype");
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader">
+        <div class="lds-spinner">
+            @for (int i = 0; i < 12; i++)
+            {
+                <div></div>
+            }
+        </div>
+    </div>
+    <header class="header">
+        <div class="header__container container">
+            <a href="/" class="header__logo">
+                <picture>
+                    <source media="(max-width: 1024px)" srcset="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")">
+                    <source media="(min-width: 1025px)" srcset="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")">
+                    <img src="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")" alt="Региональная энергетическая компания">
+                </picture>
+            </a>
+            <div class="header__col sm_hidden">
+                <div class="header__address">
+                    <i class="fas fa-map-marker-alt"></i> г. Тюмень, ул. Осипенко 19
+                </div>
+                <div class="header__note">пн. - пт.: 8:30 - 17:30 (обед 12:30 - 13:30)</div>
+            </div>
+            <div class="header__col header__col--mg">
+                <a href="tel:+73452500854" class="header__phone">
+                    <i class="fas fa-phone-alt"></i> +7 (3452) 50-08-54
+                </a>
+                <div class="header__note">Телефон офиса</div>
+            </div>
+            <div class="header__account">
+                <i class="fas fa-user-circle"></i>
+                @if (User.Identity!.IsAuthenticated!)
+                {
+                    <a href="@Url.Action("Index", "Home")" class="header__reg">@User.Identity.Name</a>
+                    <span>|</span>
+                    <a href = "@Url.Action("Logout", "Account")" class="header__reg">Выйти</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Register", "Account")" class="header__reg">Регистрация</a>
+                    <span>|</span>
+                    <a href = "@Url.Action("Login", "Account")" class="header__entry">Вход</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        @if (User.Identity.IsAuthenticated) {
+            <form asp-controller="BidPersonalInfo" asp-action="Bid1" class="form-bid-modal" role="form" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal" data-modal="create_an_application" >
+                    <div class="modal__inner" data-modal-inner="create_an_application">
+                        <div class="modal__close" data-modal-close="create_an_application">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="modal__main">
+                            <div class="modal__title">Онлайн заявка</div>
+                            <div class="modal__content" data-step="1">
+                                <div class="form-group">
+                                    <div class="select-block">
+                                        <div class="select-block__title">
+
+                                            <span>Услуга</span>
+
+                                        </div>
+                                        <ul class="select-block__list scrollbar">
+                                            @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()) || User.HasClaim(UserType.UserType.GetDescription(), UserType.IndividualEntrepreneur.GetDescription()))
+                                            {
+                                                <li><a href="#">Технологическое присоединение энергопринимающих устройств до 15 кВт</a></li> 
+                                            }
+                                            else if (User.HasClaim(UserType.UserType.GetDescription(), UserType.LegalPerson.GetDescription()))
+                                            {
+                                                <li><a href="#">Временное технологическое присоединение</a></li> 
+                                                <li><a href="#">Технологическое присоединение энергопринимающих устройств свыше 150 кВт</a></li>                                 
+                                            }                                      
+                                            <li><a href="#">Технологическое присоединение энергопринимающих устройств до 150 кВт</a></li>                                         
+                                        </ul>
+
+                                        <input type="hidden" id="service" name="service">
+                                    </div>
+                                </div>
+                                <div class="modal__btn">
+                                    <button type="submit" class="step-next btn" data-next-step="2">Продолжить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="footer__container container">
+            <a href="/" class="footer__logo">
+                <picture>
+                    <source media="(max-width: 1024px)" srcset="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")">
+                    <source media="(min-width: 1025px)" srcset="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")">
+                    <img src="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")" alt="Региональная энергетическая компания">
+                </picture>
+            </a>
+            <div class="footer__wrap">
+                <div class="footer__top">
+                    <div class="footer__col">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="footer__col_text">г. Тюмень, ул. Осипенко 19</span>
+                        <div class="footer__note">Офис компании</div>
+                    </div>
+                    <div class="footer__col">
+                        <i class="fas fa-clock"></i>
+                        <span class="footer__col_text">Режим работы</span>
+                        <div class="footer__note">Пн-Пт: 08:30-17:30 (Обед 12:30-13:30)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer__bottom">
+            <div class="container footer__flex">
+                <div class="footer__text">
+                    <a href="@Url.Action("PrivacyPolicy", "Home")">Политика конфиденциальности</a>
+                    <span class="sm_hidden">|</span>
+                    <a href="@Url.Action("TermsOfUse", "Home")">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </div>
+
+        <link href="~/css/suggestions.min.css" rel="stylesheet" />
+        <script src="~/js/jquery.suggestions.min.js"></script>
+        <script src="//kit.fontawesome.com/885a98d041.js" crossorigin="anonymous"></script>
+        <script>
+            window.tokendadata = "@ViewBag.DadataToken";
+        </script>
+        <script src="@Url.Content("~/js/modules/masked.js")"></script>
+        <script src="@Url.Content("~/js/modules/datepicker.js")"></script>
+        <script src="@Url.Content("~/js/modules/select-block.js")"></script>
+        <script src="@Url.Content("~/js/modules/policy.js?v=0001")"></script>
+        <script src="@Url.Content("~/js/modules/sidebarStiky.js?v=0002")"></script>
+        <script src="@Url.Content("~/js/modules/modal.js")"></script>
+        <script src="@Url.Content("~/js/modules/form-step.js?v=220825")"></script>
+        <script src="@Url.Content("~/js/script.js?v=23032")"></script>
+    </footer>
+
+</body>
+</html>

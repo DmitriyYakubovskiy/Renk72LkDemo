@@ -1,0 +1,32 @@
+﻿@model (BidModel, UserModel)
+
+<div class="doc request">
+    <div class="doc__title">Прикрепленные документы</div>
+    <ul class="doc__list">
+        @if (!String.IsNullOrEmpty(Model.Item1?.Step5?.PassportFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.Step5?.PassportFile.FilePath" target="_blank" class="doc__link">Документ удостоверяющий личность</a></li>
+        }
+        @if (!String.IsNullOrEmpty(Model.Item1?.Step5?.SnilsFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.Step5?.SnilsFile.FilePath" target="_blank" class="doc__link">СНИЛС</a></li>
+        }
+        @if (!String.IsNullOrEmpty(Model.Item1?.Step5?.PowerDevicesPlanFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.Step5?.PowerDevicesPlanFile.FilePath" target="_blank" class="doc__link">План расположения энергопринимающих устройств</a></li>
+        }
+        @if (!String.IsNullOrEmpty(Model.Item1?.Step5?.BenefitFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.Step5?.BenefitFile.FilePath" target="_blank" class="doc__link">Документ, подтверждающий право на льготу</a></li>
+        }
+        @if (!String.IsNullOrEmpty(Model.Item1?.Step5?.OtherFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.Step5?.OtherFile.FilePath" target="_blank" class="doc__link">Прочие документы</a></li>
+        }
+        @if (!String.IsNullOrEmpty(Model.Item1?.User?.UserDataAgreementFile?.FilePath))
+        {
+            <li class="doc__list-item"><a href="@Model.Item1?.User?.UserDataAgreementFile.FilePath" target="_blank" class="doc__link">
+            <li class="doc__list-item"><a href="@Model.Item1?.User?.UserDataAgreementFile.FilePath" target="_blank" class="doc__link">Согласие на обработку персональных данных</a></li></li>
+        }
+    </ul>
+</div>

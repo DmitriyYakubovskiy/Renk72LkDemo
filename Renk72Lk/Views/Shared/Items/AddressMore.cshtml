@@ -1,0 +1,122 @@
+﻿@model (AddressesViewModel, bool)
+
+<div class="lk-block-info @(Model.Item2 ? "" : "lk-block-info--mod")">
+    <div class="lk-block-info__header">Адрес физического лица</div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.FullAddress)}")">
+            <input type="text" placeholder="Введите адрес в свободной форме до дома" onfocus="dadate(this.id)" class="form-group__input" id="address_reg" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.FullAddress)}")" value="@Model.Item1?.RegistrationAddress?.FullAddress">
+        </div>
+        <div class="form-group form-bid">Регистрационный адрес:</div>
+        <div id="address_reg_full" dadate-input-container>
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Region)}")">
+                <input type="text" placeholder="Регион/район" dadate-input-manual class="form-group__input" id="adrreg_obl" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Region)}")" value="@Model.Item1?.RegistrationAddress?.Region">
+            </div>
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.City)}")">
+                <input type="text" placeholder="Населенный пункт" dadate-input-manual class="form-group__input" id="adrreg_city" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.City)}")" value="@Model.Item1?.RegistrationAddress?.City">
+            </div>
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Street)}")">
+                <input type="text" placeholder="Улица" dadate-input-manual class="form-group__input" id="adrreg_str" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Street)}")" value="@Model.Item1?.RegistrationAddress?.Street">
+            </div>
+            <div class="lk-block-info flex">
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.House)}")">
+                    <input type="text" placeholder="Дом" dadate-input-manual class="form-group__input" id="adrreg_house" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.House)}")" value="@Model.Item1?.RegistrationAddress?.House">
+                </div>
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Office)}")">
+                    <input type="text" placeholder="Офис/кв" dadate-input-manual class="form-group__input" id="adrreg_office" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Office)}")" value="@Model.Item1?.RegistrationAddress?.Office">
+                </div>
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Index)}")">
+
+                    <input type="text" placeholder="ИНДЕКС" dadate-input-manual class="form-group__input" id="adrreg_index" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Index)}")" value="@Model.Item1?.RegistrationAddress?.Index">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="checkbox ">
+                <input type="checkbox" id="copy_block" class="checkbox__input" checked>
+                <label for="copy_block" class="checkbox__label">
+                    <span class="checkbox__icon">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                    </span>
+                    <span class="checkbox__text"> Адреса совпадают</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group form-bid">Фактический адрес:</div>
+        <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.FullAddress)}")">
+            <input type="text" placeholder="Введите адрес в свободной форме до дома" onfocus="dadate(this.id)" class="form-group__input" id="address_actual" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.FullAddress)}")" value="@Model.Item1?.ActualAddress?.FullAddress">
+        </div>
+        <div style="display:none" id="address_actual_full">
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Region)}")">
+                <input type="text" placeholder="Регион/район" class="form-group__input" id="adract_obl" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Region)}")" value="@Model.Item1?.ActualAddress?.Region">
+            </div>
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.City)}")">
+                <input type="text" placeholder="Населенный пункт" class="form-group__input" id="adract_city" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.City)}")" value="@Model.Item1?.ActualAddress?.City">
+            </div>
+            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Street)}")">
+                <input type="text" placeholder="Улица" class="form-group__input" id="adract_str" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Street)}")" value="@Model.Item1?.ActualAddress?.Street">
+            </div>
+            <div class="lk-block-info flex">
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.House)}")">
+                    <input type="text" placeholder="Дом" class="form-group__input" id="adract_house" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.House)}")" value="@Model.Item1?.ActualAddress?.House">
+                </div>
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Office)}")">
+                    <input type="text" placeholder="Офис/кв" class="form-group__input" id="adract_office" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Office)}")" value="@Model.Item1?.ActualAddress?.Office">
+                </div>
+                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Index)}")">
+                    <input type="text" placeholder="ИНДЕКС" class="form-group__input" id="adract_index" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Index)}")" value="@Model.Item1?.ActualAddress?.Index">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        function ChooseInfo (id,st) {
+        var elem = document.getElementById(id);
+
+        if (st != '0') {
+            elem.style.display = "block";
+        } else {
+            elem.style.display = "none";
+        }
+    }
+
+    function copyaddress() {
+        elem =  document.getElementById('copy_block');
+        if(elem.checked){
+            $('#adract_index' ).val($('#adrreg_index').val());
+            $("#adract_obl").val($('#adrreg_obl').val());
+            $('#adract_city').val($('#adrreg_city').val());
+            $('#adract_str' ).val($('#adrreg_str').val());
+            $('#adract_house').val($('#adrreg_house').val());
+            $('#adract_office').val($('#adrreg_office').val());
+            $('#address_actual').val($('#address_reg').val());
+            // $('#address_actual').attr('disabled', '')
+            ChooseInfo('address_actual_full', '0')
+
+        } else {
+            // $('#address_actual').removeAttr('disabled');
+            ChooseInfo('address_actual_full', '1')
+        }
+    }
+
+    function dadateManual(address,id) {
+      address = address.split('_')[0];
+      $('#'+id).val(join([
+        $('#'+address+'_obl').val(),
+        $('#'+address+'_city').val(),
+        $('#'+address+'_str').val(),
+        $('#'+address+'_house').val(),
+        $('#'+address+'_office').val(),
+        $('#'+address+'_index').val()
+      ]));
+    }
+
+    $(document).on('change', '#copy_block', function() {copyaddress()} );
+    $(document).on('change', '#address_reg', function() {copyaddress()})
+    $(document).on('change ', '[dadate-input-manual]', function () {
+      id = this.closest("[dadate-input-container]").id.split('_full')[0];
+      dadateManual(this.id,id);
+      copyaddress();
+      });
+</script>

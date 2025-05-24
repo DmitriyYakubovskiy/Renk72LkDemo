@@ -1,0 +1,25 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Максимальная мощность ранее присоединенных в данной точке присоединения энергопринимающих устройств</div>
+    <div class="lk-block-info__container">
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.OldPointPower)">
+            <input type="text" placeholder="Мощность, кВт" class="form-group__input"
+                   id="old_point_power" name="@nameof(Model.Bid.Step4.OldPointPower)"
+                   value="@Model?.Bid.Step4?.OldPointPower" onchange="OldPoint(this)">
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step4.OldPointVolt)">
+            <label>
+                Укажите напряжение, кВ
+                <select class="form-group__input"
+                        id="old_point_volt" name="@nameof(Model.Bid.Step4.OldPointVolt)" value="@Model?.Bid.Step4?.OldPointVolt" onchange="OldPoint(this)">
+                    <option value="" disabled selected>---кВ</option>
+                    <option value=0.23>0,23кВ</option>
+                    <option value=0.38>0,38кВ</option>
+                    <option value=6>6кВ</option>
+                    <option value=10>10кВ</option>
+                </select>
+            </label>
+        </div>
+    </div>
+</div>

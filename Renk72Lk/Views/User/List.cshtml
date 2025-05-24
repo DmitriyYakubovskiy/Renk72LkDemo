@@ -1,0 +1,305 @@
+﻿@model UserModel[]
+
+<div class="container">
+    <div class="row">
+        @if (TempData["Status"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Status"]
+            </div>
+        }
+        <section class="section">
+            <h1 class="section__title">Пользователи</h1>
+            <div class="section__row">
+                <div class="sidebar">
+                    <div class="sidebar__box">
+                        <div class="sidebar__list">
+                            @await Html.PartialAsync("Sidebar/SidebarMenu")
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="content__top">
+                        <h2 class="content__title">Список пользователей</h2>
+                        <div class="sort-block">
+                            <div class="sort-block__text">Сортировать по:</div>
+                            <div class="sort-block__item" style="padding-right:100px;">
+                                <div class="select-block select-block-sort">
+                                    <form class="form-sort" style="width: 150%; display: flex;">
+                                        @Html.AntiForgeryToken()
+                                        <select class="select-block__title sort-select" name="sort">
+                                            <option value="date">Дате регистрации</option>
+                                            <option value="role">Статусу заявителя</option>
+                                        </select>
+                                        <select class="select-block__title order-select" name="order">
+                                            <option value="asc">По возрастанию</option>
+                                            <option value="desc">По убыванию</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list_users">
+                        <div class="list_users__row list_users__row--header">
+                            <div class="list_users__name">Имя</div>
+                            <div class="list_users__data">Дата регистрации</div>
+                            <div class="list_users__type">Тип пользователя</div>
+                            <div class="list_users__function">Операции</div>
+                        </div>
+                        <div class="list_users__table">
+                            @foreach (var user in Model)
+                            {
+                                <div id="user-@user.Id" class="list_users__row">
+                                    <div class="list_users__name">
+                                        @user.Surname @user.Name @user.Patronymic
+                                        <span class="list_users__status" data-user-status="checked"><i class="fas fa-check-square"></i></span>
+                                    </div>
+                                    <div class="list_users__data" data-user="01.01.2020">
+                                        <span class="list_users__xs-show">Дата регистрации:</span>
+                                        @(user.CreatedAt?.ToString("dd.MM.yyyy") ?? "")
+                                    </div>
+                                    <div class="list_users__type">
+                                        <span class="list_users__xs-show">Тип пользователя:</span>
+                                        
+                                    </div>
+                                    <div class="list_users__function">
+                                        @* <a href="javascript:;" class="list_users__lock @(user.Status == 1 ? "lock-color" : "")" data-id="@user.Id" data-attr="@Url.Action("Lock", new { id = user.Id })"> *@
+                                        @*     @(user.Status == 1 ? "Разблокировать" : "Заблокировать") *@
+                                        @* </a> / *@
+                                        <a href="javascript:;" class="list_users__edit" data-attr="@Url.Action("GetUser", new { id = user.Id })" data-attr-store="@Url.Action("Update", new { id = user.Id })" data-modal-open="edit">Редактировать</a> /
+                                        <a href="javascript:;" class="list_users__remove" data-attr="@Url.Action("Delete", new { id = user.Id })">Удалить</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<div class="modal" data-modal="edit">
+    <div class="modal__inner" data-modal-inner="edit">
+        <div class="modal__close" data-modal-close="edit">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="modal__main">
+            <div class="modal__title">Данные пользователя </div>
+            <div class="modal__content">
+
+                <form class="form-users" id="">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="id" name="id" value="" />
+                    <div class="lk-block-user">
+                        <div class="lk-block-user__row lk-block-user__row-admin">
+                            <div class="lk-block-user__data">Email:</div>
+                            <div class="lk-block-user__lock">
+                                <input type="email" placeholder="email@mail.ru" class="form-group__input" id="email" name="email">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="lk-block-user__refactor">Изменить</button>
+                        </div>
+                        <div class="lk-block-user__row lk-block-user__row-admin">
+                            <div class="lk-block-user__data">Телефон:</div>
+                            <div class="lk-block-user__lock">
+                                <input type="text" placeholder="+7 (___) ___ __ __" data-masked-phone class="form-group__input" id="phoneNumber" name="phoneNumber">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="lk-block-user__refactor">Изменить</button>
+                        </div>
+                    </div>
+                    <div class="lk-block-user">
+                        <div class="lk-block-user__row lk-block-user__row-admin">
+                            <div class="lk-block-user__data">Имя:</div>
+                            <div class="lk-block-user__lock">
+                                <input type="text" placeholder="Имя" class="form-group__input" id="name" name="name">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="lk-block-user__refactor">Изменить</button>
+                        </div>
+                        <div class="lk-block-user__row lk-block-user__row-admin">
+                            <div class="lk-block-user__data">Фамилия:</div>
+                            <div class="lk-block-user__lock">
+                                <input type="text" placeholder="Фамилия" class="form-group__input" id="surname" name="surname">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="lk-block-user__refactor">Изменить</button>
+                        </div>
+                        <div class="lk-block-user__row lk-block-user__row-admin">
+                            <div class="lk-block-user__data">Отчество:</div>
+                            <div class="lk-block-user__lock">
+                                <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="lk-block-user__refactor">Изменить</button>
+                        </div>
+                    </div>
+                    <div class="lk-block-btn lk-block-btn-admin lk-block-btn--center">
+                        <input class="form-users-input" type="hidden" value="">
+                        <button type="submit" class="btn">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(".btn").on("click", function(event) {
+        event.preventDefault();
+        var formData = new FormData($(".form-users")[0]);
+        console.log(formData.serialize);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            type: "POST",
+            url: "Update",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log("Форма успешно отправлена!");
+            },
+            error: function(xhr, status, error) {
+                console.log("Ошибка при отправке формы!");
+                console.log(xhr.responseText); 
+            }
+        });
+    });
+
+    $(document).on('click', '.list_users__lock', function() {
+        var th = $(this);
+        var href = th.data('attr');
+        var id = th.data('id');
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: href,
+            data: id,
+            success: function(data) {
+                if (data.status === 'unlocked') {
+                    th.text('Заблокировать').removeClass('lock-color');
+                } else {
+                    th.text('Разблокировать').addClass('lock-color');
+                }
+            },
+            error: function(err) {
+                console.error("Error during lock/unlock operation", err);
+            }
+        });
+    });
+
+    $(document).on('click', '.list_users__remove', function() {
+        var th = $(this);
+        var href = th.data('attr');
+        var id = th.data('id');
+
+        if (confirm("Вы уверены, что хотите удалить этого пользователя?")) {
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
+            });
+
+            $.ajax({
+                type: 'DELETE',
+                url: href,
+                data: id,
+                success: function(data) {
+                    $('#user-' + data.id).remove();
+                    console.log('#user-' + data.id);
+                    alert("Пользователь удалён.");
+                },
+                error: function(err) {
+                    console.error("Error during delete operation", err);
+                }
+            });
+        }
+    });
+
+     $(document).on('click', '.list_users__edit', function() {
+        var href = $(this).attr('data-attr');
+        var hrefStore = $(this).attr('data-attr-store');
+        $('.form-users-input').val(hrefStore);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: 'Get',
+            url: href,
+            success: function (data) {
+                $('#id').val(data.id);
+                $('#name').val(data.name);
+                $('#surname').val(data.surname);
+                $('#patronymic').val(data.patronymic);
+                $('#email').val(data.email);
+                $('#phoneNumber').val(data.phoneNumber);
+            }
+        });
+    });
+
+    $('.form-sort').on('submit', function(event) {
+        event.preventDefault();
+        var th = $(this);
+        var params = th.serialize();
+        console.log( th.serialize());
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+
+        $.ajax({
+            url: "List",
+            type: "GET",
+            data: params,
+            success: function(data) {
+                console.log('Успешно');
+                $(".list_users__table").html($(data).find('.list_users__table'));
+            },
+            error: function(err) {
+                if (err.status == 422) {
+                    console.log(err.responseJSON);
+                }
+            }
+        });
+    });
+
+    $('.sort-select, .order-select').on('change', function() {
+        $('.form-sort').submit();
+    });
+</script>

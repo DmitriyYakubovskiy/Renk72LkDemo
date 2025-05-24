@@ -1,0 +1,80 @@
+﻿@model CreateBidViewModel
+
+<form class="form-bid" role="form" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="steps_content active"  data-step="3">
+        <input type="hidden" name="@nameof(Model.Bid.Step1.Id)" value="@Model?.Bid?.Step1?.Id" />
+        <input type="hidden" name="@nameof(Model.Bid.Step1.BidId)" value="@Model?.Bid?.Step1?.BidId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step1.UserId)" value="@Model?.Bid?.Step1?.UserId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step1.Role)" value="@Model?.Bid?.Step1?.Role" />
+
+        @await Html.PartialAsync("Items/Bid/3/AddressAttachedObject")
+        @await Html.PartialAsync("Items/Bid/3/ReasonForBid")
+        @await Html.PartialAsync("Items/Bid/3/GuarantySupplier")
+        @await Html.PartialAsync("Items/Bid/3/TypeOfContract")
+        @await Html.PartialAsync("Items/Bid/3/InfoPowerDevices")
+
+        <div class="lk-block-btn">
+            <button type="submit"  class="step-next btn">Сохранить и продолжить</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('.form-bid').on('submit',function(event){
+        $('.preloader').show();
+        event.preventDefault();
+        var th = $(this);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Bid/Bid4",
+            type:"POST",
+            data:th.serialize(),
+
+            success:function(data){
+                $('.preloader').hide();
+                console.log('Успешно')
+                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+                    window.location = "/Bid/Bid4";
+            },
+            error: function (err) {
+                $('.preloader').hide();
+                console.log(err.responseJSON);
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            $(`[name='container-${fieldName}']`).each(function() {
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                $(this).removeClass('error').addClass('error');
+                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
+                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                            });
+                        });
+                    });
+                }
+
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Неверные данные</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+                
+            }
+        });
+    });
+</script>

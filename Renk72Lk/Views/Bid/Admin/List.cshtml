@@ -1,0 +1,337 @@
+﻿@model BidModel[]
+<section class="section">
+    <h1 class="section__title">Все заявки</h1>
+    <div class="sort-block sort-block--big sm_hidden">
+        <form class="form-filter" style="width: 100%; display: flex;">
+            @Html.AntiForgeryToken()
+            <div class="sort-block__item sort-block__item--col-5">
+                <div class="form-group">
+                    <div class="select-block select-block-service">
+                        <div class="select-block__title"><span>Услуга</span></div>
+                        <ul class="select-block__list scrollbar">
+                            <li class="filter-check"><a href="#">Все</a></li>
+                            @foreach (var item in Model.Select(bid => bid.Service).Distinct())
+                            {
+                                <li class="filter-check"><a href="#">@item</a></li>
+                            }
+                        </ul>
+                        <input type="hidden" class="input-service" name="service" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="sort-block__item sort-block__item--col-3">
+                <div class="form-group">
+                    <div class="select-block">
+                        <div class="select-block__title"><span>Тип пользователя</span></div>
+                        <ul class="select-block__list scrollbar">
+                            <li class="filter-check"><a href="#">Все</a></li>
+                            @foreach (var item in Model.Select(bid => bid.UserRole).Distinct())
+                            {
+                                <li class="filter-check"><a href="#">@item</a></li>
+                            }
+                        </ul>
+                        <input type="hidden" class="input-role" name="role" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="sort-block__item sort-block__item--col-3">
+                <div class="form-group">
+                    <div class="select-block">
+                        <div class="select-block__title"><span>Статус заявки</span></div>
+                        <ul class="select-block__list scrollbar">
+                            <li class="filter-check"><a href="#">Все</a></li>
+                            <li class="filter-check"><a data-status="0" href="#">В ожидании</a></li>
+                            <li class="filter-check"><a data-status="1" href="#">На согласовании</a></li>
+                            <li class="filter-check"><a data-status="3" href="#">В работе</a></li>
+                            <li class="filter-check"><a data-status="6" href="#">Замечания</a></li>
+                            <li class="filter-check"><a data-status="7" href="#">Счет на оплате</a></li>
+                            <li class="filter-check"><a data-status="8" href="#">Выполнение ТУ заявителем</a></li>
+                            <li class="filter-check"><a data-status="9" href="#">Выполнение ТУ сетевой организацией</a></li>
+                            <li class="filter-check"><a data-status="4" href="#">Фактическое подключение</a></li>
+                            <li class="filter-check"><a data-status="2" href="#">Закрыто</a></li>
+                            <li class="filter-check"><a data-status="5" href="#">Аннулирована</a></li>
+                        </ul>
+                        <input type="hidden" class="input-status" name="ticketStatus" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="sort-block__item sort-block__item--col-3">
+                <div class="form-group">
+                    <div class="select-block">
+                        <div class="select-block__title"><span>Показать на странице</span></div>
+                        <ul class="select-block__list scrollbar">
+                            <li class="filter-check"><a href="#">100</a></li>
+                            <li class="filter-check"><a href="#">200</a></li>
+                            <li class="filter-check"><a href="#">500</a></li>
+                            <li class="filter-check"><a href="#">1000</a></li>
+                            <li class="filter-check"><a href="#">5000</a></li>
+                        </ul>
+                        <input type="hidden" class="input-take" name="take" value="100">
+                    </div>
+                </div>
+            </div>
+            <div class="sort-block__item sort-block__item--col-3">
+                <div class="form-group">
+                    <div class="select-block">
+                        <div class="select-block__search">
+                            <input style="position: relative; display:inline-block; " class="select-block__input" type="text" name="surname" value="" placeholder="Фамилия">
+                            <button class="filter-check select-block__icon fas fa-search"><a href="#"></a></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sort-block__item sort-block__item--col-5">
+                <div class="form-group">
+                    <input name="date" type="tel" placeholder="01.01.2020" data-position="bottom right" class="form-group__input datepicker-here filter-check-date" autocomplete="off" value="">
+                    <i class="form-group__icon fas fa-calendar-alt" aria-hidden="true"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="section__row">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="sidebar__list">
+                    @await Html.PartialAsync("Sidebar/SidebarMenu")
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            @if (TempData["Status"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Status"]
+                </div>
+            }
+            <h2 class="content__title">Все заявки</h2>
+            <div class="content__top sm_visible_flex">
+                <div class="sort-block sort-block--big">
+                    <div class="sort-block__text">Сортировать по:</div>
+                    <div class="sort-block__item">
+                        <div class="select-block">
+                            <div class="select-block__title"><span>Дате регистрации</span></div>
+                            <ul class="select-block__list scrollbar">
+                                <li><a href="#">Дате регистрации</a></li>
+                                <li><a href="#">Статусу заявителя</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sort-block__item">
+                        <div class="form-group">
+                            <div class="select-block">
+                                <div class="select-block__title"><span>Услуга</span></div>
+                                <ul class="select-block__list scrollbar">
+                                    <li><a href="#">Подключение энергопринимающих приборов до 150 кВт</a></li>
+                                    <li><a href="#">Подключение энергопринимающих приборов после 150 кВт</a></li>
+                                </ul>
+                                <input type="hidden" value="Выберите тип пользователя">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="request_block" class="request_block">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var bid in Model)
+                    {
+                        <div id="bid-@bid.Id">
+                            <a href="@Url.Action("GetById", new { id = bid.Id })"
+                               class="request @(bid.TicketStatus == 3 ? "request--success" : "") @(bid.TicketStatus == 4 ? "request--agreed" : "") @(new[] { 2, 5 }.Contains(bid.TicketStatus!.Value) ? "request--close" : "")">
+                                <div class="request__left">
+                                    <div class="request__title"><span>№ @bid.Id</span> @bid.Name</div>
+                                    <div class="request__list">
+                                        <div class="request__info">
+                                            <span class="request__name">Тип:</span>
+                                            <span class="request__text">@bid.UserRole</span>
+                                        </div>
+                                        <div class="request__info">
+                                            <span class="request__name">Услуга:</span>
+                                            <span class="request__text">@bid.Service</span>
+                                        </div>
+                                        <div class="request__info">
+                                            <span class="request__name">ФИО: @bid?.User?.Surname @bid?.User?.Name</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="request__right">
+                                    <div class="request__status">
+                                        @switch (bid?.TicketStatus)
+                                        {
+                                            case 0:
+                                                <i class="far fa-envelope"></i>
+                                                <span>В ожидании</span>
+                                                break;
+                                            case 1:
+                                                <i class="far fa-envelope-open"></i>
+                                                <span>На согласовании</span>
+                                                break;
+                                            case 2:
+                                                <i class="far fa-window-close"></i>
+                                                <span>Закрыто</span>
+                                                break;
+                                            case 3:
+                                                <i class="fas fa-briefcase"></i>
+                                                <span>В работе</span>
+                                                break;
+                                            case 4:
+                                                <i class="fas fa-check-circle"></i>
+                                                <span>Фактическое подключение</span>
+                                                break;
+                                            case 5:
+                                                <i class="far fa-window-close"></i>
+                                                <span>Аннулирована</span>
+                                                break;
+                                            case 6:
+                                                <i class="fas fa-exclamation-circle"></i>
+                                                <span>Замечания</span>
+                                                break;
+                                            case 7:
+                                                <i class="fas fa-money-bill"></i>
+                                                <span>Счет на оплате</span>
+                                                break;
+                                            case 8:
+                                                <i class="fas fa-plug"></i>
+                                                <span>Выполнение ТУ заявителем</span>
+                                                break;
+                                            case 9:
+                                                <i class="fas fa-plug"></i>
+                                                <span>Выполнение ТУ сетевой организацией</span>
+                                                break;
+                                        }
+                                    </div>
+                                    <div class="request__data">от <span>@bid?.CreatedAt?.ToString("dd.MM.yyyy")</span></div>
+                                    <input type="hidden" class="request-id" name="id" value="@bid?.Id">
+                                    @if (bid.TicketStatus == 2)
+                                    {
+                                        <button type="button" onclick="archiveBid(@bid.Id)" class="request__archive">Архивировать</button>
+                                    }
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="request_block__more">
+                <button id="loadMore" class="request__archive" data-skip="@ViewData["Skip"]">Показать еще</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    $(document).ready(function() {
+        checkDataLength();
+
+        function checkDataLength() {
+            var takeValue = parseInt(document.querySelector('.input-take').value);
+
+            if(@Model.Length < takeValue){
+                $('#loadMore').hide();
+            }
+        }
+    });
+
+    $(document).ready(function() {
+        $('#loadMore').click(function() {
+            var $loadMoreBtn = $(this);
+            var takeValue = parseInt(document.querySelector('.input-take').value);
+            var skipValue = parseInt($loadMoreBtn.data('skip')) + takeValue;
+            var service = $(".input-service").val();
+            var role = $(".input-role").val();
+            var ticketStatus = $(".input-status").val();
+            var surname = $("[name='surname']").val();
+            var date = $("[name='date']").val();
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+               }
+            });
+            $.ajax({
+                type:'GET',
+                url:'/Bid/LoadNext',
+                data:{
+                    service: service,
+                    role: role,
+                    ticketStatus: ticketStatus,
+                    surname: surname,
+                    date: date,
+                    take: takeValue,
+                    skip: skipValue
+                },
+                success:function(data){
+                    $('#request_block').append(data);
+                    $loadMoreBtn.data('skip', skipValue);
+
+                    if(data.length < takeValue){
+                        $('#loadMore').hide();
+                    }
+                    cartSidebarSticky.setSizes();
+                }
+            });
+        });
+    });
+
+    function archiveBid(id) {
+        if (confirm('Вы уверены, что хотите архивировать эту заявку?')) {
+            event.preventDefault();
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("ToArchive", "Bid")',
+                type: 'POST',
+                data: { id: id },
+                success: function (result) {
+                    console.log('Заявка успешно архивирована');
+                    $('#bid-' + id).remove();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+
+    $('.form-filter').on('submit',function(event){
+        event.preventDefault();
+        $('#loadMore').data('skip', 0);
+        var th = $(this);
+
+        $.ajaxSetup({
+        beforeSend: function(xhr) {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            xhr.setRequestHeader("RequestVerificationToken", token);
+        }
+        });
+        $.ajax({
+            url: "/Bid",
+            type:"GET",
+            data: th.serialize(),
+            success:function(data){
+                console.log('Успешно')
+                $('#loadMore').show();
+                $(".request_block").html($(data).find('.request_block'));
+            },
+            error: function (err) {
+                if (err.status == 422) {
+                    console.log(err.responseJSON);
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.filter-check', function(){
+        $('.form-filter').submit();
+    });
+
+    $(document).on('change', '.filter-check-date', function(){
+        $('.form-filter').submit();
+    });
+</script>

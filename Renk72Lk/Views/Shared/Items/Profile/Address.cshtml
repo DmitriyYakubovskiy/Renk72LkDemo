@@ -1,0 +1,22 @@
+﻿@model IBaseUserData
+
+<div class="lk-block-info">
+    <div class="lk-block-info__header">Адрес</div>
+    <div class="lk-block-info__container" data-copy-container>
+        <div name="container-@nameof(Model.RegistrationAddress)" class="form-group">
+            <input type="text" placeholder="Адрес регистрации" data-input-copy class="form-group__input" id="address_reg" asp-for="RegistrationAddress" value="@Model?.RegistrationAddress?.FullAddress">
+        </div>
+        <div name="container-@nameof(Model.ActualAddress)" class="form-group">
+            <input type="text" placeholder="Фактический адрес" data-input-copy class="form-group__input" id="address_actual" asp-for="ActualAddress" value="@Model?.ActualAddress?.FullAddress">
+            <div class="checkbox ">
+                <input type="checkbox" id="copy_block" class="checkbox__input">
+                <label for="copy_block" class="checkbox__label">
+                    <span class="checkbox__icon">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                    </span>
+                    <span class="checkbox__text"> Адреса совпадают</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

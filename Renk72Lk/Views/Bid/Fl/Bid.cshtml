@@ -1,0 +1,54 @@
+﻿@model CreateBidViewModel
+
+<section class="section">
+    <h1 class="section__title">@ViewBag.Title</h1>
+    <div class="steps sm_hidden">
+        <a href="@Url.Action("Bid1", "BidPersonalInfo")" class="steps__item @(Context.Request.Path.Value.Contains("Bid1") ? "active" : "")">Шаг 1</a>
+        <div class="steps__icon"><i class="fas fa-chevron-right"></i></div>
+        <a href="@Url.Action("Bid2", "BidRepresentativeInfo")" class="steps__item @(Context.Request.Path.Value.Contains("Bid2") ? "active" : "")">Шаг 2</a>
+        <div class="steps__icon"><i class="fas fa-chevron-right"></i></div>
+        <a href="@Url.Action("Bid3", "BidConnectionObjectInfo")" class="steps__item @(Context.Request.Path.Value.Contains("Bid3") ? "active" : "")">Шаг 3</a>
+        <div class="steps__icon"><i class="fas fa-chevron-right"></i></div>
+        <a href="@Url.Action("Bid4", "BidTechnicalSpecifications")" class="steps__item @(Context.Request.Path.Value.Contains("Bid4") ? "active" : "")">Шаг 4</a>
+        <div class="steps__icon"><i class="fas fa-chevron-right"></i></div>
+        <a href="@Url.Action("Bid5", "BidAttachments")" class="steps__item @(Context.Request.Path.Value.Contains("Bid5") ? "active" : "")">Шаг 5</a>
+    </div>
+    <div class="section__row">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="sidebar__list">
+                    @await Html.PartialAsync("SideBar/SidebarMenu")
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            @if (TempData["Status"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Status"]
+                </div>
+            }
+
+            <div class="steps_wrapper">
+                @switch (Context.Request.Path)
+                {
+                    case "/Bid/Bid1":
+                        @await Html.PartialAsync("~/Views/Bid/Fl/Bid1.cshtml", Model)
+                        break;
+                    case "/Bid/Bid2":
+                        @await Html.PartialAsync("~/Views/Bid/Fl/Bid2.cshtml", Model)
+                        break;
+                    case "/Bid/Bid3":
+                        @await Html.PartialAsync("~/Views/Bid/Fl/Bid3.cshtml", Model)
+                        break;
+                    case "/Bid/Bid4":
+                        @await Html.PartialAsync("~/Views/Bid/Fl/Bid4.cshtml", Model)
+                        break;
+                    case "/Bid/Bid5":
+                        @await Html.PartialAsync("~/Views/Bid/Fl/Bid5.cshtml", Model)
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+</section>

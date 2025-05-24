@@ -1,0 +1,32 @@
+h1 {
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 35px;
+}
+
+h2 {
+    font-size: 22px;
+    line-height: 1.2;
+    margin-bottom: 25px;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+}

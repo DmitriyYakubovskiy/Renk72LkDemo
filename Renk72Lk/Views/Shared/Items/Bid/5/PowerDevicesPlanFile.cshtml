@@ -1,0 +1,32 @@
+﻿@model CreateBidViewModel
+@{
+    var isDisabled = Model.Bid.Step5.PowerDevicesPlanFile?.FilePath != null;
+}
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__container">
+        <div class="form-group">
+            План расположения энергопринимающих устройств (Размер файла не более 10 Мб)
+        </div>
+        <div class="form-group" name="container-@nameof(Model.Bid.Step5.PlanFiles)">
+            <input type="file" class="form-group__file" id="filename_2"
+                   name="@nameof(Model.Bid.Step5.PlanFiles)" multiple disabled="@isDisabled"
+                   accept=".jpg, .jpeg, .png, .pdf" asp-for="@Model.Bid.Step5.PlanFiles">
+        </div>
+
+        @if (Model.Bid.Step5.PowerDevicesPlanFile?.FilePath != null)
+        {
+            <div class="uploaded-file-info" style=" ackground: #f5f5f5; border-radius: 4px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: green;">✔ Документ загружен:</span>
+                    <a href="@Model.Bid.Step5.PowerDevicesPlanFile.FilePath" target="_blank" style="color: #0066cc; text-decoration: underline;">
+                        @Model.Bid.Step5.PowerDevicesPlanFile.FileName
+                    </a>
+                    <button type="button" onclick="removeUploadedFile('planFile')" style="margin-left: auto; color: #ff0000; background: none; border: none; cursor: pointer;">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,51 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Гарантирующий поставщик <span>(энергосбытовая компания)</span></div>
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid">
+            <div class="select-block" name="container-@nameof(Model.Bid.Step3.GuarantySupplier)">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Bid.Step3.GuarantySupplier))
+                    {
+                        <span>Укажите поставщика</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.Bid.Step3?.GuarantySupplier</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    @foreach (GuarantySupplier supplier in Enum.GetValues(typeof(GuarantySupplier)))
+                    {
+                        <li><a href="#" onclick="Other('guarant_supplier', this.innerHTML)">@(supplier.GetDescription())</a></li>
+                    }
+                </ul>
+                <input type="hidden" id="guarant_supplier" name="@nameof(Model.Bid.Step3.GuarantySupplier)"
+                       value="@Model?.Bid.Step3?.GuarantySupplier">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function htmlDecode(input) {
+        var doc = new DOMParser().parseFromString(input, "text/html");
+        return doc.documentElement.textContent;
+    }
+
+    function Other (id,st) {
+        var elem = document.getElementById(id);
+        var otherDescription = htmlDecode("@(GuarantySupplier.Other.GetDescription())");
+
+        if (st == otherDescription) {
+            elem.type = 'text';
+            elem.style = 'margin-top: 15px';
+            elem.value = "";
+            elem.placeholder = 'Укажите ваш вариант';
+            elem.classList.add('form-group__input');
+        } else {
+            elem.type = 'hidden';
+        }
+    }
+</script>

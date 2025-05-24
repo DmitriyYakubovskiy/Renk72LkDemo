@@ -1,0 +1,91 @@
+﻿@model CreateBidViewModel
+
+<form class="form-bid" role="form" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="steps_content active" data-step="5">
+        <input type="hidden" name="@nameof(Model.Bid.Step5.Id)" value="@Model.Bid.Step5.Id" />
+        <input type="hidden" name="@nameof(Model.Bid.Step5.BidId)" value="@Model.Bid.Step5.BidId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step5.UserId)" value="@Model.Bid.Step5.UserId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step5.Role)" value="@Model.Bid.Step5.Role" />
+
+        @await Html.PartialAsync("Items/Bid/5/Info")
+        @await Html.PartialAsync("Items/Bid/5/PassportFile")
+        @await Html.PartialAsync("Items/Bid/5/PowerDevicesPlanFile")
+        @await Html.PartialAsync("Items/Bid/5/SnilsFile")
+        @await Html.PartialAsync("Items/Bid/5/BenefitFile")
+        @await Html.PartialAsync("Items/Bid/5/OtherFile")
+        @await Html.PartialAsync("Items/Bid/5/PrePdf")
+        @await Html.PartialAsync("Items/Bid/5/SendBid")
+    </div>
+</form>
+
+
+
+<script>
+    $('.form-bid').on('submit',function(event){
+        event.preventDefault();
+        var formData = new FormData(this);
+
+        $('.preloader').show();
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Bid/Create",
+            type:"POST",
+            cache:false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success:function(data){
+                $('.preloader').hide();
+                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('500', function(){
+                        $(this).remove();
+                    });
+                }, 5000);
+                window.location = "/Bid/";
+                $('.sidebar__link_bid').removeClass('lock');
+            },
+            error: function (err) {
+                $('.preloader').hide();
+                console.log(err.responseJSON);
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i>' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                            $(`[name='container-${fieldName}']`).each(function() {
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                $(this).removeClass('error').addClass('error');
+                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
+                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                            });
+                        });
+                    });
+                }
+
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Ошибка отправки</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+        });
+    });
+</script>

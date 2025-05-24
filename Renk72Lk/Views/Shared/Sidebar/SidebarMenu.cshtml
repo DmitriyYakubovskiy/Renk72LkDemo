@@ -1,0 +1,14 @@
+﻿@if(User.IsInRole(UserRole.Admin.GetDescription()))
+{
+    <a class="sidebar__link" href="@Url.Action("Profile", "Home")">Настройка профиля</a>
+    <a class="sidebar__link" href="@Url.Action("List", "Bid")">Все заявки</a>
+    <a class="sidebar__link" href="@Url.Action("ListArchives","Bid")">Архив заявок</a>
+    <a class="sidebar__link" href="@Url.Action("List", "User")">Список пользователей</a>
+}
+else
+{
+    <a class="sidebar__link" href="@Url.Action("Profile", "Home")">Настройка профиля</a>
+    <a class="sidebar__link" href="@Url.Action("List", "Bid")">Все заявки</a>
+    <div class="sidebar__link sidebar__link_bid" data-modal-open="create_an_application">Создать заявку</div>
+    <a class="sidebar__link" href="@Url.Action("Representative", "Home")">Данные представителя</a>
+}

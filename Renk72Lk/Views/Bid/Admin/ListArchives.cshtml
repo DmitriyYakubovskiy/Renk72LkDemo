@@ -1,0 +1,184 @@
+﻿@model BidModel[]
+
+<div class="container">
+    <div class="row">
+        @if (TempData["Status"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Status"]
+            </div>
+        }
+        <h1 class="section__title">Архив заявок</h1>
+        <div class="sort-block sort-block--big sm_hidden">
+            <form class="form-filter" style="width: 100%; display: flex;">
+                @Html.AntiForgeryToken()
+                <div class="sort-block__item sort-block__item--col-3">
+                    <div class="form-group">
+                        <div class="select-block select-block-service">
+                            <div class="select-block__title"><span>Услуга</span></div>
+                            <ul class="select-block__list scrollbar">
+                                @foreach (var item in Model.Select(bid => bid.Service).Distinct())
+                                {
+                                    <li class="filter-check"><a href="#">@item</a></li>
+                                }
+                            </ul>
+                            <input type="hidden" class="input-service" name="service" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="sort-block__item sort-block__item--col-3">
+                    <div class="form-group">
+                        <div class="select-block">
+                            <div class="select-block__title"><span>Тип пользователя</span></div>
+                            <ul class="select-block__list scrollbar">
+                                @foreach (var item in Model.Select(bid => bid.UserRole).Distinct())
+                                {
+                                    <li class="filter-check"><a href="#">@item</a></li>
+                                }
+                            </ul>
+                            <input type="hidden" class="input-role" name="role" value="">
+                        </div>
+                    </div>
+                </div>                
+                <div class="sort-block__item sort-block__item--col-3">
+                    <div class="form-group">
+                        <input name="date" type="tel" placeholder="01.01.2020" data-position="bottom right" class="form-group__input datepicker-here filter-check-date" autocomplete="off" value="">
+                        <i class="form-group__icon fas fa-calendar-alt" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </form> 
+        </div>
+        <div class="section__row">
+            <div class="sidebar">
+                <div class="sidebar__box">
+                    <div class="sidebar__list">
+                        @await Html.PartialAsync("Sidebar/SidebarMenu")
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                @if (TempData["Status"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Status"]
+                    </div>
+                }
+                <h2 class="content__title">Все заявки</h2>
+                <div class="content__top sm_visible_flex">
+                    <div class="sort-block sort-block--big">
+                        <div class="sort-block__text">Сортировать по:</div>
+                        <div class="sort-block__item">
+                            <div class="select-block">
+                                <div class="select-block__title"><span>Дате регистрации</span></div>
+                                <ul class="select-block__list scrollbar">
+                                    <li><a href="#">Дате регистрации</a></li>
+                                    <li><a href="#">Статусу заявителя</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="sort-block__item">
+                            <div class="form-group">
+                                <div class="select-block">
+                                    <div class="select-block__title"><span>Услуга</span></div>
+                                    <ul class="select-block__list scrollbar">
+                                        <li><a href="#">Подключение энергопринимающих приборов до 150 кВт</a></li>
+                                        <li><a href="#">Подключение энергопринимающих приборов после 150 кВт</a></li>
+                                    </ul>
+                                    <input type="hidden" value="Выберите тип пользователя">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="request_block">
+                    @foreach (var bid in Model)
+                    {
+                        <div id="bid-@bid.Id">
+                            <a href="#" class="request request">
+                                <div class="request__left">
+                                    <div class="request__title"><span>№ @bid.Id</span> @bid.Name</div>
+                                    <div class="request__list">
+                                        <div class="request__info">
+                                            <span class="request__name">Тип:</span>
+                                            <span class="request__text">@bid.UserRole</span>
+                                        </div>
+                                        <div class="request__info">
+                                            <span class="request__name">Услуга:</span>
+                                            <span class="request__text">@bid.Service</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="request__right">
+                                    <div class="request__status"><i class="far fa-window-close"></i>Закрыто</div>
+                                    <div class="request__data">от <span>@bid.UpdatedAt?.ToString("dd.MM.yyyy")</span></div>
+                                    <button type="button" onclick="archiveBid(@bid.Id)" class="request__archive">Разархивировать</button>
+                                </div>
+                            </a>
+                        </div>
+                    }    
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function archiveBid(id) {
+        if (confirm('Вы уверены, что хотите разархивировать эту заявку?')) {
+            event.preventDefault();
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("FromArchive", "Bid")',
+                type: 'POST',
+                data: { id: id },
+                success: function (result) {
+                    console.log('Заявка успешно разархивирована');
+                    $('#bid-' + id).remove();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+
+    $('.form-filter').on('submit',function(event){
+        event.preventDefault();
+        var th = $(this);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "Archives",
+            type:"GET",
+            data: th.serialize(),
+            success:function(data){
+                console.log('Успешно')
+                $(".request_block").html($(data).find('.request_block'));
+            },
+            error: function (err) {
+                if (err.status == 422) {
+                    console.log(err.responseJSON);
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.filter-check', function(){
+        $('.form-filter').submit(); 
+    });      
+
+    $(document).on('change', '.filter-check-date', function(){
+        $('.form-filter').submit(); 
+    });    
+</script>

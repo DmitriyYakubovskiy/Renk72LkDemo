@@ -1,0 +1,11 @@
+﻿@model CreateBidViewModel
+@{
+    ViewBag.Title = "Оформление заявки";
+}
+
+<div class="container">
+    @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+    {
+        @await Html.PartialAsync("~/Views/Bid/Fl/Bid.cshtml")
+    }
+</div>  

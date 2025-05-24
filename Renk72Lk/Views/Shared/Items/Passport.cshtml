@@ -1,0 +1,43 @@
+﻿@model (IPassportData, bool)
+
+<div class="lk-block-info @(Model.Item2?"lk-block-info--mod":"")">
+    <div class="lk-block-info__header">Документ удостоверяющий личность</div>
+    <div class="lk-block-info__container">
+        <div class="form-group @(Model.Item2?"form-bid":"")">
+            <div name="container-@nameof(Model.Item1.PassportType)" class="select-block">
+                <div class="select-block__title">
+                    @if (String.IsNullOrEmpty(Model.Item1?.PassportType))
+                    {
+                        <span>Тип документа</span>
+                    }
+                    else
+                    {
+                        <span>@Model.Item1?.PassportType</span>
+                    }
+                </div>
+                <ul class="select-block__list scrollbar">
+                    <li><a href="#">@PassportType.PassportOfCitizenRF.GetDescription()</a></li>
+                    <li><a href="#">@PassportType.PassportOfForeignCitizen.GetDescription()</a></li>
+                </ul>
+                <input type="hidden" id="passport" name="@nameof(Model.Item1.PassportType)" value="@Model.Item1?.PassportType">
+            </div>
+        </div>
+        <div class="lk-block-info__flex">
+            <div name="container-@nameof(Model.Item1.PassportSeries)" class="form-group">
+                <input type="text" placeholder="Серия" class="form-group__input " data-masked-pseries id="passport_series" name="@nameof(Model.Item1.PassportSeries)" value="@Model.Item1?.PassportSeries">
+            </div>
+            <div name="container-@nameof(Model.Item1.PassportNumber)" class="form-group">
+                <input type="text" placeholder="Номер" class="form-group__input " data-masked-pnumber id="passport_number" name="@nameof(Model.Item1.PassportNumber)" value="@Model.Item1?.PassportNumber">
+            </div>
+            <div class="form-group">
+                <div name="container-@nameof(Model.Item1.PassportDate)" class="form-group__box">
+                    <input type="tel" placeholder="01.01.2020" data-position="top right" class="form-group__input datepicker-here" id="passport_date" name="@nameof(Model.Item1.PassportDate)" value="@Model.Item1?.PassportDate">
+                    <i class="form-group__icon fas fa-calendar-alt"></i>
+                </div>
+            </div>
+        </div>
+        <div name="container-@nameof(Model.Item1.PassportIssuedBy)" class="form-group">
+            <input type="text" placeholder="Кем выдан" class="form-group__input" id="passport_issued_by" name="@nameof(Model.Item1.PassportIssuedBy)" value="@Model.Item1?.PassportIssuedBy">
+        </div>
+    </div>
+</div>

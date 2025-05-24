@@ -1,0 +1,107 @@
+.list_users {
+    width: 100%;
+    border-bottom: 1px solid var(--color-grey);
+    font-size: 12px;
+    line-height: 16px;
+    margin-bottom: 30px;
+}
+
+.list_users__row{
+    display: flex;
+    border: 1px solid var(--color-grey);
+    border-bottom: none;
+    flex-wrap: wrap;
+}
+
+.list_users__row:nth-child(odd) {
+    background: var(--color-grey-v2);
+}
+
+.list_users__row--header {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+.list_users__row > div {
+    border-right: 1px solid var(--color-grey);
+    padding: 7px 5px;
+    position: relative;
+}
+
+.list_users__row > div:last-child {
+    border-right: none;
+}
+
+.list_users__status {
+    position: absolute;
+    right: 5px;
+    top: 15px;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+
+.list_users__row  .list_users__name {
+    width: calc(50% - 120px);
+    padding-right: 30px;
+    word-wrap: break-word;
+}
+
+.list_users__data {
+    width: 120px;
+}
+
+.list_users__type {
+    width: 120px;
+}
+
+.list_users__function {
+    width: calc(50% - 120px);
+}
+
+.list_users__xs-show {
+    display: none;
+}
+
+
+
+@media (max-width: 575px) {
+    .list_users__row  .list_users__name {
+        width: 100%;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .list_users__function, .list_users__type, .list_users__data {
+        width: 100%;
+    }
+
+    .list_users__row > div {
+        padding: 3px 5px;
+        border: none;
+    }
+
+    .list_users__row {
+        border-bottom: none;
+        padding: 10px 0;
+    }
+
+    .list_users__row--header {
+        display: none;
+    }
+
+    .list_users__xs-show {
+        display: inline-block;
+        /*font-weight: bold;*/
+        color: var(--color-dark);
+    }
+
+    .list_users__status {
+        top: 0;
+    }
+
+    .list_users {
+        margin-bottom: 15px;
+    }
+
+}

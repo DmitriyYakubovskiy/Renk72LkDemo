@@ -1,0 +1,32 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Точки присоединения</div>
+    <div class="lk-block-info__container">
+        <div class="connection_points">
+            <div class="connection_points__table" id="pointsTable">
+                <div class="connection_points__row connection_points__row--header">
+                    <div class="connection_points__col">№</div>
+                    <div class="connection_points__col">Напряжение, кВ</div>
+                    <div class="connection_points__col">Мощность, кВт</div>
+                </div>
+
+                @foreach (var point in Model.Bid.Step4.Points.Select((p, i) => new { Point = p, Index = i + 1 }))
+                {
+                    <div class="connection_points__row" data-point-id="@point.Point.Id">
+                        <div class="connection_points__col">@point.Index</div>
+                        <div class="connection_points__col">@point.Point.Voltage.ToString()</div>
+                        <div class="connection_points__col">@point.Point.Power.ToString()</div>
+                    </div>
+                }
+            </div>
+
+            <div class="connection_points__bottom">
+                <a href="#" class="connection_points__del" id="deletePointBtn">Удалить последнюю точку</a>
+                <a href="#" class="connection_points__more" data-modal-open="attachment_points">Добавить точку</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="currentPoint" name="currentPoint" value="@Model.Bid.Step4.Points.Count" />

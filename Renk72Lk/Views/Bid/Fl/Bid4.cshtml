@@ -1,0 +1,128 @@
+﻿@model CreateBidViewModel
+
+<form class="form-bid" role="form" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="steps_content active"  data-step="4">
+        <input type="hidden" name="@nameof(Model.Bid.Step4.Id)" value="@Model?.Bid?.Step4?.Id" />
+        <input type="hidden" name="@nameof(Model.Bid.Step4.BidId)" value="@Model?.Bid?.Step4?.BidId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step4.UserId)" value="@Model?.Bid?.Step4?.UserId" />
+        <input type="hidden" name="@nameof(Model.Bid.Step4.Role)" value="@Model?.Bid?.Step4?.Role" />
+        <input type="hidden" name="@nameof(Model.Bid.Step4.Service)" value="@Model?.Bid?.Step4?.Service" />
+        <input type="hidden" name="@nameof(Model.Bid.Step4.Reason)" value="@Model?.Bid?.Step4?.Reason" />
+        
+        @await Html.PartialAsync("Items/Bid/4/ParametersTechnologicalConnection")
+        @if (Model?.Bid?.Step3?.ReasonForBid != ReasonForBid.NewConnection.GetDescription())
+        {
+            @await Html.PartialAsync("Items/Bid/4/OldAttachedPoints")
+        }
+        @await Html.PartialAsync("Items/Bid/4/AttachedPoints")
+        @if (Model?.Bid?.Service == TechnologicalConnectionType.UpTo150kW.GetDescription())
+        {
+            @await Html.PartialAsync("Items/Bid/4/NatureLoad")
+        }
+        @await Html.PartialAsync("Items/Bid/4/AttachedStages")
+        @await Html.PartialAsync("Items/Bid/4/AddInfo")
+
+        @if (Model?.Bid?.Service == TechnologicalConnectionType.UpTo150kW.GetDescription())
+        {
+            @await Html.PartialAsync("Items/Bid/4/CalcProcedure")
+        }
+        <div class="lk-block-btn">
+            <button type="submit" class="step-next btn">Сохранить и продолжить</button>
+        </div>
+    </div>
+</form>
+
+@await Html.PartialAsync("_ModalFormAttachmentsPointsStages", Model)
+
+<script>
+
+    var PointObj = {};
+    function OldPoint (old) {
+        var status = '@Model?.Bid?.Step3?.ReasonForBid';
+        var type = '@Model?.bidServiceByInt';
+
+        if (type == 15) {
+            if (status === 'Увеличение мощности ранее присоединенных энергопринимающего устройства' && old.id === 'old_point_volt') {
+                // var el = document.getElementById('modal_volt');
+                // el.value = old.value;
+                // PointObj.volt = old.value;
+            } else if (status === 'Изменение уровня напряжения' && old.id === 'old_point_power' ) {
+                var el = document.getElementById('modal_power');
+                el.value = old.value;
+                PointObj.power = old.value;
+            }
+        }
+    }
+
+    $('.form-bid').on('submit',function(event){
+        $('.preloader').show();
+        event.preventDefault();
+        var th = $(this);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Bid/Bid5",
+            type:"POST",
+            data:th.serialize(),
+            success:function(data){
+                $('.preloader').hide();
+                console.log('Успешно')
+                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+                    window.location = "/Bid/Bid5";
+            },
+            error: function (err) {
+                $('.preloader').hide();
+                console.log(err.responseJSON.errors);
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+
+                        if (fieldName.includes('Points')){
+                            var cp = $('#point_tab');
+                            cp.find('.connection_points__col').addClass('is-active');
+                            cp.before('<div class="form-group__error">Добавьте точку присоединения.</div>');
+                            cp.parent().find('.form-group__error').not(':first-child').remove();
+                        }
+                        else if (fieldName.includes('Etap')){
+                            var cp = $('#etap_tab');
+                            cp.find('.connection_points__col').addClass('is-active');
+                            cp.before('<div class="form-group__error">Добавьте этап строительства.</div>');
+                            cp.parent().find('.form-group__error').not(':first-child').remove();
+                        }
+
+                        $.each(messages, function(index, message) {
+
+                            $(`[name='container-${fieldName}']`).each(function() {
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                if ($(this).hasClass('active')) {
+                                    $(this).removeClass('error').addClass('error');
+                                } else {
+                                    $(this).closest(".form-group").removeClass('error').addClass('error');
+                                }
+                                });
+                        });
+                    });
+                }
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Неверные данные</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+        });
+    });
+ </script>

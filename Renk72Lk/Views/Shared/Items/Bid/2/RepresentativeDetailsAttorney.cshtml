@@ -1,0 +1,40 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Данные представителя</div>
+    <div class="lk-block-info__container">
+        <div class="form-group" name="container-@nameof(Model.Bid.Step2.IsAttorney)">
+            <div class="checkbox">
+                <input type="checkbox" id="doverenost" name="@nameof(Model.Bid.Step2.IsAttorney)" class="checkbox__input" value="@Model?.Bid.Step2?.IsAttorney" @(!String.IsNullOrEmpty(Model?.Bid.Step2.Name) ? "checked" : "")>
+                <label for="doverenost" class="checkbox__label">
+                    <span class="checkbox__icon">
+                        <i class="fas fa-check"></i>
+                    </span>
+                    <span class="checkbox__text">Я являюсь представителем организации по доверенности</a></span>
+                </label>
+            </div>
+        </div>
+        <div doverenost style="display: @(!String.IsNullOrEmpty(Model?.Bid.Step2.Name) ? "block" : "none")">
+            <div class="form-group" name="container-@nameof(Model.Bid.Step2.Surname)">
+                <input type="text" placeholder="Фамилия" class="form-group__input" id="surname" name="surname" value="@Model?.Bid.Step2?.Surname">
+            </div>
+            <div class="form-group" name="container-@nameof(Model.Bid.Step2.Name)">
+                <input type="text" placeholder="Имя" class="form-group__input" id="name" name="name" value="@Model?.Bid.Step2?.Name">
+            </div>
+            <div class="form-group" name="container-@nameof(Model.Bid.Step2.Patronymic)">
+                <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic" value="@Model?.Bid.Step2?.Patronymic">
+            </div>
+            @await Html.PartialAsync("Items/DownloadRepresentative")
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).on('change', '#doverenost', function() {
+        $('[doverenost]').toggle()
+        $("#surname").val(null);
+        $("#name").val(null);
+        $("#patronymic").val(null);
+        cartSidebarSticky.setSizes();
+    });
+</script>

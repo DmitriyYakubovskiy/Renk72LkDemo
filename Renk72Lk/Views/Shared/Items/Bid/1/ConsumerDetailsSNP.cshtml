@@ -1,0 +1,41 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Данные заявителя</div>
+
+    <div class="lk-block-info__container">
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.Surname)">
+            <input type="text" placeholder="Фамилия" class="form-group__input" id="surname" name="surname" value="@Model?.Bid.Step1?.Surname">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.Name)">
+            <input type="text" placeholder="Имя" class="form-group__input" id="name" name="name" value="@Model?.Bid.Step1?.Name">
+        </div>
+        <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.Patronymic)">
+            <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic" value="@Model?.Bid.Step1?.Patronymic">
+        </div>
+        @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+        {
+            <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.Snils)">
+                <input type="text" placeholder="СНИЛС" class="form-group__input" id="snils" name="snils" data-masked-snils value="@Model?.Bid.Step1?.Snils">
+            </div>
+            <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.DateOfBirth)">
+                <input type="text" placeholder="Дата рождения" class="form-group__input datepicker-here" data-position="top right" id="date_of_birth" name="@nameof(Model.Bid.Step1.DateOfBirth)" data-masked-date_of_birth value="@Model?.Bid.Step1?.DateOfBirth">
+                <i class="form-group__icon fas fa-calendar-alt"></i>
+            </div>
+            <div class="form-group form-bid" name="container-@nameof(Model.Bid.Step1.PlaceOfBirth)">
+                <input type="text" placeholder="Место рождения" class="form-group__input" id="place_of_birth" name="@nameof(Model.Bid.Step1.PlaceOfBirth)" value="@Model?.Bid.Step1?.PlaceOfBirth">
+            </div>
+            <div class="form-group" name="container-@nameof(Model.Bid.Step1.IsAgreePersonData)">
+                <input type="checkbox" id="agree_person_data" name="@nameof(Model.Bid.Step1.IsAgreePersonData)" class="checkbox__input" value="@Model?.Bid.Step1?.IsAgreePersonData" data-input-personData>
+                <label for="agree_person_data" class="checkbox__label">
+                    <span class="checkbox__icon">
+                        <i class="fas fa-check"></i>
+                    </span>
+                    <span>Согласие заявителя на обработку персональных данных в соответствии с требованиями Федерального закона «О персональных данных»</span>
+                </label>
+            </div>
+        }
+
+        @await Html.PartialAsync("Items/DownloadConsumer")
+    </div>
+</div>

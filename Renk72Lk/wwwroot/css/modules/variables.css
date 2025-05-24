@@ -1,0 +1,12 @@
+:root {
+    --color-dark: #032F5F;/*Основной цвет текста*/
+    --color-grey: rgb(204, 204, 204);
+    --color-grey-v2: #f4f4f4;
+    --color-blue: #025CBD;
+    --color-blue-v2: #ccdef2;
+    --color-white: #fff;
+    --color-link: #0067D7;/*Цвет ссылок */
+    --color-link-active: #032F5F;/*Цвет активных ссылок*/
+    --color-btn: #032F5F;
+    --color-red: #d9534f;
+}

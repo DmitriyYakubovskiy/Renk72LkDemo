@@ -1,0 +1,130 @@
+﻿@model (BidModel, UserModel)
+
+<section class="section">
+    @{
+        var userBidId = Model.Item1?.Id;
+    }
+    <h1 class="section__title">Обращение №@Model.Item1?.Id</h1>
+    <div class="section__row section__row--reverse">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="request">
+                    <div class="request__wrap">
+                        <div class="request__title"><span>№ @Model.Item1?.Id</span> @Model.Item1?.Name</div>
+                        <div class="request__list">
+                            <div class="request__info">
+                                <span class="request__name">Организация:</span>
+                                <span class="request__text">@Model.Item1?.Department</span>
+                            </div>
+                            <div class="request__info">
+                                <span class="request__name">Услуга:</span>
+                                <span class="request__text">@Model.Item1?.Service</span>
+                            </div>
+                            <div class="request__btn">
+                                <a href="@Model.Item1?.DocumentFile?.FilePath" target="_blank" class="btn">Скачать заявление</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @await Html.PartialAsync("Items/Bid/Details/Files")
+            </div>     
+        </div>
+        @await Html.PartialAsync("Items/Bid/Details/Chat")
+    </div>
+</section>
+
+<script>
+    $(document).on('click', '.status-check', function(){
+        $('.form-status-ticket').submit();
+    });
+
+    $('.form-message').on('submit',function(event){
+        event.preventDefault();
+        var th = $(this);
+        var formData = new FormData(this);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Chat/SendMessage",
+            type:"POST",
+            cache:false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success:function(data){
+                th.trigger('reset');
+                console.log('Успешно');
+                $('.chat__btn .btn').before('<div class="alert alert-success alert-chat"><i class="fas fa-check-circle"></i> Сообщение отправлено</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 1000);
+                getMessage();
+                autoScroll();
+            },
+            error: function (err) {
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            } else{
+                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> Заполните поле</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    });
+
+
+    $(document).on('input', '.textarea-mesage', function(){
+        $(this).removeClass('is-active');
+        $('.form-group__error').remove();
+
+    });
+
+    setInterval(()=> {
+        getMessage();
+    }, 4000);
+
+
+    function getMessage() {
+        var th = $('.form-message');
+        $.ajax({
+            url: "/Bid/"+@userBidId,
+            type:"GET",
+            success:function(data){
+                $(".chat__window").html($(data).find('.chat__message'));
+            },
+        });
+    }
+
+    function autoScroll() {
+        $('.chat__window').animate({
+            scrollTop: $('.chat__window')[0].scrollHeight},
+        1000 );
+    }
+    autoScroll();
+
+    $(document).on('change', '.uk-select', function(){
+        $('.uk-list-title').addClass('active');
+    });
+
+</script>

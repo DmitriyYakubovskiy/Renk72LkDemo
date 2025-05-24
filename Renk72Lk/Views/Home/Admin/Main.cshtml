@@ -1,0 +1,140 @@
+﻿@model UserModel
+
+<section class="section">
+    <h1 class="section__title">Кабинет администратора</h1>
+
+    <div class="section__row">
+        <div class="sidebar">
+            <div class="sidebar__box">
+                <div class="sidebar__list">
+                    @await Html.PartialAsync("Sidebar/SidebarMenu")
+                </div>
+                <div class="authorizing">
+                    <div class="authorizing__title">Последние авторизации</div>
+                    <div class="authorizing__note">
+                        <i class="fas fa-question-circle"></i>
+                        Измените пароль, если заметили авторизацию с чужого IP адреса!
+                    </div>
+                    @await Html.PartialAsync("Sidebar/SidebarStories", Model)
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            @if (TempData["Status"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Status"]
+                </div>
+            }
+            <form class="form-profile" role="form" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input class="hidden" asp-for="UserName" value="@Model.UserName" />
+                <input class="hidden" asp-for="Email" value="@Model.Email" />
+                <input class="hidden" asp-for="@Model.Id" value="@Model.Id" />
+                <input class="hidden" asp-for="@Model.Name" value="@Model.Name" />
+                <input class="hidden" asp-for="@Model.Surname" value="@Model.Surname" />
+                <input class="hidden" asp-for="@Model.Patronymic" value="@Model.Patronymic" />
+
+                <h2 class="content__title">Настройка профиля</h2>
+                <div class="lk-block-user" name="container-@nameof(Model.Email)">
+                    <div class="lk-block-user__row">
+                        <div class="lk-block-user__data">Email:</div>
+                        <div class="lk-block-user__lock">
+                            <input class="lk-block-user__input form-group__input is-disabled" type="email" id="email" name="email" value="@Model?.Email">
+
+                            <div class="lk-block-user__icon">
+                                <i class="fas fa-lock"></i>
+                                <i class="fas fa-lock-open"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="lk-block-user__row" name="container-@nameof(Model.Password)">
+                        <div class="lk-block-user__data">Пароль:</div>
+                        <div class="lk-block-user__lock">
+                            <div class="password">
+                                <input class="lk-block-user__input form-group__input is-disabled" type="password" id="password" name="password">
+                                <div class="lk-block-user__icon">
+                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-lock-open"></i>
+                                </div>
+                                <div class="password__eye">
+                                    <i class="fas fa-eye-slash"></i>
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="lk-block-user__refactor">Изменить</button>
+                    </div>
+                </div>
+
+                <div class="lk-block-btn">
+                    <button type="submit" name="modal_1" value="modal_1" class="btn">Сохранить</button>
+                </div>
+            </form>
+            <div>
+                <a href="/Account/SendTestMessage" class="btn">Проверка почты</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $('.form-profile').on('submit',function(event){
+        event.preventDefault();
+        var formData = new FormData(this);
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            url: "/Home/UpdateProfile",
+            type:"POST",
+            data:formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                console.log('Успешно')
+                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('400', function(){
+                        $(this).remove();
+                    });
+                }, 3000);
+            },
+            error: function (err) {
+                console.log(err.responseJSON.errors);
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            $(`[name='container-${fieldName}']`).each(function() {
+
+                                $(this).find('.form-group__error').remove();
+                                $(this).find('.form-group__error form-group__error_home').remove();
+
+                                if($(this).find('.lk-block-info__hellp').length > 0) $(this).find('.lk-block-info__hellp').after(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else if($(this).find('.lk-block-user__lock').length > 0) $(this).find('.lk-block-user__lock').prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else if($(this).attr('id')==="date_of_birth_box") $(this).prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
+                                else $(this).append(`<div class="form-group__error">${message}</div>`);
+
+                                $(this).removeClass('error').addClass('error');
+                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
+                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                            });
+                        });
+                    });
+                }
+
+                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Неверные данные</div>');
+                    setTimeout(() => {
+                        $('.alert').slideUp('400', function(){
+                            $(this).remove();
+                        });
+                    }, 3000);
+            }
+        });
+    });
+</script>

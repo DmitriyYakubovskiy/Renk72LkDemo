@@ -1,0 +1,34 @@
+﻿@model CreateBidViewModel
+
+<div class="lk-block-info lk-block-info--mod">
+    <div class="lk-block-info__header">Этапы строительства</div>
+    <div class="lk-block-info__container">
+        <div class="connection_points">
+            <div class="connection_points__table" id="stagesTable">
+                <div class="connection_points__row connection_points__row--header">
+                    <div class="connection_points__col">№</div>
+                    <div class="connection_points__col">Проектирование</div>
+                    <div class="connection_points__col">Ввод в эксплуатацию</div>
+                    <div class="connection_points__col">Мощность, кВт</div>
+                </div>
+
+                @foreach (var stage in Model.Bid.Step4.Stages.Select((s, i) => new { Stage = s, Index = i + 1 }))
+                {
+                    <div class="connection_points__row" data-stage-id="@stage.Stage.Id">
+                        <div class="connection_points__col">@stage.Index</div>
+                        <div class="connection_points__col">@stage.Stage.DesignPeriod?.ToString("dd.MM.yyyy")</div>
+                        <div class="connection_points__col">@stage.Stage.CommissioningPeriod?.ToString("dd.MM.yyyy")</div>
+                        <div class="connection_points__col">@stage.Stage.Power</div>
+                    </div>
+                }
+            </div>
+
+            <div class="connection_points__bottom">
+                <a href="#" class="connection_points__del" id="deleteStageBtn">Удалить последний этап</a>
+                <a href="#" class="connection_points__more" data-modal-open="attachment_stage">Добавить этап</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="currentStage" name="currentStage" value="@Model.Bid.Step4.Stages.Count" />

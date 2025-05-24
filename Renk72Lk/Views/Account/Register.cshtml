@@ -1,0 +1,119 @@
+﻿@model RegistrationModel
+
+<div class="container container--vh">
+    <section class="section section--center">
+        <form role="form" class="form" enctype="multipart/form-data">
+            <h1 class="form__title">Регистрация на сайте</h1>
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                Личный кабинет для физического лица
+            </div>
+            <div name="container-@nameof(Model.Login)" class="form-group">
+                <input type="text" placeholder="Логин" class="form-group__input" name="login" value="@Model.Login">
+            </div>
+            <div name="container-@nameof(Model.Password)" class="form-group password-group">
+                <input type="password" placeholder="Пароль" class="form-group__input" name="password" value="@Model.Password">
+                <a href="#" class="password-control"></a>
+            </div>
+            <div name="container-@nameof(Model.ConfirmPassword)" class="form-group">
+                <input type="password" placeholder="Подтверждение пароля" class="form-group__input" name="@nameof(Model.ConfirmPassword)" value="@Model.ConfirmPassword">
+            </div>
+            <div name="container-@nameof(Model.Surname)" class="form-group">
+                <input type="text" placeholder="Фамилия" class="form-group__input" name="surname" value="@Model.Surname">
+            </div>
+            <div name="container-@nameof(Model.Name)" class="form-group">
+                <input type="text" placeholder="Имя" class="form-group__input name" name="name" value="@Model.Name">
+            </div>
+            <div name="container-@nameof(Model.Patronymic)" class="form-group">
+                <input type="text" placeholder="Отчество" class="form-group__input" name="patronymic" value="@Model.Patronymic">
+            </div>
+            <div name="container-@nameof(Model.Snils)" class="form-group">
+                <input type="text" data-masked-snils placeholder="СНИЛС" class="form-group__input" name="snils" value="@Model.Snils">
+            </div>
+            <div name="container-@nameof(Model.Email)" class="form-group">
+                <input type="email" placeholder="Адрес эл.почты" class="form-group__input" name="email" value="@Model.Email">
+            </div>
+            <div name="container-@nameof(Model.Phone)" class="form-group">
+                <input type="tel" name="phone" data-masked-phone placeholder="Контактный номер телефона" class="form-group__input" name="phone" value="@Model.Phone">
+            </div>
+            <div class="lk-block-info__container password-group" style="margin-bottom:20px">
+                <div class="form-group">
+                    <a href="~/uploads/forall/Soglasie_na_obrabotku_personalnyh_dannyh.pdf" target="_blank">Скачайте</a>, заполните и прекрипите "Согласие на обработку персональных данных".
+                </div>
+                <div class="form-group" name="container-@nameof(Model.UserDataAgreementFormFile)">
+                    <input type="file" class="form-group__file" id="file_sopd" name="@nameof(Model.UserDataAgreementFormFile)" accept=".jpg, .jpeg, .png, .pdf" asp-for="@Model.UserDataAgreementFormFile"><br>
+                    <p class="password__text">
+                        Принимаются фото документов, сделанные на мобильные устройства. Допустимые форматы: jpg, jpeg, png, pdf<br>
+                        (Размер файла не более 10 Мб)
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-form">Зарегистрироваться</button>
+            </div>
+            <div class="checkbox ">
+                <input type="checkbox" id="subscribe-policy" class="checkbox__input" data-input-policy checked>
+                <label for="subscribe-policy" class="checkbox__label">
+                    <span class="checkbox__icon">
+                        <i class="fas fa-check"></i>
+                    </span>
+                    <span class="checkbox__text"> Согласен(а) с условиями <a href="@Url.Action("PrivacyPolicy", "Home")">обработки персональных данных</a></span>
+                </label>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script>
+    $('.form').on('submit', function(event) {
+        event.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+
+        $.ajax({
+            url: "Register",
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                $('.form').append('<div class="alert alert-success alert-profile"><i class="fas fa-exclamation-circle"></i> Успешно</div>');
+                setTimeout(() => {
+                    $('.alert').slideUp('500', function(){
+                        $(this).remove();
+                    });
+                }, 5000);
+                window.location = '/';
+            },
+            error: function(err) {
+                if (err.responseJSON.errors) {
+                    $.each(err.responseJSON.errors, function(fieldName, messages) {
+                        $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.form').append('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                            }
+                            $(`[name^='container-${fieldName}']`).each(function() {
+                                                            console.log(fieldName +'1');
+                                $(this).find('.form-group__error').remove();
+                                $(this).append(`<div class="form-group__error">${message}</div>`);
+                                $(this).find('.form-group__input').removeClass('is-active').addClass('is-active');
+                            });
+                        });
+                    });
+                }
+            }
+        });
+    });
+</script>
