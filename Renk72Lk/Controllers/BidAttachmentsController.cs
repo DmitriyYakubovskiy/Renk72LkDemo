@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using Renk72Lk.Services;
@@ -19,14 +20,14 @@ public class BidAttachmentsController : Controller
     private readonly IBidTechnicalSpecificationsService bid4Service;
     private readonly IBidAttachmentsService bid5Service;
     private readonly IBidViewModelService bidViewModelService;
-    private readonly IAttachmentFileService fileService;
+    private readonly IFileService fileService;
 
     private readonly HttpClient httpClient;
-    private readonly PdfGeneratorApiSettings apiSettings;
+    private readonly ReportingSettings apiSettings;
 
     public BidAttachmentsController(IUserService userService, IBidTechnicalSpecificationsService bid4Service, IBidAttachmentsService bid5Service,
-        IAttachmentFileService fileService, IBidViewModelService bidViewModelService, HttpClient httpClient, 
-        IOptions<PdfGeneratorApiSettings> apiSettings
+        IFileService fileService, IBidViewModelService bidViewModelService, HttpClient httpClient, 
+        IOptions<ReportingSettings> apiSettings
         )
     {
         this.userService = userService;
@@ -167,7 +168,7 @@ public class BidAttachmentsController : Controller
         var user = await userService.GetByUserNameAsync(User?.Identity?.Name!);
         var viewBid = bidViewModelService.GetCreateBidViewModelById(id);
 
-        if (user.Id != viewBid.Bid.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
+        if (user.Id != viewBid.Bid.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return base.BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
 
         var response = await httpClient.PostAsJsonAsync($"http://{apiSettings.Host}:{apiSettings.Port}/api/generate-pdf", viewBid.Bid);
         

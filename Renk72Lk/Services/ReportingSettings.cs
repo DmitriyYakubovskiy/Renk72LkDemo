@@ -4,12 +4,12 @@ using System.Diagnostics;
 
 namespace Renk72Lk.Services;
 
-public class PdfGeneratorApiService : IHostedService
+public class ReportingService : IHostedService
 {
-    private readonly PdfGeneratorApiSettings apiSettings;
+    private readonly ReportingSettings apiSettings;
     private Process? apiOpenProcess;
 
-    public PdfGeneratorApiService(IOptions<PdfGeneratorApiSettings> apiSettings)
+    public ReportingService(IOptions<ReportingSettings> apiSettings)
     {
         this.apiSettings = apiSettings.Value;
     }

@@ -1,4 +1,5 @@
-﻿@model BidRepresentativeInfoModel
+﻿@using Renk72Lk.DataAccess.Extensions
+@model BidRepresentativeInfoModel
 
 <section class="section">
     @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))

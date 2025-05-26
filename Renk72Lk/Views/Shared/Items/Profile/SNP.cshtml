@@ -1,4 +1,5 @@
-﻿@model IBaseUserData
+﻿@using Renk72Lk.DataAccess.Extensions
+@model IBaseUserData
 
 <div class="lk-block-info">
     <div class="lk-block-info__header">ФИО</div>
@@ -15,7 +16,7 @@
             <div class="lk-block-info__hellp">Отчество</div>
             <input type="text" placeholder="Отчество" class="form-group__input" id="patronymic" name="patronymic" value="@Model?.Patronymic">
         </div>
-        @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+        @if (User.HasClaim(UserType.UserType.ToString(), UserType.NaturalPerson.ToString()))
         {
             <div name="container-@nameof(Model.Snils)" class="lk-block-info__row">
                 <div class="lk-block-info__hellp">СНИЛС</div>

@@ -1,4 +1,5 @@
-﻿@model UserModel
+﻿@using Renk72Lk.DataAccess.Extensions
+@model UserModel
 
 <section class="section">
     @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))

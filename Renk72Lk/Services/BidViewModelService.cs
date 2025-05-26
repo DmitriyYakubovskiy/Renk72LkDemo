@@ -1,4 +1,5 @@
 ﻿using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Services.DataBase;
 using Renk72Lk.ViewModels;
 using System.ComponentModel.DataAnnotations;
@@ -155,7 +156,7 @@ public class BidViewModelService: IBidViewModelService
 
         foreach(var type in types)
         {
-            if (type.GetDescription() == service) return (int)type;
+            if (type.ToString() == service) return (int)type;
         }
         return -1;
     }

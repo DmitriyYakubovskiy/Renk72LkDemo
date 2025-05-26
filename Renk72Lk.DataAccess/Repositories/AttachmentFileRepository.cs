@@ -29,6 +29,12 @@ public class AttachmentFileRepository : IAttachmentFileRepository
         dbContext.SaveChanges();
     }
 
+    public bool FileExists(string filePath)
+    {
+        var entity = dbContext.AttachmentFiles.Where(x => x.FilePath == filePath).FirstOrDefault();
+        return entity != null;
+    }
+
     public AttachmentFileEntity[] GetAll()
     {
         return dbContext.AttachmentFiles.ToArray();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Requirements;
 
 namespace Renk72Lk.Handlers;
@@ -10,7 +11,7 @@ public class NotBannedHandler : AuthorizationHandler<NotBannedRequirement>
     {
         var user = context.User;
 
-        if (user.Identity?.IsAuthenticated == true && !user.HasClaim(UserBanned.UserBanned.GetDescription(), "true"))
+        if (user.Identity?.IsAuthenticated == true && !user.HasClaim(UserBanned.UserBanned.ToString(), "true"))
         {
             context.Succeed(requirement);
         }

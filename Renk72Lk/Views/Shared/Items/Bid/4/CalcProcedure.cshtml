@@ -1,4 +1,5 @@
-﻿@model CreateBidViewModel
+﻿@using Renk72Lk.DataAccess.Extensions
+@model CreateBidViewModel
 
 <div class="lk-block-info lk-block-info--mod">
     <div class="lk-block-info__header">Порядок расчета и условия рассрочки внесения платы за технологическое присоединение по договору осуществляется по:</div>
@@ -25,6 +26,7 @@
                 <span id="payment_order_infofor">
                     <h5>Вариант 1, при котором:</h5>
                     <ul>
+                        
                         @if (User.IsInRole(UserType.NaturalPerson.GetDescription()))
                         {
                             <li>15 процентов платы за технологическое присоединение вносятся в течение 05 рабочих дней со дня размещения в личном кабинете заявителя счета;</li>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Helpers;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
@@ -21,16 +22,16 @@ public class BidController : Controller
     private readonly IUserService userService;
     private readonly IBidService bidService;
     private readonly IBidAttachmentsService bid5Service;
-    private readonly IAttachmentFileService fileService;
+    private readonly IFileService fileService;
     private readonly IEmailSerivce emailService;
     private readonly IBidViewModelService bidViewModelService;
 
     private readonly HttpClient httpClient;
-    private readonly PdfGeneratorApiSettings apiSettings;
+    private readonly ReportingSettings apiSettings;
 
     public BidController(IUserService userService, IBidService bidService, IBidAttachmentsService bid5Service, 
-        IAttachmentFileService fileService, IEmailSerivce emailService,
-        IBidViewModelService bidViewModelService, HttpClient httpClient, IOptions<PdfGeneratorApiSettings> apiSettings)
+        IFileService fileService, IEmailSerivce emailService,
+        IBidViewModelService bidViewModelService, HttpClient httpClient, IOptions<ReportingSettings> apiSettings)
     {
         this.userService = userService;
         this.bidService = bidService;
@@ -51,7 +52,7 @@ public class BidController : Controller
         if (User.IsInRole(UserRole.Admin.GetDescription()))
         {
             ViewData["Skip"] = skip;
-            return View("List", await GetBids(isArchive: 0, service: service, role: role, ticketStatuses: [ticketStatus!], surname: surname, date: date, take: take, skip: skip));
+            return base.View("List", await GetBids(isArchive: 0, service: service, role: role, ticketStatuses: [ticketStatus!], surname: surname, date: date, take: take, skip: skip));
         }
 
         return View("List", await GetBids(service: service, role:role, ticketStatuses: [ticketStatus!], surname: surname, date: date, take: null, skip: null));
@@ -165,7 +166,7 @@ public class BidController : Controller
         var bid = bidService.GetById(id, includeUser: true, includeBid1: true, includeBid2: true, includeBid5: true, includeTickets:true);
 
         if (bid == null || bid.Status==0) return BadRequest(ResultModel.GetErrors(["Заявка не найдена" ]));
-        if (user.Id != bid.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
+        if (user.Id != bid.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return base.BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
 
         return View("Details", (bid, user));
     }
@@ -231,7 +232,7 @@ public class BidController : Controller
             var currentUser = await userService.GetByUserNameAsync(User.Identity!.Name!);
             var bid = bidService.GetById(id, includeBid1: true);
 
-            if (currentUser.Id != bid.UserId && !(await userService.GetUserRolesAsync(currentUser.Id)).Contains(UserRole.Admin.GetDescription())) return BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
+            if (currentUser.Id != bid.UserId && !(await userService.GetUserRolesAsync(currentUser.Id)).Contains(UserRole.Admin.GetDescription())) return base.BadRequest(ResultModel.GetErrors(["Нет доступа к данной заявке"]));
 
             var response = await httpClient.PostAsJsonAsync($"http://{apiSettings.Host}:{apiSettings.Port}/api/generate-dopinfo", bid.Step1);
 

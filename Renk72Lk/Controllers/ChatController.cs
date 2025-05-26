@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Models;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
@@ -17,10 +18,10 @@ public class ChatController : Controller
     private readonly IUserService userService;
     private readonly IBidService bidService;
     private readonly IEmailSerivce emailService;
-    private readonly IAttachmentFileService fileService;
+    private readonly IFileService fileService;
 
     public ChatController(IMessageService ticketService, IUserService userService, IBidService userBidService,
-       IEmailSerivce emailService, IAttachmentFileService fileService)
+       IEmailSerivce emailService, IFileService fileService)
     {
         this.chatService = ticketService;
         this.userService = userService;
@@ -38,7 +39,7 @@ public class ChatController : Controller
         var url = Url.Action("GetById", "Bid", new { id = bid?.Id }, Request.Scheme);
 
         if (user.Id != model.UserId) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
-        if (bid?.User?.Id != model.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
+        if (bid?.User?.Id != model.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return base.BadRequest(ResultModel.GetErrors(["Нет доступа"]));
         try
         {
             if (model.DocFiles.Count > 0)

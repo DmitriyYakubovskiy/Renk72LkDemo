@@ -9,10 +9,10 @@ namespace Renk72Lk.Services.DataBase;
 public class BidAttachmentsService : IBidAttachmentsService
 {
     private readonly IBidAttachmentsRepository repository;
-    private readonly IAttachmentFileService fileService;
+    private readonly IFileService fileService;
     private readonly IMapper mapper;
 
-    public BidAttachmentsService(IMapper mapper, IBidAttachmentsRepository repository, IAttachmentFileService fileService)
+    public BidAttachmentsService(IMapper mapper, IBidAttachmentsRepository repository, IFileService fileService)
     {
         this.mapper = mapper;
         this.repository = repository;

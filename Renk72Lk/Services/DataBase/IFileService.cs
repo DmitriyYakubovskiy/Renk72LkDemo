@@ -3,7 +3,7 @@ using Renk72Lk.ViewModels;
 
 namespace Renk72Lk.Services.DataBase;
 
-public interface IAttachmentFileService
+public interface IFileService
 {
     AttachmentFileModel[] GetAll();
     AttachmentFileModel GetById(int id);

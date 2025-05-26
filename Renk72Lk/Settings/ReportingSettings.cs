@@ -1,6 +1,6 @@
 ﻿namespace Renk72Lk.Settings;
 
-public class PdfGeneratorApiSettings
+public class ReportingSettings
 {
     public string Host { get; set; } = null!;
     public int Port { get; set; }

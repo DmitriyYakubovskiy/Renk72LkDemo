@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Renk72Lk.DataAccess.Entities;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using System.Security.Claims;
@@ -13,12 +14,12 @@ public class UserService : IUserService
     private readonly SignInManager<UserEntity> signInManager;
     private readonly RoleManager<IdentityRole<int>> roleManager;
     private readonly IAuthHistoryService authHistoryService;
-    private readonly IAttachmentFileService attachmentFileService;
+    private readonly IFileService attachmentFileService;
     private readonly IAddressService addressService;
     private readonly IMapper mapper;
 
     public UserService(SignInManager<UserEntity> signInManager, RoleManager<IdentityRole<int>> roleManager, 
-        IAuthHistoryService authStoryService, IAttachmentFileService attachmentFileService,
+        IAuthHistoryService authStoryService, IFileService attachmentFileService,
         IAddressService addressService, IMapper mapper)
     {
         this.signInManager = signInManager;
@@ -86,8 +87,8 @@ public class UserService : IUserService
             if (result.Succeeded)
             {
                 user = await signInManager.UserManager.FindByEmailAsync(model.Email);
-                await signInManager.UserManager.AddToRoleAsync(user!, UserRole.User.GetDescription());
-                await signInManager.UserManager.AddClaimAsync(user!, new Claim(UserType.UserType.GetDescription(),UserType.NaturalPerson.GetDescription()));
+                await signInManager.UserManager.AddToRoleAsync(user!, UserRole.User.GetDescription());    
+                await signInManager.UserManager.AddClaimAsync(user!, new Claim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()));
                 await LoginAsync(new LoginModel() { Login = user.UserName!, Password = model.Password }, ipAddress);
 
                 return new ResultModel(true);

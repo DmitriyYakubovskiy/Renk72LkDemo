@@ -1,11 +1,12 @@
-﻿@model CreateBidViewModel
+﻿@using Renk72Lk.DataAccess.Extensions
+@model CreateBidViewModel
 
 <div class="lk-block-info lk-block-info--mod">
     <div class="lk-block-info__header">Параметры надежности технологического присоединения</div>
     <div class="lk-block-info__container">
         <div class="form-group" name="container-@nameof(Model.Bid.Step4.ReliabilityCategory)">
             <div class="select-block select-block-reliability_category">
-                @if (Model?.bidServiceByInt == 15 && User.IsInRole("Физическое лицо"))
+                @if (Model?.bidServiceByInt == 15 && User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
                 {
                     <div class="select-block__title">
                         <span>III - один источник питания</span>

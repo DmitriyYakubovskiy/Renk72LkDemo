@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Minio;
 using Renk72Lk.Controllers;
 using Renk72Lk.DataAccess.Contexts;
 using Renk72Lk.DataAccess.Entities;
 using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.DataAccess.Repositories;
 using Renk72Lk.Handlers;
 using Renk72Lk.Requirements;
@@ -31,15 +34,15 @@ public class Startup
         var connectionString = configuration.GetConnectionString("DbConnection");
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseMySQL(connectionString!));
-        services.Configure<PdfGeneratorApiSettings>(configuration.GetSection("PdfGeneratorApi"));
+        services.Configure<ReportingSettings>(configuration.GetSection("ReportingService"));
         services.Configure<EmailSettings>(configuration.GetSection("Email"));
-
+        services.Configure<MinioSettings>(configuration.GetSection("MinIO"));
         services.Configure<FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 10485760;
         });
 
-        services.AddHostedService<PdfGeneratorApiService>();
+        services.AddHostedService<ReportingService>();
         services.AddScoped<IAuthHistoryRepository, AuthHistoryRepository>();
         services.AddScoped<IBidPersonalInfoRepository, BidPersonalInfoRepository>();
         services.AddScoped<IBidRepresentativeInfoRepository, BidRepresentativeInfoRepository>();
@@ -64,7 +67,7 @@ public class Startup
         services.AddScoped<IBidService, BidService>();
         services.AddScoped<IBidViewModelService, BidViewModelService>();
         services.AddScoped<IAddressService, AddressService>();
-        services.AddScoped<IAttachmentFileService, AttachmentFileService>();
+        services.AddScoped<IFileService, FileService>();
         services.AddScoped<IAttachmentsPointService, AttachmentsPointService>();
         services.AddScoped<IAttachmentsStageService, AttachmentsStageService>();
         services.AddScoped<IEmailSerivce, EmailService>();
@@ -72,6 +75,20 @@ public class Startup
         services.AddHttpClient<BidAttachmentsController>();
         services.AddHttpClient<BidController>();
         services.AddHttpClient<EmailService>();
+
+        services.AddSingleton<IMinioClient>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<MinioSettings>>().Value;
+            return new MinioClient()
+                .WithEndpoint(settings.Host)
+                .WithCredentials(settings.AccessKey, settings.SecretKey)
+                .Build();
+        });
+        services.AddResponseCaching(options =>
+        {
+            options.MaximumBodySize = 1024 * 1024 * 256;
+            options.UseCaseSensitivePaths = true;
+        });
 
         services.AddIdentity<UserEntity, IdentityRole<int>>(options =>
         {

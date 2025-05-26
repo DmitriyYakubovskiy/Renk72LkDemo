@@ -1,4 +1,5 @@
-﻿@if(User.IsInRole(UserRole.Admin.GetDescription()))
+﻿@using Renk72Lk.DataAccess.Extensions
+@if (User.IsInRole(UserRole.Admin.GetDescription()))
 {
     <a class="sidebar__link" href="@Url.Action("Profile", "Home")">Настройка профиля</a>
     <a class="sidebar__link" href="@Url.Action("List", "Bid")">Все заявки</a>

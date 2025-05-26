@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Renk72Lk.DataAccess.Enums;
+namespace Renk72Lk.DataAccess.Extensions;
 
 public static class EnumExtensions
 {

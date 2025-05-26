@@ -1,6 +1,7 @@
-﻿@inject IConfiguration Configuration
+﻿@using Renk72Lk.DataAccess.Extensions
+@inject IConfiguration Configuration
 @{
-    ViewBag.DadateToken = Configuration["DadateToken"];
+    ViewBag.DadataToken = Configuration["DadataToken"];
     ViewData["Title"] = "Личный кабинет ООО «РЭНК»";
 }
 
@@ -177,7 +178,7 @@
         <script src="@Url.Content("~/js/modules/sidebarStiky.js?v=0002")"></script>
         <script src="@Url.Content("~/js/modules/modal.js")"></script>
         <script src="@Url.Content("~/js/modules/form-step.js?v=220825")"></script>
-        <script src="@Url.Content("~/js/script.js?v=23032")"></script>
+        <script src="@Url.Content("~/js/script.js?v=23033")"></script>
     </footer>
 
 </body>

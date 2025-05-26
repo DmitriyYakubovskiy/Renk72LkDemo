@@ -16,20 +16,11 @@ namespace Renk72Lk.Controllers;
 public class AccountController : Controller
 {
     private readonly IUserService userService;
-    private readonly IRazorViewEngine viewEngine;
-    private readonly ITempDataProvider tempDataProvider;
-    private readonly IServiceProvider serviceProvider;
     private readonly IEmailSerivce emailService;
-    private readonly EmailSettings emailSettings; 
 
-    public AccountController(IUserService userService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, 
-        IServiceProvider serviceProvider, IOptions<EmailSettings> emailSettings, IEmailSerivce emailService)
+    public AccountController(IUserService userService, IEmailSerivce emailService)
     {
         this.userService = userService;
-        this.viewEngine = viewEngine;
-        this.tempDataProvider = tempDataProvider;
-        this.serviceProvider = serviceProvider;
-        this.emailSettings = emailSettings.Value;
         this.emailService = emailService;
     }
 
