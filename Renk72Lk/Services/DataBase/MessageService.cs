@@ -16,10 +16,11 @@ public class MessageService : IMessageService
         this.mapper = mapper;
     }
 
-    public async Task CreateAsync(MessageModel model)
+    public async Task<MessageModel> CreateAsync(MessageModel model)
     {
         var entity = mapper.Map<MessageEntity>(model);
-        await repository.CreateAsync(entity);
+        return mapper.Map<MessageModel>(await repository.CreateAsync(entity));
+        
     }
 
     public void Delete(int id)

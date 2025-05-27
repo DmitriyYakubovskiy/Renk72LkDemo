@@ -13,6 +13,7 @@ using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.DataAccess.Repositories;
 using Renk72Lk.Handlers;
+using Renk72Lk.Hubs;
 using Renk72Lk.Requirements;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
@@ -109,8 +110,9 @@ public class Startup
 
         services.AddAutoMapper(typeof(Startup).Assembly);
 
-        services.AddRazorPages()
-            .AddRazorRuntimeCompilation();
+        services.AddRazorPages().AddRazorRuntimeCompilation();
+
+        services.AddSignalR();
 
         services.Configure<DataProtectionTokenProviderOptions>(options =>
             options.TokenLifespan = TimeSpan.FromHours(4)); //токен восстановления пароля
@@ -142,7 +144,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, RoleManager<IdentityRole<int>> roleManager)
     {
-        CreateRolesAsync(roleManager).Wait();
+        //CreateRolesAsync(roleManager).Wait();
         //UpdateDataBaseAsync().Wait();
 
         if (env.IsDevelopment())
@@ -169,6 +171,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapHub<ChatHub>("/chatHub");
         });
     }
 

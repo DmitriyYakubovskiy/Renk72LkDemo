@@ -13,12 +13,14 @@ public class MessageRepository : IMessageRepository
         dbContext = context;
     }
 
-    public async Task CreateAsync(MessageEntity entity)
+    public async Task<MessageEntity> CreateAsync(MessageEntity entity)
     {
         entity.CreatedAt = DateTime.Now;
         entity.UpdatedAt = DateTime.Now;
         await dbContext.Messages.AddAsync(entity);
         dbContext.SaveChanges();
+
+        return entity;
     }
 
     public MessageEntity[] GetAll()

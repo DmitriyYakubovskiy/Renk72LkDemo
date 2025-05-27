@@ -77,10 +77,19 @@
                 }, 3000);
             },
             error: function (err) {
-                console.log(err);
+                console.log(err.responseJSON);
                 if (err.responseJSON.errors) {
                     $.each(err.responseJSON.errors, function(fieldName, messages) {
                         $.each(messages, function(index, message) {
+                            if(fieldName === "mainError"){
+                                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
+                                setTimeout(() => {
+                                    $('.alert').slideUp('500', function(){
+                                        $(this).remove();
+                                    });
+                                }, 5000);
+                                return true;
+                            }
                             $(`[name='container-${fieldName}']`).each(function() {
 
                                 $(this).find('.form-group__error').remove();

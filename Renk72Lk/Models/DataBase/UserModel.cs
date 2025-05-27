@@ -47,13 +47,13 @@ public class UserModel:IBaseUserData
     public string? PassportIssuedBy { get; set; } = string.Empty;
 
     [NotEmptyMinStringLength(11)]
-    [Required(ErrorMessage = "Не указан СНИЛС.")]
+    //[Required(ErrorMessage = "Не указан СНИЛС.")]
     public string? Snils { get; set; } = null!;
 
-    [Required(ErrorMessage = "Обязательное поле.")]
+    //[Required(ErrorMessage = "Обязательное поле.")]
     public DateTime? DateOfBirth { get; set; }
 
-    [Required(ErrorMessage = "Обязательное поле.")]
+    //[Required(ErrorMessage = "Обязательное поле.")]
     public string? PlaceOfBirth { get; set; }
 
     public DateTime? CreatedAt { get; set; }

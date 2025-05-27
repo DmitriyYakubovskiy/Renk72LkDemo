@@ -45,7 +45,7 @@ public class ReportingService : IHostedService
     {
         string apiPath = Path.GetFullPath(apiSettings.Path);
         string host = apiSettings.Host;
-        int port = apiSettings.Port;
+        string port = apiSettings.Port;
 
         ProcessStartInfo startInfo = new ProcessStartInfo
         {

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
+using Renk72Lk.Hubs;
 using Renk72Lk.Models;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
@@ -14,69 +16,41 @@ namespace Renk72Lk.Controllers;
 [Authorize("NotBannedPolicy")]
 public class ChatController : Controller
 {
-    private readonly IMessageService chatService;
-    private readonly IUserService userService;
-    private readonly IBidService bidService;
-    private readonly IEmailSerivce emailService;
-    private readonly IFileService fileService;
+    private readonly IHubContext<ChatHub> _hubContext;
+    private readonly IEmailSerivce _emailService;
+    private readonly IFileService _fileService;
 
-    public ChatController(IMessageService ticketService, IUserService userService, IBidService userBidService,
-       IEmailSerivce emailService, IFileService fileService)
+    public ChatController(IHubContext<ChatHub> hubContext, IEmailSerivce emailService, IFileService fileService)
     {
-        this.chatService = ticketService;
-        this.userService = userService;
-        this.bidService = userBidService;
-        this.emailService = emailService;
-        this.fileService = fileService;
+        _hubContext = hubContext;
+        _emailService = emailService;
+        _fileService = fileService;
     }
 
-    [HttpPost("SendMessage")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SendMessage([FromForm] MessageViewModel model)
-    {
-        var user = await userService.GetByUserNameAsync(User.Identity.Name!);
-        var bid = bidService.GetById(model.BidId);
-        var url = Url.Action("GetById", "Bid", new { id = bid?.Id }, Request.Scheme);
+    //[HttpPost("SendFile")]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> SendFile([FromForm] IFormFile file, [FromForm] int bidId, [FromForm] int userId)
+    //{
+    //    try
+    //    {
+    //        int fileId = await _fileService.CreateMessageFileAsync(file);
 
-        if (user.Id != model.UserId) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
-        if (bid?.User?.Id != model.UserId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())) return base.BadRequest(ResultModel.GetErrors(["Нет доступа"]));
-        try
-        {
-            if (model.DocFiles.Count > 0)
-            {
-                foreach (var file in model.DocFiles)
-                {
-                    int id = await fileService.CreateMessageFileAsync(file);
-                    await chatService.CreateAsync(new Models.DataBase.MessageModel() { Message = "Прикреплен файл.", BidId = model.BidId, UserId = model.UserId, FileId = id });
-                }
-            }
-            if (!string.IsNullOrEmpty(model.Text)) await chatService.CreateAsync(new Models.DataBase.MessageModel() { Message = model.Text, BidId = model.BidId, UserId = model.UserId });
+    //        // Отправка через Hub
+    //        await _hubContext.Clients.Group($"bid-{bidId}").SendAsync("ReceiveMessage", new
+    //        {
+    //            Message = "Прикреплен файл",
+    //            FileId = fileId,
+    //            FileName = file.FileName,
+    //            FilePath = $"/files/{fileId}",
+    //            UserId = userId,
+    //            CreatedAt = DateTime.Now
+    //        });
 
-            if (user?.Id == bid.UserId)
-            {
-                await emailService.NotifyAdminAboutNewMessage(MetadataProvider, ModelState, bid.Id, url!);
-            }
-            else
-            {
-                var bidUser = await userService.GetByIdAsync(bid.UserId.Value);
-
-                await emailService.NotifyUserAboutNewMessage(MetadataProvider, ModelState, bidUser, bid.Id, url!);
-            }
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ResultModel.GetErrors([$"Ошибка: {ex.Message}"]));
-        }
-    }
-
-    [HttpPost("Delete")]
-    [Authorize(Roles = "Admin")]
-    [ValidateAntiForgeryToken]
-    public IActionResult Delete([FromForm] int id)
-    {
-        chatService.Delete(id);
-        return Ok();
-    }
+    //        return Ok();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return BadRequest(ResultModel.GetErrors([$"Ошибка: {ex.Message}"]));
+    //    }
+    //}
 }

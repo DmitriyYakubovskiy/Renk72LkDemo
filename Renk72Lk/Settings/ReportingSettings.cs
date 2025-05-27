@@ -3,6 +3,6 @@
 public class ReportingSettings
 {
     public string Host { get; set; } = null!;
-    public int Port { get; set; }
+    public string Port { get; set; } = null!;
     public string Path { get; set; } = null!;
 }

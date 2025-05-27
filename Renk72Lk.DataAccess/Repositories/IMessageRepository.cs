@@ -7,7 +7,7 @@ public interface IMessageRepository
     MessageEntity[] GetAll(int bidId);
     MessageEntity[] GetAll();
     MessageEntity GetById(int id);
-    Task CreateAsync(MessageEntity ticket);
+    Task<MessageEntity> CreateAsync(MessageEntity ticket);
     void Update(MessageEntity entity);
     void Delete(int id);
 }

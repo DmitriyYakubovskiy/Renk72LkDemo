@@ -60,7 +60,6 @@ public class HomeController : Controller
         var user = await userService.GetByUserNameAsync(User?.Identity?.Name!);
         if (model.UserName != user?.UserName) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
         if (model.Email != user?.Email) return BadRequest(ResultModel.GetErrors(["Почту сменить нельзя"]));
-        if (model.Id != user.Id) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
 
         var response = await userService.UpdateAsync(model!);
 
