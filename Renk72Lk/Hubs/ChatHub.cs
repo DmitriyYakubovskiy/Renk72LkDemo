@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;

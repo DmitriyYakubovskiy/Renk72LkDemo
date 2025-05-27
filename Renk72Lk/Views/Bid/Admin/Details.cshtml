@@ -158,20 +158,20 @@
 
         connection.on("ReceiveMessage", (message) => {
             console.log("сооьщение получено");
-            const isCurrentUser = message.UserId === @Model.Item2?.Id;
+            console.log(message);
+            const isCurrentUser = message.userId === @Model.Item2?.Id;
             const messageHtml = `
                 <div class="chat__message ${isCurrentUser ? "chat__message--revers" : ""}">
                     <div>
-                        ${isCurrentUser ? `<button type="button" onclick="deleteMessage(${message.Id})" class="btn btn-delete">x</button>` : ''}
+                        ${`<button type="button" onclick="deleteMessage(${message.id})" class="btn btn-delete">x</button>`}
                     </div>
-                    ${message.Message}
+                    ${message.message}
                     <div class="chat__user">
-
-                        <div class="chat__data">${new Date(message.CreatedAt).toLocaleString()}</div>
+                        <div class="chat__data">${new Date(message.createdAt).toLocaleString()}</div>
                     </div>
                 </div>
             `;
-
+            console.log(messageHtml);
             $('.chat__window').append(messageHtml);
             autoScroll();
         });
