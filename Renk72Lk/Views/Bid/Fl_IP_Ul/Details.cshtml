@@ -32,99 +32,82 @@
         @await Html.PartialAsync("Items/Bid/Details/Chat")
     </div>
 </section>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
 <script>
-    $(document).on('click', '.status-check', function(){
-        $('.form-status-ticket').submit();
-    });
+    $(document).ready(function() {
+         autoScroll();
+         const connection = new signalR.HubConnectionBuilder()
+             .withUrl("/chatHub")
+             .configureLogging(signalR.LogLevel.Information)
+             .build();
 
-    $('.form-message').on('submit',function(event){
-        event.preventDefault();
-        var th = $(this);
-        var formData = new FormData(this);
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                var token = $('input[name="__RequestVerificationToken"]').val();
-                xhr.setRequestHeader("RequestVerificationToken", token);
-            }
-        });
-        $.ajax({
-            url: "/Chat/SendMessage",
-            type:"POST",
-            cache:false,
-            contentType: false,
-            processData: false,
-            data:formData,
-            success:function(data){
-                th.trigger('reset');
-                console.log('Успешно');
-                $('.chat__btn .btn').before('<div class="alert alert-success alert-chat"><i class="fas fa-check-circle"></i> Сообщение отправлено</div>');
-                setTimeout(() => {
-                    $('.alert').slideUp('400', function(){
-                        $(this).remove();
-                    });
-                }, 1000);
-                getMessage();
-                autoScroll();
-            },
-            error: function (err) {
-                if (err.responseJSON.errors) {
-                    $.each(err.responseJSON.errors, function(fieldName, messages) {
-                        $.each(messages, function(index, message) {
-                            if(fieldName === "mainError"){
-                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
-                                setTimeout(() => {
-                                    $('.alert').slideUp('500', function(){
-                                        $(this).remove();
-                                    });
-                                }, 5000);
-                            } else{
-                                $('.chat__btn .btn').before('<div class="alert alert-dunger alert-chat"><i class="fas fa-exclamation-circle"></i> Заполните поле</div>');
-                                setTimeout(() => {
-                                    $('.alert').slideUp('500', function(){
-                                        $(this).remove();
-                                    });
-                                }, 5000);
-                            }
-                        });
-                    });
-                }
-            }
-        });
-    });
+         connection.start()
+             .then(() => {
+                 console.log("SignalR Connected.");
+                 connection.invoke("JoinBidGroup", @userBidId);
+             })
+             .catch(err => console.error(err.toString()));
 
+         connection.on("ReceiveMessage", (message) => {
+             const isCurrentUser = message.userId === @Model.Item2?.Id;
+             const messageHtml = `
+                 <div class="chat__message ${isCurrentUser ? "chat__message--revers" : ""}">
+                     <div>
+                         ${`<button type="button" onclick="deleteMessage(${message.id})" class="btn btn-delete">x</button>`}
+                     </div>
+                     ${message.message}
+                     <div class="chat__user">
+                        ${message.user.surname} ${message.user.name} ${message.user.patronymic}
+                         <div class="chat__data">${new Date(message.createdAt).toLocaleString()}</div>
+                     </div>
+                 </div>
+             `;
 
-    $(document).on('input', '.textarea-mesage', function(){
-        $(this).removeClass('is-active');
-        $('.form-group__error').remove();
+             $('.chat__window').append(messageHtml);
+             autoScroll();
+         });
 
-    });
+         connection.on("MessageDeleted", (messageId) => {
+             $(`.chat__message:has(button[onclick="deleteMessage(${messageId})"])`).remove();
+         });
 
-    setInterval(()=> {
-        getMessage();
-    }, 4000);
+         connection.on("ReceiveError", (error) => {
+             showAlert(error, 'danger');
+         });
 
+         $('.form-message').on('submit', function(event) {
+             event.preventDefault();
+             const formData = new FormData(this);
+             const messageText = formData.get('Text');
 
-    function getMessage() {
-        var th = $('.form-message');
-        $.ajax({
-            url: "/Bid/"+@userBidId,
-            type:"GET",
-            success:function(data){
-                $(".chat__window").html($(data).find('.chat__message'));
-            },
-        });
-    }
+             if (!messageText && formData.getAll('DocFiles').length === 0) {
+                 showAlert('Заполните поле или прикрепите файл', 'danger');
+                 return;
+             }
 
-    function autoScroll() {
-        $('.chat__window').animate({
-            scrollTop: $('.chat__window')[0].scrollHeight},
-        1000 );
-    }
-    autoScroll();
+             connection.invoke("SendMessageToBid",
+            @userBidId,
+             messageText || "Прикреплен файл",
+            @Model.Item2?.Id)
+             .catch(err => {
+                 console.error(err.toString());
+                 showAlert('Ошибка при отправке сообщения', 'danger');
+             });
 
-    $(document).on('change', '.uk-select', function(){
-        $('.uk-list-title').addClass('active');
-    });
+             $(this).trigger('reset');
+             showAlert('Сообщение отправлено', 'success');
+         });
+     });
 
+     function showAlert(message, type) {
+         const alertHtml = `<div class="alert alert-${type} alert-chat">${message}</div>`;
+         $('.chat__btn .btn').before(alertHtml);
+         setTimeout(() => $('.alert').fadeOut().remove(), 3000);
+     }
+
+     function autoScroll() {
+         $('.chat__window').animate({
+             scrollTop: $('.chat__window')[0].scrollHeight
+         }, 1000);
+     }
 </script>

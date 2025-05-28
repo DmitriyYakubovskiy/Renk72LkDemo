@@ -144,6 +144,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
 <script>
     $(document).ready(function() {
+        autoScroll();
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
             .configureLogging(signalR.LogLevel.Information)
@@ -157,8 +158,6 @@
             .catch(err => console.error(err.toString()));
 
         connection.on("ReceiveMessage", (message) => {
-            console.log("сооьщение получено");
-            console.log(message);
             const isCurrentUser = message.userId === @Model.Item2?.Id;
             const messageHtml = `
                 <div class="chat__message ${isCurrentUser ? "chat__message--revers" : ""}">
@@ -167,11 +166,12 @@
                     </div>
                     ${message.message}
                     <div class="chat__user">
+                        ${message.user.surname} ${message.user.name} ${message.user.patronymic}
                         <div class="chat__data">${new Date(message.createdAt).toLocaleString()}</div>
                     </div>
                 </div>
             `;
-            console.log(messageHtml);
+
             $('.chat__window').append(messageHtml);
             autoScroll();
         });
@@ -216,18 +216,17 @@
                     });
             }
         };
-
-        function showAlert(message, type) {
-            const alertHtml = `<div class="alert alert-${type} alert-chat">${message}</div>`;
-            $('.chat__btn .btn').before(alertHtml);
-            setTimeout(() => $('.alert').fadeOut().remove(), 3000);
-        }
-
-        function autoScroll() {
-            $('.chat__window').animate({
-                scrollTop: $('.chat__window')[0].scrollHeight
-            }, 1000);
-        }
     });
 
+    function showAlert(message, type) {
+        const alertHtml = `<div class="alert alert-${type} alert-chat">${message}</div>`;
+        $('.chat__btn .btn').before(alertHtml);
+        setTimeout(() => $('.alert').fadeOut().remove(), 3000);
+    }
+
+    function autoScroll() {
+        $('.chat__window').animate({
+            scrollTop: $('.chat__window')[0].scrollHeight
+        }, 1000);
+    }
 </script>
