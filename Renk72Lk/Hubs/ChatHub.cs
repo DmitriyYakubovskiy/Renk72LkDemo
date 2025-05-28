@@ -36,7 +36,6 @@ public class ChatHub : Hub
 
     public async Task SendMessageToBid(int bidId, string message, int userId)
     {
-        Console.WriteLine($"{message} {bidId}, {userId}");
         var user = await userService.GetByIdAsync(userId);
         var bid = bidService.GetById(bidId);
 
