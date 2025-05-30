@@ -136,7 +136,7 @@ public class BidController : Controller
         int docId = 0;
         try
         {
-            docId = await fileService.CreateBidDocumentFileAsync(viewBid);
+            docId = (await fileService.CreateBidDocumentFileAsync(viewBid)).Id;
             if (docId == -1) return BadRequest(ResultModel.GetErrors(["Ошибка при генерации PDF"]));
         }
         catch(Exception ex)
@@ -152,8 +152,8 @@ public class BidController : Controller
         var bidsUrl = Url.Action("List", "Bid", new { }, Request.Scheme);
         var documentUrl = $"{Request.Scheme}://{Request.Host}/{viewBid.Bid?.DocumentFile?.FilePath}";
 
-        await emailService.NotifyUserAboutCreationBid(MetadataProvider, ModelState, user, viewBid.Bid.Id, bidsUrl!, documentUrl);
-        await emailService.NotifyAdminAboutCreationBid(MetadataProvider, ModelState, user, viewBid.Bid.Id, bidsUrl!, documentUrl);
+        await emailService.NotifyUserAboutCreationBid(user, viewBid.Bid.Id, bidsUrl!, documentUrl);
+        await emailService.NotifyAdminAboutCreationBid(user, viewBid.Bid.Id, bidsUrl!, documentUrl);
 
         return RedirectToAction("List", "Bid");
     }
@@ -185,7 +185,7 @@ public class BidController : Controller
             
         bidService.Update(bid);
 
-        await emailService.NotifyUserAboutNewBidStatus(MetadataProvider, ModelState, user, bid.Id, TicketStatus.ticketStatuses.Where(x => x.Id == bid.TicketStatus).FirstOrDefault()?.Name!, $"{Request.Scheme}://{Request.Host}/{bid?.DocumentFile?.FilePath}");
+        await emailService.NotifyUserAboutNewBidStatus(user, bid.Id, TicketStatus.ticketStatuses.Where(x => x.Id == bid.TicketStatus).FirstOrDefault()?.Name!, $"{Request.Scheme}://{Request.Host}/{bid?.DocumentFile?.FilePath}");
 
         return Ok();
     }

@@ -80,7 +80,7 @@ public class UserService : IUserService
 
             if (model.UserDataAgreementFormFile == null) return new ResultModel(false).AddErrors(["Не загружен файл"], nameof(model.UserDataAgreementFormFile));
 
-            user.UserDataAgreementFileId = await attachmentFileService.CreateUserDataAgreementFileAsync(model.UserDataAgreementFormFile);
+            user.UserDataAgreementFileId = (await attachmentFileService.CreateUserDataAgreementFileAsync(model.UserDataAgreementFormFile)).Id;
             
             var result = await signInManager.UserManager.CreateAsync(user);
 

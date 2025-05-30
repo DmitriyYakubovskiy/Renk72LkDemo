@@ -1,9 +1,6 @@
 ﻿@model (BidModel, UserModel)
 
 <section class="section">
-    @{
-        var userBidId = Model.Item1?.Id;
-    }
     <h1 class="section__title">Обращение №@Model.Item1?.Id</h1>
     <div class="section__row section__row--reverse">
         <div class="sidebar">
@@ -32,82 +29,3 @@
         @await Html.PartialAsync("Items/Bid/Details/Chat")
     </div>
 </section>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-<script>
-    $(document).ready(function() {
-         autoScroll();
-         const connection = new signalR.HubConnectionBuilder()
-             .withUrl("/chatHub")
-             .configureLogging(signalR.LogLevel.Information)
-             .build();
-
-         connection.start()
-             .then(() => {
-                 console.log("SignalR Connected.");
-                 connection.invoke("JoinBidGroup", @userBidId);
-             })
-             .catch(err => console.error(err.toString()));
-
-         connection.on("ReceiveMessage", (message) => {
-             const isCurrentUser = message.userId === @Model.Item2?.Id;
-             const messageHtml = `
-                 <div class="chat__message ${isCurrentUser ? "chat__message--revers" : ""}">
-                     <div>
-                         ${`<button type="button" onclick="deleteMessage(${message.id})" class="btn btn-delete">x</button>`}
-                     </div>
-                     ${message.message}
-                     <div class="chat__user">
-                        ${message.user.surname} ${message.user.name} ${message.user.patronymic}
-                         <div class="chat__data">${new Date(message.createdAt).toLocaleString()}</div>
-                     </div>
-                 </div>
-             `;
-
-             $('.chat__window').append(messageHtml);
-             autoScroll();
-         });
-
-         connection.on("MessageDeleted", (messageId) => {
-             $(`.chat__message:has(button[onclick="deleteMessage(${messageId})"])`).remove();
-         });
-
-         connection.on("ReceiveError", (error) => {
-             showAlert(error, 'danger');
-         });
-
-         $('.form-message').on('submit', function(event) {
-             event.preventDefault();
-             const formData = new FormData(this);
-             const messageText = formData.get('Text');
-
-             if (!messageText && formData.getAll('DocFiles').length === 0) {
-                 showAlert('Заполните поле или прикрепите файл', 'danger');
-                 return;
-             }
-
-             connection.invoke("SendMessageToBid",
-            @userBidId,
-             messageText || "Прикреплен файл",
-            @Model.Item2?.Id)
-             .catch(err => {
-                 console.error(err.toString());
-                 showAlert('Ошибка при отправке сообщения', 'danger');
-             });
-
-             $(this).trigger('reset');
-             showAlert('Сообщение отправлено', 'success');
-         });
-     });
-
-     function showAlert(message, type) {
-         const alertHtml = `<div class="alert alert-${type} alert-chat">${message}</div>`;
-         $('.chat__btn .btn').before(alertHtml);
-         setTimeout(() => $('.alert').fadeOut().remove(), 3000);
-     }
-
-     function autoScroll() {
-         $('.chat__window').animate({
-             scrollTop: $('.chat__window')[0].scrollHeight
-         }, 1000);
-     }
-</script>

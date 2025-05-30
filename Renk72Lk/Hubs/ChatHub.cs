@@ -1,31 +1,50 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
+using MySqlX.XDevAPI;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
-using Renk72Lk.Services.DataBase;
 using Renk72Lk.Models.DataBase;
+using Renk72Lk.Services;
+using Renk72Lk.Services.DataBase;
+using System.Security.Policy;
 
 namespace Renk72Lk.Hubs;
 
 [Authorize("NotBannedPolicy")]
 public class ChatHub : Hub
 {
+    private readonly LinkGenerator linkGenerator;
     private readonly IMessageService chatService;
     private readonly IUserService userService;
     private readonly IBidService bidService;
-    private readonly IFileService fileService;
+    private readonly IEmailSerivce emailService;
 
-    public ChatHub(IMessageService chatService, IUserService userService,
-                  IBidService bidService, IFileService fileService)
+    public ChatHub(IMessageService chatService, IUserService userService, IEmailSerivce emailService,
+                  IBidService bidService, IFileService fileService, IModelMetadataProvider metadataProvider,
+                  LinkGenerator linkGenerator)
     {
+        this.linkGenerator = linkGenerator;
         this.chatService = chatService;
         this.userService = userService;
         this.bidService = bidService;
-        this.fileService = fileService;
+        this.emailService = emailService;
     }
 
-    public async Task JoinBidGroup(int bidId)
+    public async Task JoinBidGroup(int userId, int bidId)
     {
+        var user = await userService.GetByUserNameAsync(Context.User.Identity.Name);
+        var bid = bidService.GetById(bidId);
+
+        if (user.Id != userId || (bid?.User?.Id != userId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())))
+        {
+            await Clients.Caller.SendAsync("ReceiveError", "Нет доступа");
+            return;
+        }
         await Groups.AddToGroupAsync(Context.ConnectionId, $"bid-{bidId}");
     }
 
@@ -34,9 +53,15 @@ public class ChatHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"bid-{bidId}");
     }
 
-    public async Task SendMessageToBid(int bidId, string message, int userId)
+    public async Task SendMessage(int bidId, string message, int userId, int? fileId = null, string? fileName = null, string? filePath = null)
     {
-        var user = await userService.GetByIdAsync(userId);
+        if (String.IsNullOrEmpty(message) && fileId == null)
+        {
+            await Clients.Caller.SendAsync("ReceiveError", "Сообщение не может быть пустым");
+            return;
+        }
+
+        var user = await userService.GetByUserNameAsync(Context.User.Identity.Name);
         var bid = bidService.GetById(bidId);
 
         if (user.Id != userId || (bid?.User?.Id != userId && !(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription())))
@@ -49,37 +74,52 @@ public class ChatHub : Hub
         {
             Message = message,
             BidId = bidId,
-            UserId = userId
+            UserId = userId,
+            FileId = fileId
         };
 
         messageModel = await chatService.CreateAsync(messageModel);
 
+        var url = linkGenerator.GetPathByAction("GetById", "Bid", new { id = bidId });
+
+        if (user?.Id == bid.UserId)
+        {
+            await emailService.NotifyAdminAboutNewMessage(bid.Id, url!);
+        }
+        else
+        {
+            var bidUser = await userService.GetByIdAsync(bid.UserId.Value);
+            await emailService.NotifyUserAboutNewMessage(bidUser, bid.Id, url!);
+        }
+
         await Clients.Group($"bid-{bidId}").SendAsync("ReceiveMessage", new
         {
-            Id = messageModel.Id,
-            Message = messageModel.Message,
-            UserId = messageModel.UserId,
-            CreatedAt = messageModel.CreatedAt,
-            User = new
+            id = messageModel.Id,
+            message = messageModel.Message,
+            userId = messageModel.UserId,
+            createdAt = messageModel.CreatedAt,
+            user = new
             {
-                Surname = user.Surname,
-                Name = user.Name,
-                Patronymic = user.Patronymic
-            }
+                surname = user.Surname,
+                name = user.Name,
+                patronymic = user.Patronymic
+            },
+            file = fileId != null ? new
+            {
+                id = fileId,
+                name = fileName,
+                path = filePath
+            } : null
         });
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task DeleteMessage(int messageId, int userId)
     {
-        var user = await userService.GetByIdAsync(userId);
-        if (!(await userService.GetUserRolesAsync(user.Id)).Contains(UserRole.Admin.GetDescription()))
-        {
-            await Clients.Caller.SendAsync("ReceiveError", "Нет прав для удаления");
-            return;
-        }
-
+        var bidId = GetBidIdForMessage(messageId);
         chatService.Delete(messageId);
-        await Clients.Group($"bid-{GetBidIdForMessage(messageId)}").SendAsync("MessageDeleted", messageId);
+
+        await Clients.Group($"bid-{bidId}").SendAsync("MessageDeleted", messageId);
     }
 
     private int GetBidIdForMessage(int messageId)

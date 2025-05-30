@@ -7,11 +7,11 @@ public interface IFileService
 {
     AttachmentFileModel[] GetAll();
     AttachmentFileModel GetById(int id);
-    Task<int> CreateMessageFileAsync(IFormFile formFile);
-    Task<int> CreateBidDocumentFileAsync(CreateBidViewModel viewBid);
-    Task<int> CreateBidAttachmentsFileAsync(IFormFile[] formFiles);
-    Task<int> CreateUserDataAgreementFileAsync(IFormFile formFile);
-    Task<int> CreateAsync(AttachmentFileModel model);
+    Task<AttachmentFileModel> CreateMessageFileAsync(IFormFile formFile);
+    Task<AttachmentFileModel> CreateBidDocumentFileAsync(CreateBidViewModel viewBid);
+    Task<AttachmentFileModel> CreateBidAttachmentsFileAsync(IFormFile[] formFiles);
+    Task<AttachmentFileModel> CreateUserDataAgreementFileAsync(IFormFile formFile);
+    Task<AttachmentFileModel> CreateAsync(AttachmentFileModel model);
     void Update(AttachmentFileModel model);
     void Delete(int id);
 }

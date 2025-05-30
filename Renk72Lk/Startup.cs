@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -85,6 +86,7 @@ public class Startup
                 .WithCredentials(settings.AccessKey, settings.SecretKey)
                 .Build();
         });
+
         services.AddResponseCaching(options =>
         {
             options.MaximumBodySize = 1024 * 1024 * 256;

@@ -111,16 +111,6 @@ $(function () {
             $(this).remove();
         });
     }, 3000);
-
-        
-    
-            // $.each(err.responseJSON, function (i, error) {
-            //     var el = $(document).find('[name="'+i+'"]');
-            //     el.addClass('is-active');
-            //     $(el).before('<div class="form-group__error">Проверьте правильность введенных данных</div>');
-            // });
-
-
 });
 
 //

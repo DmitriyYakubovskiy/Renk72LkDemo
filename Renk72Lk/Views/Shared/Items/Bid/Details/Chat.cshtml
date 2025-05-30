@@ -1,4 +1,8 @@
 ﻿@model (BidModel, UserModel)
+@{
+    var bidId = Model.Item1?.Id;
+    var userId = Model.Item2?.Id;
+}
 
 <div class="content">
     <div class="chat">
@@ -6,11 +10,16 @@
             @foreach (var message in Model.Item1.Messages!)
             {
                 <div class="chat__message @(message.UserId == Model.Item2?.Id ? "chat__message--revers" : "")">
+                    @if(User.IsInRole(UserRole.Admin.GetDescription())){
+                        <div>
+                            <button type="button" onclick="deleteMessage(@message.Id)" class="btn btn-delete">x</button>
+                        </div>
+                    }
                     @message.Message
                     @if (!String.IsNullOrEmpty(message?.File?.FileName))
                     {
                         <div class="chat-attachment">
-                            <a href="@Url.Content(message.File.FilePath)" download class="chat-attachment__item" target="_blank">
+                            <a href="@Url.Content(message.File.FilePath)" class="chat-attachment__item" target="_blank">
                                 <div class="chat-attachment__icon">
                                     <i class="far fa-file-excel"></i>
                                 </div>
@@ -42,3 +51,12 @@
         }
     </div>
 </div>
+
+<script src="~/js/modules/signalr.js"></script>
+<script>
+    window.chatConfig = {
+        userId: @userId,
+        userBidId: @bidId
+    };
+</script>
+<script src="~/js/modules/chat.js"></script>

@@ -4,6 +4,7 @@ using Minio.DataModel.Args;
 using Minio;
 using Microsoft.Extensions.Options;
 using Renk72Lk.Settings;
+using Renk72Lk.Services.DataBase;
 
 namespace Renk72Lk.Controllers;
 
@@ -14,12 +15,35 @@ namespace Renk72Lk.Controllers;
 public class FileController : Controller
 {
     private readonly IMinioClient minioClient;
+    private readonly IFileService fileService;
     private string bucketName;
 
-    public FileController(IMinioClient minioClient, IOptions<MinioSettings> minioSettings)
+    public FileController(IMinioClient minioClient, IFileService fileService, IOptions<MinioSettings> minioSettings)
     {
         this.minioClient = minioClient;
+        this.fileService = fileService;
         bucketName = minioSettings.Value.BucketName;
+    }
+
+    [HttpPost("Upload")]
+    public async Task<IActionResult> UploadFile(IFormFile file)
+    {
+        try
+        {
+            var fileModel = await fileService.CreateMessageFileAsync(file);
+
+            return Ok(new
+            {
+                id = fileModel.Id,
+                fileName = fileModel.FileName,
+                filePath = fileModel.FilePath,
+
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 
     [HttpGet("{*path}")]

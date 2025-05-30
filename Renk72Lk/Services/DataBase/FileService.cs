@@ -32,9 +32,9 @@ public class FileService : IFileService
         bucketName = minioSettings.Value.BucketName;
     }
 
-    public async Task<int> CreateMessageFileAsync(IFormFile formFile)
+    public async Task<AttachmentFileModel> CreateMessageFileAsync(IFormFile formFile)
     {
-        if (formFile == null || formFile.Length == 0) return -1;
+        if (formFile == null || formFile.Length == 0) return null!;
         try
         {
             string fileExtension = Path.GetExtension(formFile.FileName);
@@ -64,10 +64,10 @@ public class FileService : IFileService
         {
             Console.WriteLine(ex.Message);
         }
-        return -1;
+        return null;
     }
 
-    public async Task<int> CreateBidDocumentFileAsync(CreateBidViewModel viewBid)
+    public async Task<AttachmentFileModel> CreateBidDocumentFileAsync(CreateBidViewModel viewBid)
     {
         try
         {
@@ -95,12 +95,12 @@ public class FileService : IFileService
         {
             Console.WriteLine(ex.Message);
         }
-        return -1;
+        return null!;
     }
 
-    public async Task<int> CreateBidAttachmentsFileAsync(IFormFile[] formFiles)
+    public async Task<AttachmentFileModel> CreateBidAttachmentsFileAsync(IFormFile[] formFiles)
     {
-        if (formFiles == null || formFiles.Length == 0) return -1;
+        if (formFiles == null || formFiles.Length == 0) return null!;
         try
         {
             var zipFileName = $"{Guid.NewGuid()}.zip";
@@ -135,13 +135,13 @@ public class FileService : IFileService
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving formFile: {ex.Message}");
-            return -1;
+            return null!;
         }
     }
 
-    public async Task<int> CreateUserDataAgreementFileAsync(IFormFile formFile)
+    public async Task<AttachmentFileModel> CreateUserDataAgreementFileAsync(IFormFile formFile)
     {
-        if (formFile == null || formFile.Length == 0) return -1;
+        if (formFile == null || formFile.Length == 0) return null!;
         try
         {
             string fileExtension = Path.GetExtension(formFile.FileName);
@@ -162,13 +162,13 @@ public class FileService : IFileService
         {
             Console.WriteLine(ex.Message);
         }
-        return -1;
+        return null!;
     }
 
-    public async Task<int> CreateAsync(AttachmentFileModel model)
+    public async Task<AttachmentFileModel> CreateAsync(AttachmentFileModel model)
     {
         var entity = mapper.Map<AttachmentFileEntity>(model);
-        return await repository.CreateAsync(entity);
+        return mapper.Map<AttachmentFileModel>(await repository.CreateAsync(entity));
     }
 
     public void Delete(int id)
@@ -203,19 +203,9 @@ public class FileService : IFileService
     {
         try
         {
-            Console.WriteLine($"{bucketName} 2222222222222222222222222222222222222222222222222222223333333333333333333333333333333333333\n44444444444444444444444444444444444444444444444444");
-            var objects = minioClient.ListObjectsEnumAsync(
-                new ListObjectsArgs()
-                    .WithBucket(bucketName)
-                    .WithPrefix(""));
+            var bucketExists = await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
+            if (!bucketExists) await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
 
-            await foreach (var item in objects)
-            {
-                Console.WriteLine($"Found object: {item.Key}");
-            }
-            Console.WriteLine($"{bucketName} 222222222222222222222222222222222222");
-            //var bucketExists = await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
-            //if (!bucketExists) await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
             using (var stream = formFile.OpenReadStream())
             {
                 await minioClient.PutObjectAsync(new PutObjectArgs()
@@ -225,7 +215,6 @@ public class FileService : IFileService
                     .WithObjectSize(formFile.Length)
                     .WithContentType(formFile.ContentType));
             }
-            Console.WriteLine($"{bucketName} 111111111111111111111111111111111111111111111111111111111111111111111");
         }
         catch(Exception ex)
         {

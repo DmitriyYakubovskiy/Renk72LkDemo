@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Options;
-using Renk72Lk.Helpers;
 using Renk72Lk.Models;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
-using Renk72Lk.Settings;
 
 namespace Renk72Lk.Controllers;
 
@@ -85,8 +80,8 @@ public class AccountController : Controller
 
             if (response.Success)
             {
-                await emailService.NotifyAdminAboutRegistration(MetadataProvider, ModelState, model, Url.Action("Login", "Account", new { }, Request.Scheme));
-                await emailService.NotifyUserAboutRegistration(MetadataProvider, ModelState, model, Url.Action("Login", "Account", new { }, Request.Scheme));
+                await emailService.NotifyAdminAboutRegistration(model, Url.Action("Login", "Account", new { }, Request.Scheme));
+                await emailService.NotifyUserAboutRegistration(model, Url.Action("Login", "Account", new { }, Request.Scheme));
 
                 return Ok();
             }
@@ -133,7 +128,7 @@ public class AccountController : Controller
             var token = await userService.GeneratePasswordResetTokenAsync(user.Id);
             var resetLink = Url.Action("ResetPassword", "Account", new { token = token }, Request.Scheme);
 
-            await emailService.SendResetPasswordToken(MetadataProvider, ModelState, user, resetLink!);
+            await emailService.SendResetPasswordToken(user, resetLink!);
 
             return Ok();
         }
@@ -187,7 +182,7 @@ public class AccountController : Controller
     public async Task<IActionResult> SendTestMessage()
     {
         var url = Url.Action("Login", "Account", new { }, Request.Scheme);
-        await emailService.Test(MetadataProvider, ModelState, url!);
+        await emailService.Test(url!);
 
         return Redirect("/");
     }

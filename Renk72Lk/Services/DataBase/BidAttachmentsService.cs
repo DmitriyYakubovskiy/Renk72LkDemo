@@ -64,27 +64,27 @@ public class BidAttachmentsService : IBidAttachmentsService
         if (entity.BenefitFileId != model.BenefitFileId) entity.BenefitFileId = model.BenefitFileId;
         if (model?.OtherFiles?.Length != 0 && model.OtherFiles != null)
         {
-            int id = await fileService.CreateBidAttachmentsFileAsync(model.OtherFiles);
+            int id = (await fileService.CreateBidAttachmentsFileAsync(model.OtherFiles)).Id;
             entity.OtherFileId = id;
         }
         if (model?.PassportFiles?.Length != 0 && model.PassportFiles != null)
         {
-            int id = await fileService.CreateBidAttachmentsFileAsync(model.PassportFiles);
+            int id = (await fileService.CreateBidAttachmentsFileAsync(model.PassportFiles)).Id;
             entity.PassportFileId = id;
         }
         if (model?.SnilsFiles?.Length != 0 && model.SnilsFiles != null)
         {
-            int id = await fileService.CreateBidAttachmentsFileAsync(model.SnilsFiles);
+            int id = (await fileService.CreateBidAttachmentsFileAsync(model.SnilsFiles)).Id;
             entity.SnilsFileId = id;
         }
         if (model?.PlanFiles?.Length != 0 && model.PlanFiles != null)
         {
-            int id = await fileService.CreateBidAttachmentsFileAsync(model.PlanFiles);
+            int id = (await fileService.CreateBidAttachmentsFileAsync(model.PlanFiles)).Id;
             entity.PowerDevicesPlanFileId = id;
         }
         if (model?.BenefitFiles?.Length != 0 && model.BenefitFiles != null)
         {
-            int id = await fileService.CreateBidAttachmentsFileAsync(model.BenefitFiles);
+            int id = (await fileService.CreateBidAttachmentsFileAsync(model.BenefitFiles)).Id;
             entity.BenefitFileId = id;
         }
 

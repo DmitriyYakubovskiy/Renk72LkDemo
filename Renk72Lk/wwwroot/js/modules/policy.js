@@ -107,10 +107,4 @@ $(function () {
     $(document).on('change','[type="file"]', function () {
         console.log($(this).select())
     })
-
-    // function alert() {
-    //     $('.alert').slideUp();
-    // }
-    // setTimeout(alert, 3000);    
-
 });

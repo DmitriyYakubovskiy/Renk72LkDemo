@@ -12,13 +12,13 @@ public class AttachmentFileRepository : IAttachmentFileRepository
         this.dbContext = dbContext;
     }
 
-    public async Task<int> CreateAsync(AttachmentFileEntity entity)
+    public async Task<AttachmentFileEntity> CreateAsync(AttachmentFileEntity entity)
     {
         entity.CreatedAt = DateTime.Now;
         entity.UpdatedAt = DateTime.Now;
         await dbContext.AttachmentFiles.AddAsync(entity);
         await dbContext.SaveChangesAsync();
-        return entity.Id;
+        return entity;
     }
 
     public void Delete(int id)

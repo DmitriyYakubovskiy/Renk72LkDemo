@@ -4,21 +4,19 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Renk72Lk.Helpers;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using Renk72Lk.Settings;
-using System.Security.Cryptography;
-using System.Security.Policy;
 
 namespace Renk72Lk.Services;
 
 public class EmailService : IEmailSerivce
 {
     private readonly IRazorViewEngine viewEngine;
-    private readonly ITempDataProvider tempDataProvider;
     private readonly IServiceProvider serviceProvider;
+    private readonly IModelMetadataProvider metadataProvider;
+    private readonly ITempDataProvider tempDataProvider;
 
     private string smtpHost;
     private int smtpPort;
@@ -26,12 +24,13 @@ public class EmailService : IEmailSerivce
     private string smtpPass;
     private string rootEmail;
 
-    public EmailService(IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IServiceProvider serviceProvider,
-        IOptions<EmailSettings> emailSettings)
+    public EmailService(IRazorViewEngine viewEngine, IServiceProvider serviceProvider, IModelMetadataProvider metadataProvider,
+        ITempDataProvider tempDataProvider, IOptions<EmailSettings> emailSettings)
     {
         this.viewEngine = viewEngine;
-        this.tempDataProvider = tempDataProvider;
         this.serviceProvider = serviceProvider;
+        this.metadataProvider = metadataProvider;
+        this.tempDataProvider = tempDataProvider;
 
         smtpHost = emailSettings.Value.SmtpHost!;
         smtpPort = emailSettings.Value.SmtpPort!;
@@ -66,11 +65,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyUserAboutCreationBid(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, UserModel user, int bidId, string urlBids, string urlBid)
+    public async Task NotifyUserAboutCreationBid(UserModel user, int bidId, string urlBids, string urlBid)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -97,11 +96,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyAdminAboutCreationBid(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, UserModel user, int bidId, string urlBids, string urlBid)
+    public async Task NotifyAdminAboutCreationBid(UserModel user, int bidId, string urlBids, string urlBid)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider,"Email/MailTemplate", new MailModel()
             {
                 Title = $"Пользователь, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle() { Text = $"Успешно оформил заявку №{bidId}" },
@@ -124,11 +123,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyUserAboutNewBidStatus(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, UserModel user, int bidId, string bidStatusName, string urlBid)
+    public async Task NotifyUserAboutNewBidStatus(UserModel user, int bidId, string bidStatusName, string urlBid)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -152,11 +151,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyAdminAboutRegistration(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, RegistrationModel model, string url)
+    public async Task NotifyAdminAboutRegistration(RegistrationModel model, string url)
     {
         try
-        {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+        {;
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Новый пользователь: {model?.Surname} {model?.Name} {model?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -182,11 +181,12 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyUserAboutRegistration(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, RegistrationModel model, string url)
+    public async Task NotifyUserAboutRegistration(RegistrationModel model, string url)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var modelState = new ModelStateDictionary();
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, {model?.Surname} {model?.Name} {model?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -212,11 +212,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task SendResetPasswordToken(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, UserModel user, string url)
+    public async Task SendResetPasswordToken(UserModel user, string url)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle() { Text = "Мы получили запрос на сброс пароля для Вашей учетной записи. Для восстановления доступа к аккаунту перейдите по ссылке" },
@@ -237,11 +237,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task Test(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, string url)
+    public async Task Test(string url)
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, Админ!",
                 SubTitle = new Subtitle() { Text = "Вы получили тестовое сообщение" },
@@ -261,11 +261,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyAdminAboutNewMessage(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, int bidId, string url)
+    public async Task NotifyAdminAboutNewMessage(int bidId, string url)
     {
         try
         {
-            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте!",
                 SubTitle = new Subtitle() { Text = $"В заявке №{bidId} добавлено новое сообщение." },
@@ -285,11 +285,11 @@ public class EmailService : IEmailSerivce
         }
     }
 
-    public async Task NotifyUserAboutNewMessage(IModelMetadataProvider MetadataProvider, ModelStateDictionary ModelState, UserModel user, int bidId, string url)
+    public async Task NotifyUserAboutNewMessage(UserModel user, int bidId, string url)
     {
         try
         {
-            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, MetadataProvider, ModelState, "Email/MailTemplate", new MailModel()
+            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
