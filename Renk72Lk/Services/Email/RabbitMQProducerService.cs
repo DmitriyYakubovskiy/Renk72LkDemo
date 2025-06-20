@@ -1,67 +1,71 @@
-﻿using MailKit.Net.Smtp;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
-using MimeKit;
+using RabbitMQ.Client;
 using Renk72Lk.Helpers;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using Renk72Lk.Settings;
+using System.Text;
+using System.Text.Json;
 
-namespace Renk72Lk.Services;
+namespace Renk72Lk.Services.Email;
 
-public class EmailService : IEmailSerivce
+public class RabbitMQProducerService : IRabbitMQProducerSerivce
 {
     private readonly IRazorViewEngine viewEngine;
     private readonly IServiceProvider serviceProvider;
     private readonly IModelMetadataProvider metadataProvider;
     private readonly ITempDataProvider tempDataProvider;
+    private readonly IConnectionFactory factory;
+    private readonly IChannel channel;
+    private readonly IConnection connection;
 
-    private string smtpHost;
-    private int smtpPort;
-    private string smtpUser;
-    private string smtpPass;
     private string rootEmail;
+    private string queueName;
 
-    public EmailService(IRazorViewEngine viewEngine, IServiceProvider serviceProvider, IModelMetadataProvider metadataProvider,
-        ITempDataProvider tempDataProvider, IOptions<EmailSettings> emailSettings)
+    public RabbitMQProducerService(IRazorViewEngine viewEngine, IServiceProvider serviceProvider, IModelMetadataProvider metadataProvider,
+        ITempDataProvider tempDataProvider, IOptions<EmailSettings> emailSettings, IOptions<RabbitMQSettings> rabbitSettings)
     {
         this.viewEngine = viewEngine;
         this.serviceProvider = serviceProvider;
         this.metadataProvider = metadataProvider;
         this.tempDataProvider = tempDataProvider;
 
-        smtpHost = emailSettings.Value.SmtpHost!;
-        smtpPort = emailSettings.Value.SmtpPort!;
-        smtpUser = emailSettings.Value.SmtpUser!;
-        smtpPass = emailSettings.Value.SmtpPass!;
         rootEmail = emailSettings.Value.RootEmail!;
+        queueName = rabbitSettings.Value.QueueName!;
+
+        factory = new ConnectionFactory()
+        {
+            HostName = rabbitSettings.Value.Host!,
+            UserName = rabbitSettings.Value.UserName!,
+            Password = rabbitSettings.Value.Password!,
+        };
+
+        connection = factory.CreateConnectionAsync().Result;
+        channel = connection.CreateChannelAsync().Result;
+        channel.QueueDeclareAsync(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
     }
 
-    public async Task SendEmailAsync(string toEmail, string subject, string htmlContent)
+    public async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
     {
         try
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Личный кабинет ООО «РЭНК»", smtpUser));
-            message.To.Add(new MailboxAddress("", toEmail));
-            message.Subject = subject;
-
-            message.Body = new TextPart("html") { Text = htmlContent };
-
-            using (var client = new SmtpClient())
+            var emailData = new
             {
-                await client.ConnectAsync(smtpHost, smtpPort, true);
-                await client.AuthenticateAsync(smtpUser, smtpPass);
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-            }
+                ToEmail = rootEmail,
+                Subject = subject,
+                HtmlBody = htmlBody
+            };
+
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(emailData));
+
+            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queueName, body: body);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            throw new Exception(ex.Message);
         }
     }
 
@@ -69,7 +73,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -100,7 +104,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider,"Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider,"Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Пользователь, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle() { Text = $"Успешно оформил заявку №{bidId}" },
@@ -127,7 +131,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -155,7 +159,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {;
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Новый пользователь: {model?.Surname} {model?.Name} {model?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -186,7 +190,7 @@ public class EmailService : IEmailSerivce
         try
         {
             var modelState = new ModelStateDictionary();
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, {model?.Surname} {model?.Name} {model?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -216,7 +220,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle() { Text = "Мы получили запрос на сброс пароля для Вашей учетной записи. Для восстановления доступа к аккаунту перейдите по ссылке" },
@@ -241,14 +245,14 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, Админ!",
                 SubTitle = new Subtitle() { Text = "Вы получили тестовое сообщение" },
                 Button = new MailBlockWithLink()
                 {
                     Text = "В лк",
-                    Url =url
+                    Url = url
                 },
                 Text = "Тест.",
             });
@@ -265,7 +269,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте!",
                 SubTitle = new Subtitle() { Text = $"В заявке №{bidId} добавлено новое сообщение." },
@@ -289,7 +293,7 @@ public class EmailService : IEmailSerivce
     {
         try
         {
-            var htmlBody = await ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailModel()
+            var htmlBody = ViewToString.RenderViewToStringAsync(viewEngine, tempDataProvider, serviceProvider, metadataProvider, "Email/MailTemplate", new MailTemplateModel()
             {
                 Title = $"Здравствуйте, {user?.Surname} {user?.Name} {user?.Patronymic}!",
                 SubTitle = new Subtitle()
@@ -304,7 +308,7 @@ public class EmailService : IEmailSerivce
                 Text = "\"С уважением!",
             });
 
-            await SendEmailAsync(user?.Email!, $"#{bidId} - заявка. Новое сообщение!", htmlBody);
+            await SendEmailAsync(user.Email!, $"#{bidId} - заявка. Новое сообщение.", await htmlBody);
         }
         catch (Exception ex)
         {

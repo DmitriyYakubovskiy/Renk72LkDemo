@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Renk72Lk.Models;
+﻿using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 
-namespace Renk72Lk.Services;
+namespace Renk72Lk.Services.Email;
 
-public interface IEmailSerivce
+public interface IRabbitMQProducerSerivce
 {
     Task SendEmailAsync(string toEmail, string subject, string htmlContent);
     Task NotifyUserAboutCreationBid(UserModel user, int bidId, string urlBids, string urlBid);

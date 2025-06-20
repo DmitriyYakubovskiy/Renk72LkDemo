@@ -8,6 +8,7 @@ using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
+using Renk72Lk.Services.Email;
 using Renk72Lk.Settings;
 using System.Data;
 using System.Globalization;
@@ -23,14 +24,14 @@ public class BidController : Controller
     private readonly IBidService bidService;
     private readonly IBidAttachmentsService bid5Service;
     private readonly IFileService fileService;
-    private readonly IEmailSerivce emailService;
+    private readonly IRabbitMQProducerSerivce emailService;
     private readonly IBidViewModelService bidViewModelService;
 
     private readonly HttpClient httpClient;
     private readonly ReportingSettings apiSettings;
 
     public BidController(IUserService userService, IBidService bidService, IBidAttachmentsService bid5Service, 
-        IFileService fileService, IEmailSerivce emailService,
+        IFileService fileService, IRabbitMQProducerSerivce emailService,
         IBidViewModelService bidViewModelService, HttpClient httpClient, IOptions<ReportingSettings> apiSettings)
     {
         this.userService = userService;

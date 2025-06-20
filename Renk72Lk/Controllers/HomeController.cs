@@ -14,13 +14,11 @@ namespace Renk72Lk.Controllers;
 public class HomeController : Controller
 {
     private readonly IUserService userService;
-    private readonly IBidPersonalInfoService bid1Service;
     private readonly IBidRepresentativeInfoService bid2Service;
 
-    public HomeController(IUserService userService, IBidPersonalInfoService bid1Service, IBidRepresentativeInfoService bid2Service)
+    public HomeController(IUserService userService, IBidRepresentativeInfoService bid2Service)
     {
         this.userService = userService;
-        this.bid1Service = bid1Service;
         this.bid2Service = bid2Service;
     }
 

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 using Renk72Lk.Hubs;
 using Renk72Lk.Models.DataBase;
-using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
+using Renk72Lk.Services.Email;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -20,7 +20,7 @@ public class ChatHubTests
 {
     private readonly Mock<IMessageService> _chatService = new();
     private readonly Mock<IUserService> _userService = new();
-    private readonly Mock<IEmailSerivce> _emailService = new();
+    private readonly Mock<IRabbitMQProducerSerivce> _emailService = new();
     private readonly Mock<IBidService> _bidService = new();
     private readonly Mock<IFileService> _fileService = new();
     private readonly Mock<IModelMetadataProvider> _metadataProvider = new();

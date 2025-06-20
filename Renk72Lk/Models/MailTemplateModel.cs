@@ -3,7 +3,7 @@
 namespace Renk72Lk.Models;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public class MailModel
+public class MailTemplateModel
 {
     public string? Title { get; set; }
     public Subtitle? SubTitle { get; set; }

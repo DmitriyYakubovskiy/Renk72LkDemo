@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Hosting;
-using MySqlX.XDevAPI;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Models.DataBase;
-using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
-using System.Security.Policy;
+using Renk72Lk.Services.Email;
 
 namespace Renk72Lk.Hubs;
 
@@ -22,17 +16,19 @@ public class ChatHub : Hub
     private readonly IMessageService chatService;
     private readonly IUserService userService;
     private readonly IBidService bidService;
-    private readonly IEmailSerivce emailService;
+    private readonly IRabbitMQProducerSerivce emailService;
+    private readonly HttpContext httpContext;
 
-    public ChatHub(IMessageService chatService, IUserService userService, IEmailSerivce emailService,
+    public ChatHub(IMessageService chatService, IUserService userService, IRabbitMQProducerSerivce emailService,
                   IBidService bidService, IFileService fileService, IModelMetadataProvider metadataProvider,
-                  LinkGenerator linkGenerator)
+                  LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
     {
         this.linkGenerator = linkGenerator;
         this.chatService = chatService;
         this.userService = userService;
         this.bidService = bidService;
         this.emailService = emailService;
+        this.httpContext = httpContextAccessor.HttpContext!;
     }
 
     public async Task JoinBidGroup(int userId, int bidId)
@@ -79,8 +75,10 @@ public class ChatHub : Hub
         };
 
         messageModel = await chatService.CreateAsync(messageModel);
+        var relativeUrl = linkGenerator.GetPathByAction("GetById", "Bid", new { id = bidId });
+        var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
-        var url = linkGenerator.GetPathByAction("GetById", "Bid", new { id = bidId });
+        var url = $"{baseUrl}{relativeUrl}";
 
         if (user?.Id == bid.UserId)
         {

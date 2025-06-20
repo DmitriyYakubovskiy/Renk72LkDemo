@@ -18,6 +18,7 @@ using Renk72Lk.Hubs;
 using Renk72Lk.Requirements;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
+using Renk72Lk.Services.Email;
 using Renk72Lk.Settings;
 
 namespace Renk72Lk;
@@ -39,12 +40,14 @@ public class Startup
         services.Configure<ReportingSettings>(configuration.GetSection("ReportingService"));
         services.Configure<EmailSettings>(configuration.GetSection("Email"));
         services.Configure<MinioSettings>(configuration.GetSection("MinIO"));
+        services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
         services.Configure<FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 10485760;
         });
 
         services.AddHostedService<ReportingService>();
+        services.AddHostedService<RabbitMQConsumerService>();
         services.AddScoped<IAuthHistoryRepository, AuthHistoryRepository>();
         services.AddScoped<IBidPersonalInfoRepository, BidPersonalInfoRepository>();
         services.AddScoped<IBidRepresentativeInfoRepository, BidRepresentativeInfoRepository>();
@@ -72,12 +75,13 @@ public class Startup
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IAttachmentsPointService, AttachmentsPointService>();
         services.AddScoped<IAttachmentsStageService, AttachmentsStageService>();
-        services.AddScoped<IEmailSerivce, EmailService>();
+        services.AddScoped<IRabbitMQProducerSerivce, RabbitMQProducerService>();
 
         services.AddHttpClient<BidAttachmentsController>();
         services.AddHttpClient<BidController>();
-        services.AddHttpClient<EmailService>();
+        services.AddHttpClient<RabbitMQProducerService>();
 
+        services.AddHttpContextAccessor();
         services.AddSingleton<IMinioClient>(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<MinioSettings>>().Value;

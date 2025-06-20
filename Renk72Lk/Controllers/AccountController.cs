@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Renk72Lk.Models;
-using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
+using Renk72Lk.Services.Email;
 
 namespace Renk72Lk.Controllers;
 
@@ -11,9 +11,9 @@ namespace Renk72Lk.Controllers;
 public class AccountController : Controller
 {
     private readonly IUserService userService;
-    private readonly IEmailSerivce emailService;
+    private readonly IRabbitMQProducerSerivce emailService;
 
-    public AccountController(IUserService userService, IEmailSerivce emailService)
+    public AccountController(IUserService userService, IRabbitMQProducerSerivce emailService)
     {
         this.userService = userService;
         this.emailService = emailService;
