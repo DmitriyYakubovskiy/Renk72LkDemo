@@ -11,7 +11,7 @@ using Renk72Lk.DataAccess.Contexts;
 namespace Renk72Lk.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250503062350_InitialCreate")]
+    [Migration("20250630080751_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -202,13 +202,13 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("FileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("FilePath")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<string>("Filename")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -227,7 +227,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float>("Power")
+                    b.Property<float?>("Power")
                         .HasColumnType("float");
 
                     b.Property<int?>("TechnicalSpecificationsId")
@@ -236,7 +236,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float>("Voltage")
+                    b.Property<float?>("Voltage")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -252,16 +252,16 @@ namespace Renk72Lk.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CommissioningPeriod")
+                    b.Property<DateTime?>("CommissioningPeriod")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DesignPeriod")
+                    b.Property<DateTime?>("DesignPeriod")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float>("Power")
+                    b.Property<float?>("Power")
                         .HasColumnType("float");
 
                     b.Property<int?>("TechnicalSpecificationsId")
@@ -331,7 +331,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<int?>("PassportFileId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PowerDevicesPlanId")
+                    b.Property<int?>("PowerDevicesPlanFileId")
                         .HasColumnType("int");
 
                     b.Property<int?>("SnilsFileId")
@@ -354,7 +354,7 @@ namespace Renk72Lk.DataAccess.Migrations
 
                     b.HasIndex("PassportFileId");
 
-                    b.HasIndex("PowerDevicesPlanId");
+                    b.HasIndex("PowerDevicesPlanFileId");
 
                     b.HasIndex("SnilsFileId");
 
@@ -736,7 +736,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("FileId")
+                    b.Property<int?>("FileId")
                         .HasColumnType("int");
 
                     b.Property<string>("Message")
@@ -1001,7 +1001,7 @@ namespace Renk72Lk.DataAccess.Migrations
 
                     b.HasOne("Renk72Lk.DataAccess.Entities.AttachmentFileEntity", "PowerDevicesPlanFile")
                         .WithMany()
-                        .HasForeignKey("PowerDevicesPlanId")
+                        .HasForeignKey("PowerDevicesPlanFileId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Renk72Lk.DataAccess.Entities.AttachmentFileEntity", "SnilsFile")
@@ -1138,8 +1138,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.HasOne("Renk72Lk.DataAccess.Entities.AttachmentFileEntity", "File")
                         .WithMany()
                         .HasForeignKey("FileId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Renk72Lk.DataAccess.Entities.UserEntity", "User")
                         .WithMany("Messages")

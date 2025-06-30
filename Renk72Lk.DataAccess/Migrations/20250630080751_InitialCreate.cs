@@ -59,7 +59,7 @@ namespace Renk72Lk.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Filename = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    FileName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
                     FilePath = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
@@ -312,7 +312,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     PassportFileId = table.Column<int>(type: "int", nullable: true),
-                    PowerDevicesPlanId = table.Column<int>(type: "int", nullable: true),
+                    PowerDevicesPlanFileId = table.Column<int>(type: "int", nullable: true),
                     SnilsFileId = table.Column<int>(type: "int", nullable: true),
                     BenefitFileId = table.Column<int>(type: "int", nullable: true),
                     OtherFileId = table.Column<int>(type: "int", nullable: true),
@@ -341,8 +341,8 @@ namespace Renk72Lk.DataAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_bids_attachments_attachment_files_PowerDevicesPlanId",
-                        column: x => x.PowerDevicesPlanId,
+                        name: "FK_bids_attachments_attachment_files_PowerDevicesPlanFileId",
+                        column: x => x.PowerDevicesPlanFileId,
                         principalTable: "attachment_files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -555,7 +555,7 @@ namespace Renk72Lk.DataAccess.Migrations
                     Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    FileId = table.Column<int>(type: "int", nullable: false),
+                    FileId = table.Column<int>(type: "int", nullable: true),
                     BidId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -589,8 +589,8 @@ namespace Renk72Lk.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Voltage = table.Column<float>(type: "float", nullable: false),
-                    Power = table.Column<float>(type: "float", nullable: false),
+                    Voltage = table.Column<float>(type: "float", nullable: true),
+                    Power = table.Column<float>(type: "float", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     TechnicalSpecificationsId = table.Column<int>(type: "int", nullable: true)
@@ -613,9 +613,9 @@ namespace Renk72Lk.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    DesignPeriod = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CommissioningPeriod = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Power = table.Column<float>(type: "float", nullable: false),
+                    DesignPeriod = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CommissioningPeriod = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Power = table.Column<float>(type: "float", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     TechnicalSpecificationsId = table.Column<int>(type: "int", nullable: true)
@@ -705,9 +705,9 @@ namespace Renk72Lk.DataAccess.Migrations
                 column: "PassportFileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_bids_attachments_PowerDevicesPlanId",
+                name: "IX_bids_attachments_PowerDevicesPlanFileId",
                 table: "bids_attachments",
-                column: "PowerDevicesPlanId");
+                column: "PowerDevicesPlanFileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_bids_attachments_SnilsFileId",
