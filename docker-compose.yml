@@ -4,7 +4,7 @@ services:
   webapp:
     build:
       context: .
-      dockerfile: Renk72Lk/Dockerfile
+      dockerfile: Renk72Lk/dockerfile
     ports:
       - "85:85"
     environment:
@@ -14,7 +14,7 @@ services:
   laravel:
     build:
       context: ./pdf-generator-api
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     ports:
       - "8000:8000"
     restart: unless-stopped
