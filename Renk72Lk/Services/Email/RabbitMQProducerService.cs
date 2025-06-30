@@ -54,7 +54,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         {
             var emailData = new
             {
-                ToEmail = rootEmail,
+                ToEmail = toEmail,
                 Subject = subject,
                 HtmlBody = htmlBody
             };
