@@ -1,6 +1,42 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_renk72lk
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - renk72lk_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma_renk72lk
+    environment:
+      UPLOAD_LIMIT: 20M
+      MAX_EXECUTION_TIME: 300
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 0
+    ports:
+      - "8080:80"
+    networks:
+      - renk72lk_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
   webapp:
     build:
       context: .
@@ -11,10 +47,17 @@ services:
       - ASPNETCORE_URLS=http://+:85
     extra_hosts:
       - "host.docker.internal:host-gateway" 
+    networks:
+      - renk72lk_network
     depends_on:
-      - pdfgenerator
-      - rabbitmq
-      - minio
+      mysql:
+        condition: service_healthy
+      pdfgenerator:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      minio:
+        condition: service_started
     restart: unless-stopped
 
   pdfgenerator:
@@ -23,6 +66,8 @@ services:
       dockerfile: dockerfile
     ports:
       - "8000:8000"
+    networks:
+      - renk72lk_network
     restart: unless-stopped
 
   nginx:
@@ -35,6 +80,8 @@ services:
       - webapp
       - rabbitmq
       - minio
+    networks:
+      - renk72lk_network
     restart: unless-stopped
 
   minio:
@@ -48,6 +95,8 @@ services:
       MINIO_ROOT_PASSWORD: MINIO_ROOT_PASSWORD
     volumes:
       - minio_data:/data
+    networks:
+      - renk72lk_network
     restart: unless-stopped
 
   rabbitmq:
@@ -66,8 +115,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - renk72lk_network
     restart: on-failure 
 
 volumes:
   minio_data:
   rabbitmq_data:
+  mysql_data:
+
+networks:
+  renk72lk_network:
+    driver: bridge

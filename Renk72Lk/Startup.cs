@@ -150,8 +150,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, RoleManager<IdentityRole<int>> roleManager)
     {
-        //CreateRolesAsync(roleManager).Wait();
-        //UpdateDataBaseAsync().Wait();
+        CreateRolesAsync(roleManager).Wait();
 
         if (env.IsDevelopment())
         {
