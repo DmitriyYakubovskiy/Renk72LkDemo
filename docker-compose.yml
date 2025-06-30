@@ -12,6 +12,7 @@ services:
       MINIO_ROOT_PASSWORD: MINIO_ROOT_PASSWORD
     volumes:
       - minio_data:/data
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -29,6 +30,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    restart: unless-stopped
 
 volumes:
   minio_data:
