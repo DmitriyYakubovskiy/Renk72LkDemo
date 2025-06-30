@@ -131,6 +131,32 @@
     font-size: 14px;
 }
 
+.select-block__list--floating {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-grey);
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    font-size: 14px;
+    overflow-y: auto;
+    max-height: 0;
+    transition: max-height 0.2s ease-in-out;
+    padding: 0;
+    pointer-events: none;
+}
+
+.select-block.active .select-block__list--floating {
+    max-height: 200px;
+    pointer-events: auto;
+    overflow-y: auto;
+}
+
 .select-block__list a, .form-group select.form-group__input {
     display: block;
     color: #333;

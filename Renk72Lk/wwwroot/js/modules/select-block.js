@@ -38,3 +38,15 @@ $(document).click(function(e) {
     $('.select-block__list').slideUp(200);
     e.stopPropagation();
 });
+
+
+$(document).on('click', '.select-block__list--floating a', function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var text = $this.text();
+    var $block = $this.closest('.select-block');
+
+    $block.find('input[type=hidden]').val(text);
+    $block.find('.select-block__title span').text(text);
+    $block.removeClass('active');
+});

@@ -8,7 +8,7 @@
                 <div class="form-group">
                     <div class="select-block select-block-service">
                         <div class="select-block__title"><span>Услуга</span></div>
-                        <ul class="select-block__list scrollbar">
+                        <ul class="select-block__list select-block__list--floating scrollbar">
                             <li class="filter-check"><a href="#">Все</a></li>
                             @foreach (var item in Model.Select(bid => bid.Service).Distinct())
                             {
@@ -23,7 +23,7 @@
                 <div class="form-group">
                     <div class="select-block">
                         <div class="select-block__title"><span>Тип пользователя</span></div>
-                        <ul class="select-block__list scrollbar">
+                        <ul class="select-block__list select-block__list--floating scrollbar">
                             <li class="filter-check"><a href="#">Все</a></li>
                             @foreach (var item in Model.Select(bid => bid.UserRole).Distinct())
                             {
@@ -38,7 +38,7 @@
                 <div class="form-group">
                     <div class="select-block">
                         <div class="select-block__title"><span>Статус заявки</span></div>
-                        <ul class="select-block__list scrollbar">
+                        <ul class="select-block__list select-block__list--floating scrollbar">
                             <li class="filter-check"><a href="#">Все</a></li>
                             <li class="filter-check"><a data-status="0" href="#">В ожидании</a></li>
                             <li class="filter-check"><a data-status="1" href="#">На согласовании</a></li>
@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <div class="select-block">
                         <div class="select-block__title"><span>Показать на странице</span></div>
-                        <ul class="select-block__list scrollbar">
+                        <ul class="select-block__list select-block__list--floating scrollbar">
                             <li class="filter-check"><a href="#">100</a></li>
                             <li class="filter-check"><a href="#">200</a></li>
                             <li class="filter-check"><a href="#">500</a></li>
@@ -110,7 +110,7 @@
                     <div class="sort-block__item">
                         <div class="select-block">
                             <div class="select-block__title"><span>Дате регистрации</span></div>
-                            <ul class="select-block__list scrollbar">
+                            <ul class="select-block__list select-block__list--floating scrollbar">
                                 <li><a href="#">Дате регистрации</a></li>
                                 <li><a href="#">Статусу заявителя</a></li>
                             </ul>
@@ -120,7 +120,7 @@
                         <div class="form-group">
                             <div class="select-block">
                                 <div class="select-block__title"><span>Услуга</span></div>
-                                <ul class="select-block__list scrollbar">
+                                <ul class="select-block__list select-block__list--floating scrollbar">
                                     <li><a href="#">Подключение энергопринимающих приборов до 150 кВт</a></li>
                                     <li><a href="#">Подключение энергопринимающих приборов после 150 кВт</a></li>
                                 </ul>
