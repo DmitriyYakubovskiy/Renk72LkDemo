@@ -8,11 +8,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-	  <Content Update="appsettings.json" CopyToPublishDirectory="PreserveNewest" Link="appsettings.json" />
-	  <Content Update="appsettings.example.json" CopyToPublishDirectory="PreserveNewest" Link="appsettings.example.json" />
-	</ItemGroup>
-
-	<ItemGroup>
     <Compile Remove="Factories\**" />
     <Compile Remove="Middleware\**" />
     <Compile Remove="wwwroot\uploads\bid2\**" />
