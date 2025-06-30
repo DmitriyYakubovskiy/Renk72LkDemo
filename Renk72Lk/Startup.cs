@@ -20,6 +20,7 @@ using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
 using Renk72Lk.Services.Email;
 using Renk72Lk.Settings;
+using System.Globalization;
 
 namespace Renk72Lk;
 
@@ -150,6 +151,10 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, RoleManager<IdentityRole<int>> roleManager)
     {
+        var cultureInfo = new CultureInfo("ru-RU");
+        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
         CreateRolesAsync(roleManager).Wait();
 
         if (env.IsDevelopment())
