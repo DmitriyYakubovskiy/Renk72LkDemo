@@ -93,3 +93,33 @@
         @await Html.PartialAsync("Items/Bid/Details/Chat")
     </div>
 </section>
+
+<script>
+    $('.status-check a').on('click', function (e) {
+        e.preventDefault();
+        var status = $(this).data('status');
+        $('.input-status').val(status);
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                xhr.setRequestHeader("RequestVerificationToken", token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ChangeTicketStatus", "Bid")',
+            data: {
+                id: '@Model.Item1.Id',
+                ticketStatus: status
+            },
+            success: function (data) {
+                console.log('Статус тикета изменен успешно');
+                getMessage();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+</script>
