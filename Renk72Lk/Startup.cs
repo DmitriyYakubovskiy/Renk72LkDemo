@@ -46,7 +46,7 @@ public class Startup
             options.MultipartBodyLengthLimit = 10485760;
         });
 
-        services.AddHostedService<ReportingService>();
+        //services.AddHostedService<ReportingService>();
         services.AddHostedService<RabbitMQConsumerService>();
         services.AddScoped<IAuthHistoryRepository, AuthHistoryRepository>();
         services.AddScoped<IBidPersonalInfoRepository, BidPersonalInfoRepository>();

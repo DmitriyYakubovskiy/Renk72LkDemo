@@ -1,0 +1,19 @@
+# Этап сборки
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+EXPOSE 85
+WORKDIR /src
+
+COPY ["Renk72Lk/Renk72Lk.csproj", "Renk72Lk/"]
+COPY ["Renk72Lk.DataAccess/Renk72Lk.DataAccess.csproj", "Renk72Lk.DataAccess/"]
+
+RUN dotnet restore "Renk72Lk/Renk72Lk.csproj"
+
+COPY . .
+
+WORKDIR "/src/Renk72Lk"
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Renk72Lk.dll"]
