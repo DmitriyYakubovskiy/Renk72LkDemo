@@ -9,6 +9,8 @@ services:
       - "85:85"
     environment:
       - ASPNETCORE_URLS=http://+:85
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
     depends_on:
       - pdfgenerator
       - rabbitmq
