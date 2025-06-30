@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,14 @@ public class Startup
         services.Configure<FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 10485760;
+        });
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var ruCulture = new CultureInfo("ru-RU");
+            ruCulture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
+            options.DefaultRequestCulture = new RequestCulture(ruCulture);
+            options.SupportedCultures = new List<CultureInfo> { ruCulture };
+            options.SupportedUICultures = new List<CultureInfo> { ruCulture };
         });
 
         //services.AddHostedService<ReportingService>();
@@ -141,7 +150,6 @@ public class Startup
             options.AddPolicy("NotBannedPolicy", policy =>
                 policy.Requirements.Add(new NotBannedRequirement()));
         });
-
         services.AddSingleton<IAuthorizationHandler, NotBannedHandler>();
 
         services.AddSwaggerGen();
@@ -151,10 +159,6 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, RoleManager<IdentityRole<int>> roleManager)
     {
-        var cultureInfo = new CultureInfo("ru-RU");
-        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
         CreateRolesAsync(roleManager).Wait();
 
         if (env.IsDevelopment())
@@ -174,6 +178,7 @@ public class Startup
             ContentTypeProvider = ConfigureFileExtensions([".sig"])
         });
 
+        app.UseRequestLocalization();
         app.UseRouting();
 
         app.UseAuthentication();
