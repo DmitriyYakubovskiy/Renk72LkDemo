@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Renk72Lk.DataAccess.Enums;
-using Renk72Lk.DataAccess.Extensions;
-using Renk72Lk.Requirements;
 
 namespace Renk72Lk.Handlers;
 
@@ -17,5 +15,12 @@ public class NotBannedHandler : AuthorizationHandler<NotBannedRequirement>
         }
 
         return Task.CompletedTask;
+    }
+}
+
+public class NotBannedRequirement : IAuthorizationRequirement
+{
+    public NotBannedRequirement()
+    {
     }
 }

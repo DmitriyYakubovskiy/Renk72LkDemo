@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -16,7 +15,6 @@ using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.DataAccess.Repositories;
 using Renk72Lk.Handlers;
 using Renk72Lk.Hubs;
-using Renk72Lk.Requirements;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
 using Renk72Lk.Services.Email;
@@ -45,7 +43,7 @@ public class Startup
         services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
         services.Configure<FormOptions>(options =>
         {
-            options.MultipartBodyLengthLimit = 10485760;
+            options.MultipartBodyLengthLimit = 1048576000;
         });
         services.Configure<RequestLocalizationOptions>(options =>
         {
@@ -56,7 +54,6 @@ public class Startup
             options.SupportedUICultures = new List<CultureInfo> { ruCulture };
         });
 
-        //services.AddHostedService<ReportingService>();
         services.AddHostedService<RabbitMQConsumerService>();
         services.AddScoped<IAuthHistoryRepository, AuthHistoryRepository>();
         services.AddScoped<IBidPersonalInfoRepository, BidPersonalInfoRepository>();
@@ -91,7 +88,6 @@ public class Startup
         services.AddHttpClient<BidController>();
         services.AddHttpClient<RabbitMQProducerService>();
 
-        services.AddHttpContextAccessor();
         services.AddSingleton<IMinioClient>(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<MinioSettings>>().Value;
@@ -116,6 +112,10 @@ public class Startup
             options.Password.RequiredLength = 8;
             options.Password.RequiredUniqueChars = 1;
             options.User.AllowedUserNameCharacters = null!;
+
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            options.User.RequireUniqueEmail = true;
+
         }).AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
@@ -131,18 +131,23 @@ public class Startup
         services.AddSignalR();
 
         services.Configure<DataProtectionTokenProviderOptions>(options =>
-            options.TokenLifespan = TimeSpan.FromHours(4)); //токен восстановления пароля
+            options.TokenLifespan = TimeSpan.FromHours(4)); //Токен восстановления пароля
 
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie
-        (
-            options =>
-            {
+        services.ConfigureApplicationCookie(options =>
+        {
                 options.ExpireTimeSpan = TimeSpan.FromHours(4);
-                options.SlidingExpiration = true; 
+                options.SlidingExpiration = true;  // Обновляет куку при активности
+            
                 options.LoginPath = "/Account/Login"; 
                 options.LogoutPath = "/Account/Logout";
-            }
+
+                options.ReturnUrlParameter = "/";
+
+                options.Cookie.HttpOnly = true; // Защита от XSS
+                options.Cookie.SameSite = SameSiteMode.Strict; // Защита от CSRF
+ 
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Только HTTPS
+        }
         );
 
         services.AddAuthorization(options =>

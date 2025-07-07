@@ -92,7 +92,6 @@ services:
       - webapp
       - rabbitmq
       - minio
-      - phpmyadmin
     networks:
       - renk72lk_network
     restart: unless-stopped
