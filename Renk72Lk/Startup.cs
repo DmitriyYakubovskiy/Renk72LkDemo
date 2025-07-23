@@ -135,18 +135,18 @@ public class Startup
 
         services.ConfigureApplicationCookie(options =>
         {
-                options.ExpireTimeSpan = TimeSpan.FromHours(4);
-                options.SlidingExpiration = true;  // Обновляет куку при активности
+            options.ExpireTimeSpan = TimeSpan.FromHours(4);
+            options.SlidingExpiration = true;  // Обновляет куку при активности
             
-                options.LoginPath = "/Account/Login"; 
-                options.LogoutPath = "/Account/Logout";
+            options.LoginPath = "/Account/Login"; 
+            options.LogoutPath = "/Account/Logout";
 
-                options.ReturnUrlParameter = "/";
+            options.ReturnUrlParameter = "/";
 
-                options.Cookie.HttpOnly = true; // Защита от XSS
-                options.Cookie.SameSite = SameSiteMode.Strict; // Защита от CSRF
+            options.Cookie.HttpOnly = true; // Защита от XSS
+            options.Cookie.SameSite = SameSiteMode.Strict; // Защита от CSRF
  
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Только HTTPS
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Только HTTPS
         }
         );
 
