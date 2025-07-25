@@ -149,7 +149,7 @@ public class Startup
 
             options.Cookie.HttpOnly = true; // Защита от XSS
             options.Cookie.SameSite = SameSiteMode.Strict; // Защита от CSRF
- 
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Для HTTP
             //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Только HTTPS
         }
         );
