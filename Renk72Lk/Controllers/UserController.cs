@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
@@ -25,11 +24,17 @@ public class UserController : Controller
     {
         var users = userService.GetAll().ToList();
         var userClaims = new Dictionary<int, bool>();
+        var userTypes = new Dictionary<int, string>();
+
         foreach (var user in users)
         {
-            var isBanned = await userService.GetUserClaimValueAsync(user.UserName, UserBanned.UserBanned.GetDescription()) == "true";
-            userClaims[user.Id] = isBanned;
+            var isBannedClaim = await userService.GetUserClaimValueAsync(user.UserName, UserBanned.UserBanned.GetDescription());
+            userClaims[user.Id] = isBannedClaim == "true";
+
+            var userTypeClaim = await userService.GetUserClaimValueAsync(user.UserName, UserType.UserType.GetDescription());
+            userTypes[user.Id] = userTypeClaim;
         }
+
 
         switch (sort)
         {
@@ -45,6 +50,8 @@ public class UserController : Controller
         }
 
         ViewBag.UserClaims = userClaims;
+        ViewBag.UserTypes = userTypes;
+
         return View(users.ToArray());
     }
 
