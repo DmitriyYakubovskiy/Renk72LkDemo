@@ -71,21 +71,6 @@ namespace Renk72Lk.DataAccess.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "data_protection_keys",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    FriendlyName = table.Column<string>(type: "longtext", nullable: true),
-                    Xml = table.Column<string>(type: "longtext", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_data_protection_keys", x => x.Id);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "aspnet_role_claims",
                 columns: table => new
                 {
@@ -526,14 +511,14 @@ namespace Renk72Lk.DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     ReliabilityCategory = table.Column<string>(type: "longtext", nullable: true),
-                    OldPointPower = table.Column<string>(type: "longtext", nullable: true),
-                    OldPointVolt = table.Column<string>(type: "longtext", nullable: true),
-                    CountOfTransformers = table.Column<string>(type: "longtext", nullable: true),
-                    TransformersPower = table.Column<string>(type: "longtext", nullable: true),
-                    CountOfGenerators = table.Column<string>(type: "longtext", nullable: true),
-                    GeneratorsPower = table.Column<string>(type: "longtext", nullable: true),
+                    OldPointPower = table.Column<float>(type: "float", nullable: true),
+                    OldPointVolt = table.Column<float>(type: "float", nullable: true),
+                    CountOfTransformers = table.Column<int>(type: "int", nullable: true),
+                    TransformersPower = table.Column<float>(type: "float", nullable: true),
+                    CountOfGenerators = table.Column<int>(type: "int", nullable: true),
+                    GeneratorsPower = table.Column<float>(type: "float", nullable: true),
                     TypeOfLoad = table.Column<string>(type: "longtext", nullable: true),
-                    TechMin = table.Column<string>(type: "longtext", nullable: true),
+                    TechMin = table.Column<float>(type: "float", nullable: true),
                     JustificationTechMin = table.Column<string>(type: "longtext", nullable: true),
                     NatureLoad = table.Column<string>(type: "longtext", nullable: true),
                     PaymentOrder = table.Column<string>(type: "longtext", nullable: true),
@@ -868,9 +853,6 @@ namespace Renk72Lk.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "bids_representative_info");
-
-            migrationBuilder.DropTable(
-                name: "data_protection_keys");
 
             migrationBuilder.DropTable(
                 name: "messages");

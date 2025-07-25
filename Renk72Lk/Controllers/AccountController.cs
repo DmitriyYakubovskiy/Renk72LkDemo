@@ -12,11 +12,13 @@ public class AccountController : Controller
 {
     private readonly IUserService userService;
     private readonly IRabbitMQProducerSerivce emailService;
+    private readonly ILogger<AccountController> logger;
 
-    public AccountController(IUserService userService, IRabbitMQProducerSerivce emailService)
+    public AccountController(IUserService userService, IRabbitMQProducerSerivce emailService, ILogger<AccountController> logger)
     {
         this.userService = userService;
         this.emailService = emailService;
+        this.logger = logger;
     }
 
     [HttpGet("Login")]
@@ -92,7 +94,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation(ex.Message);
             return BadRequest(ResultModel.GetErrors([$"Ошибка: {ex.Message}"]));
         }
     }
@@ -135,7 +137,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation(ex.Message);
             return BadRequest(ResultModel.GetErrors([$"Ошибка: {ex.Message}"]));
         }
     }
@@ -173,7 +175,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation(ex.Message);  
             return BadRequest(ResultModel.GetErrors([$"Ошибка: {ex.Message}"]));
         }
     }

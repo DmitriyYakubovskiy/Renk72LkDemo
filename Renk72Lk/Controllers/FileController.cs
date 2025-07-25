@@ -5,6 +5,7 @@ using Minio;
 using Microsoft.Extensions.Options;
 using Renk72Lk.Settings;
 using Renk72Lk.Services.DataBase;
+using Microsoft.Extensions.Logging;
 
 namespace Renk72Lk.Controllers;
 
@@ -16,13 +17,15 @@ public class FileController : Controller
 {
     private readonly IMinioClient minioClient;
     private readonly IFileService fileService;
+    private readonly ILogger<FileController> logger;
     private string bucketName;
 
-    public FileController(IMinioClient minioClient, IFileService fileService, IOptions<MinioSettings> minioSettings)
+    public FileController(IMinioClient minioClient, IFileService fileService, IOptions<MinioSettings> minioSettings, ILogger<FileController> logger)
     {
         this.minioClient = minioClient;
         this.fileService = fileService;
         bucketName = minioSettings.Value.BucketName;
+        this.logger = logger;
     }
 
     [HttpPost("Upload")]
@@ -70,7 +73,7 @@ public class FileController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка получения файла: {ex.Message}");
             return NotFound();
         }
     }

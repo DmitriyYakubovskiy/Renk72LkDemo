@@ -21,12 +21,13 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
     private readonly IConnectionFactory factory;
     private readonly IChannel channel;
     private readonly IConnection connection;
+    private readonly ILogger<RabbitMQProducerService> logger;   
 
     private string rootEmail;
     private string queueName;
 
     public RabbitMQProducerService(IRazorViewEngine viewEngine, IServiceProvider serviceProvider, IModelMetadataProvider metadataProvider,
-        ITempDataProvider tempDataProvider, IOptions<EmailSettings> emailSettings, IOptions<RabbitMQSettings> rabbitSettings)
+        ITempDataProvider tempDataProvider, IOptions<EmailSettings> emailSettings, IOptions<RabbitMQSettings> rabbitSettings, ILogger<RabbitMQProducerService> logger)
     {
         this.viewEngine = viewEngine;
         this.serviceProvider = serviceProvider;
@@ -46,6 +47,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         connection = factory.CreateConnectionAsync().Result;
         channel = connection.CreateChannelAsync().Result;
         channel.QueueDeclareAsync(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+        this.logger = logger;
     }
 
     public async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
@@ -65,7 +67,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -96,7 +98,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -123,7 +125,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -151,7 +153,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -181,7 +183,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -212,7 +214,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -237,7 +239,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -261,7 +263,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -285,7 +287,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 
@@ -312,7 +314,7 @@ public class RabbitMQProducerService : IRabbitMQProducerSerivce
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка при создании письма: {ex.Message}");
         }
     }
 }

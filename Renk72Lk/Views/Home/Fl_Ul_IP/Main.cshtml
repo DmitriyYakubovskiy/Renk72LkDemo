@@ -38,7 +38,7 @@
 
                 @await Html.PartialAsync("Items/Profile/PhonePassword")
                 @await Html.PartialAsync("Items/Profile/SNP", Model)
-                @await Html.PartialAsync("Items/Passport", ((IPassportData)Model, true))
+                @await Html.PartialAsync("Items/Passport", ((IPassportData)Model, false, false))
                 @await Html.PartialAsync("Items/AddressMore", (new AddressesViewModel() { ActualAddress = Model.ActualAddress, RegistrationAddress = Model.RegistrationAddress }, true))
 
                 <div class="lk-block-btn">

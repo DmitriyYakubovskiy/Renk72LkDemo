@@ -9,11 +9,13 @@ public class BidRepresentativeInfoService : IBidRepresentativeInfoService
 {
     private readonly IBidRepresentativeInfoRepository repository;
     private readonly IMapper mapper;
+    private readonly ILogger<BidRepresentativeInfoService> logger;
 
-    public BidRepresentativeInfoService(IBidRepresentativeInfoRepository repository, IMapper mapper)
+    public BidRepresentativeInfoService(IBidRepresentativeInfoRepository repository, IMapper mapper, ILogger<BidRepresentativeInfoService> logger)
     {
         this.repository = repository;
         this.mapper = mapper;
+        this.logger = logger;
     }
 
     public async Task CreateAsync(BidRepresentativeInfoModel model)
@@ -95,7 +97,7 @@ public class BidRepresentativeInfoService : IBidRepresentativeInfoService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving file: {ex.Message}");
+            logger.LogInformation($"Error saving file: {ex.Message}");
             return (null!, null!);
         }
     }

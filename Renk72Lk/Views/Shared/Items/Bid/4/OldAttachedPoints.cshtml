@@ -4,7 +4,7 @@
     <div class="lk-block-info__header">Максимальная мощность ранее присоединенных в данной точке присоединения энергопринимающих устройств</div>
     <div class="lk-block-info__container">
         <div class="form-group" name="container-@nameof(Model.Bid.Step4.OldPointPower)">
-            <input type="text" placeholder="Мощность, кВт" class="form-group__input"
+            <input type="number" placeholder="Мощность, кВт" class="form-group__input"
                    id="old_point_power" name="@nameof(Model.Bid.Step4.OldPointPower)"
                    value="@Model?.Bid.Step4?.OldPointPower" onchange="OldPoint(this)">
         </div>

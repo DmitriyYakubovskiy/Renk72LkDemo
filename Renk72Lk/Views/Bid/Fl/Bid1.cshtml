@@ -9,8 +9,8 @@
         <input type="hidden" name="@nameof(Model.Bid.Step1.Role)" value="@Model?.Bid?.Step1?.Role"  />
 
         @await Html.PartialAsync("Items/Bid/1/ConsumerDetailsSNP")
-        @await Html.PartialAsync("Items/Passport", ((IPassportData)Model?.Bid?.Step1!, true))
-        @await Html.PartialAsync("Items/ContactInfo", (IContactData)Model?.Bid?.Step1!)
+        @await Html.PartialAsync("Items/Passport", ((IPassportData)Model?.Bid?.Step1!, true, true))
+        @await Html.PartialAsync("Items/ContactInfo", ((IContactData)Model?.Bid?.Step1!, true))
         @await Html.PartialAsync("Items/AddressMore", (new AddressesViewModel() { ActualAddress = Model.Bid.Step1.ActualAddress, RegistrationAddress = Model.Bid.Step1.RegistrationAddress }, false))
 
         <div class="lk-block-btn">
@@ -31,18 +31,52 @@
                 $("#snils").val(data.snils);
                 $("#date_of_birth").val(data.dateOfBirth);
                 $("#place_of_birth").val(data.placeOfBirth);
-                $(".passport-text").html(data.passport);
-                $("#passport").val(data.passport);
+                $("#passport").val(data.passportType);
+                  $('[name="container-@nameof(Model.Bid.Step1.PassportType)"] .select-block__title span').text(data.passportType || 'Тип документа');
                 $("#passport_series").val(data.passportSeries);
                 $("#passport_number").val(data.passportNumber);
-                $("#passport_date").val(data.passportDate);
+
+                const dateObj = new Date(data.passportDate);
+                const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${dateObj.getFullYear()}`;
+                $("#passport_date").val(formattedDate);
                 $("#passport_issued_by").val(data.passportIssuedBy);
                 $("#phone").val(data.phoneNumber);
                 $("#email").val(data.email);
-                $("#address_reg").val(data.addressRegistration);
-                $("#address_actual").val(data.addressActual);
+
+                if (data.registrationAddress) {
+                    fillAddressFields(data.registrationAddress, 'reg');
+                    $("#address_reg").val(data.registrationAddress.fullAddress);
+                }
+
+                if (data.actualAddress) {
+                    fillAddressFields(data.actualAddress, 'act');
+                    $("#address_actual").val(data.actualAddress.fullAddress);
+
+                    if (JSON.stringify(data.registrationAddress) === JSON.stringify(data.actualAddress)) {
+                        $("#copy_block").prop('checked', true);
+                        ChooseInfo('address_actual_full', '0');
+                    } else {
+                        $("#copy_block").prop('checked', false);
+                        ChooseInfo('address_actual_full', '1');
+                    }
+                }
             }
         });
+    }
+
+    function fillAddressFields(address, prefix) {
+        $(`#adr${prefix}_obl`).val(address.region || '');
+        $(`#adr${prefix}_city`).val(address.city || '');
+        $(`#adr${prefix}_str`).val(address.street || '');
+        $(`#adr${prefix}_house`).val(address.house || '');
+        $(`#adr${prefix}_office`).val(address.office || '');
+        $(`#adr${prefix}_index`).val(address.index || '');
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
     }
 
     $('.form-bid').on('submit',function(event){

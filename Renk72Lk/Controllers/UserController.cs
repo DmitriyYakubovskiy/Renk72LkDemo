@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Renk72Lk.DataAccess.Enums;
+using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Models;
 using Renk72Lk.Services.DataBase;
 
@@ -18,9 +21,15 @@ public class UserController : Controller
     }
 
     [HttpGet("List")]
-    public IActionResult List(string sort = "date", string order = "asc")
+    public async Task<IActionResult> List(string sort = "date", string order = "asc")
     {
         var users = userService.GetAll().ToList();
+        var userClaims = new Dictionary<int, bool>();
+        foreach (var user in users)
+        {
+            var isBanned = await userService.GetUserClaimValueAsync(user.UserName, UserBanned.UserBanned.GetDescription()) == "true";
+            userClaims[user.Id] = isBanned;
+        }
 
         switch (sort)
         {
@@ -35,6 +44,7 @@ public class UserController : Controller
                 break;
         }
 
+        ViewBag.UserClaims = userClaims;
         return View(users.ToArray());
     }
 

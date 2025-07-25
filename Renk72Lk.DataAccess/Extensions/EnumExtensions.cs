@@ -14,4 +14,22 @@ public static class EnumExtensions
 
         return value.ToString();
     }
+
+    public static int? GetEnumValueFromDescription(string description, Type enumType)
+    {
+        if (!enumType.IsEnum)
+            throw new ArgumentException("Тип должен быть enum");
+
+        var fields = enumType.GetFields();
+        foreach (var field in fields)
+        {
+            var attribute = field.GetCustomAttribute<DescriptionAttribute>();
+            if (attribute != null && attribute.Description == description)
+            {
+                return (int)field.GetValue(null);
+            }
+        }
+
+        return null;
+    }
 }

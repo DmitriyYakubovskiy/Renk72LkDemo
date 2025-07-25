@@ -14,16 +14,16 @@ public class BidTechnicalSpecificationsModel
     [Required(ErrorMessage = "Обязательное поле.")]
     public string? ReliabilityCategory { get; set; }
 
-    public string? OldPointPower { get; set; }
-    public string? OldPointVolt { get; set; }
+    public float? OldPointPower { get; set; }
+    public float? OldPointVolt { get; set; }
 
-    public string? CountOfTransformers { get; set; }
-    public string? TransformersPower { get; set; }
-    public string? CountOfGenerators { get; set; }
-    public string? GeneratorsPower { get; set; }
+    public int? CountOfTransformers { get; set; }
+    public float? TransformersPower { get; set; }
+    public int? CountOfGenerators { get; set; }
+    public float? GeneratorsPower { get; set; }
     [RequiredIf("Service", new[] { "Технологическое присоединение энергопринимающих устройств до 150 кВт" })]
     public string? TypeOfLoad { get; set; }
-    public string? TechMin { get; set; }
+    public float? TechMin { get; set; }
     public string? JustificationTechMin { get; set; }
 
     [RequiredIf("Service", new[] { "Технологическое присоединение энергопринимающих устройств до 150 кВт" })]

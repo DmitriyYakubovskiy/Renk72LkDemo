@@ -22,9 +22,9 @@
                             <option value="10">10 кВ</option>
                         </select>
                     </div>
-                    @if (Model?.bidServiceByInt == 15)
+                    @if (Model?.Bid?.Service != TechnologicalConnectionType.UpTo15kW.GetDescription())
                     {
-                        @if (Model.Bid.Step3?.ReasonForBid == ReasonForBid.PowerIncrease.GetDescription())
+                        @if (Model?.Bid?.Step3?.ReasonForBid == ReasonForBid.PowerIncrease.GetDescription())
                         {
                             <div class="form-group">
                                 <label>
@@ -107,11 +107,9 @@
 @functions {
     public dynamic GetPowerAttributes(CreateBidViewModel model)
     {
-        if (model?.bidServiceByInt == 15) return new { min = 1, max = 15 };
-        if (model?.bidServiceByInt == 100) return new { min = 1, max = 150 };
-        if (model?.bidServiceByInt == 999 && model?.Bid.Step3?.ReasonForBid == "Временное технологическое присоединение передвижного объекта")
-            return new { min = 1, max = 150 };
-
+        if (Model?.Bid?.Service == TechnologicalConnectionType.UpTo15kW.GetDescription()) return new { min = 1, max = 15 };
+        if (Model?.Bid?.Service == TechnologicalConnectionType.UpTo150kW.GetDescription()) return new { min = 1, max = 150 };
+        if (Model?.Bid?.Service == TechnologicalConnectionType.Temporary.GetDescription() && model?.Bid.Step3?.ReasonForBid == "Временное технологическое присоединение передвижного объекта") return new { min = 1, max = 150 };
         return new { min = 150, max = "" };
     }
 }

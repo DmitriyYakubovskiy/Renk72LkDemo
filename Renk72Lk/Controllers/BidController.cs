@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
@@ -26,13 +27,14 @@ public class BidController : Controller
     private readonly IFileService fileService;
     private readonly IRabbitMQProducerSerivce emailService;
     private readonly IBidViewModelService bidViewModelService;
+    private readonly ILogger<BidController> logger;
 
     private readonly HttpClient httpClient;
     private readonly ReportingSettings apiSettings;
 
     public BidController(IUserService userService, IBidService bidService, IBidAttachmentsService bid5Service, 
         IFileService fileService, IRabbitMQProducerSerivce emailService,
-        IBidViewModelService bidViewModelService, HttpClient httpClient, IOptions<ReportingSettings> apiSettings)
+        IBidViewModelService bidViewModelService, HttpClient httpClient, IOptions<ReportingSettings> apiSettings, ILogger<BidController> logger)
     {
         this.userService = userService;
         this.bidService = bidService;
@@ -44,6 +46,7 @@ public class BidController : Controller
         this.bidViewModelService = bidViewModelService;
         this.httpClient = httpClient;
         this.apiSettings = apiSettings.Value;
+        this.logger = logger;
     }
 
     [HttpGet("")]
@@ -142,7 +145,7 @@ public class BidController : Controller
         }
         catch(Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation(ex.Message);
             return BadRequest(ResultModel.GetErrors([$"Ошибка при генерации PDF: {ex.Message}"]));
         }
 
@@ -247,9 +250,9 @@ public class BidController : Controller
 
             return BadRequest(ResultModel.GetErrors([$"Ошибка при создании PDF: {errorMessage} {response.StatusCode}"]));
         }
-        catch (Exception ex)
+        catch (Exception ex)    
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation(ex.Message);
             return BadRequest(ResultModel.GetErrors([$"Ошибка при создании PDF: {ex.Message}"]));
         }
     }

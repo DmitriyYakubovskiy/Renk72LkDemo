@@ -87,7 +87,7 @@ public class BidPersonalInfoController : Controller
     [HttpGet("GetDataProfile")]
     public async Task<IActionResult> GetDataProfile()
     {
-        var user = await userService.GetByUserNameAsync(User?.Identity?.Name!);
+        var user = await userService.GetByUserNameAsync(User?.Identity?.Name!, setAddresses: true);
         return Json(user);
     }
 

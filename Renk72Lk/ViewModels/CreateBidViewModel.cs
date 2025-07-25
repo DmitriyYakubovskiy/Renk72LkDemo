@@ -8,5 +8,4 @@ public class CreateBidViewModel
 
     public bool IsRepresentativeData { get; set; } = false;
     public bool IsConsumerData { get; set; } = false;
-    public int bidServiceByInt = 0;
 }

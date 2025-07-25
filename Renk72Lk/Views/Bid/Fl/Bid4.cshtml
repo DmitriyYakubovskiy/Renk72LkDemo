@@ -40,7 +40,7 @@
     var PointObj = {};
     function OldPoint (old) {
         var status = '@Model?.Bid?.Step3?.ReasonForBid';
-        var type = '@Model?.bidServiceByInt';
+        var type = '@(EnumExtensions.GetEnumValueFromDescription(Model?.Bid?.Service, typeof(TechnologicalConnectionType)))';
 
         if (type == 15) {
             if (status === 'Увеличение мощности ранее присоединенных энергопринимающего устройства' && old.id === 'old_point_volt') {

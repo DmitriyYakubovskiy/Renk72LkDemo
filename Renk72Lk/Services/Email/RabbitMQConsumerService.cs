@@ -1,4 +1,5 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using RabbitMQ.Client;
@@ -13,6 +14,7 @@ namespace Renk72Lk.Services.Email;
 public class RabbitMQConsumerService : BackgroundService
 {
     private readonly IConnectionFactory factory;
+    private readonly ILogger<RabbitMQConsumerService> logger;
 
     private string queueName;
     private string smtpHost;
@@ -20,7 +22,7 @@ public class RabbitMQConsumerService : BackgroundService
     private string smtpUser;
     private string smtpPass;
 
-    public RabbitMQConsumerService(IOptions<EmailSettings> emailSettings, IOptions<RabbitMQSettings> rabbitSettings)
+    public RabbitMQConsumerService(IOptions<EmailSettings> emailSettings, IOptions<RabbitMQSettings> rabbitSettings, ILogger<RabbitMQConsumerService> logger)
     {
         queueName = rabbitSettings.Value.QueueName!;
         smtpHost = emailSettings.Value.SmtpHost!;
@@ -28,6 +30,7 @@ public class RabbitMQConsumerService : BackgroundService
         smtpUser = emailSettings.Value.SmtpUser!;
         smtpPass = emailSettings.Value.SmtpPass!;
 
+        this.logger = logger;
         factory = new ConnectionFactory()
         {
             HostName = rabbitSettings.Value.Host!,
@@ -85,7 +88,7 @@ public class RabbitMQConsumerService : BackgroundService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogError($"Ошибка отправки почтового сообщения(to {toEmail}): {ex.Message}");
         }
     }
 }

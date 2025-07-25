@@ -48,7 +48,11 @@ public class Startup
         services.Configure<RequestLocalizationOptions>(options =>
         {
             var ruCulture = new CultureInfo("ru-RU");
+            ruCulture.NumberFormat.NumberDecimalSeparator = ".";      
+            ruCulture.NumberFormat.NumberGroupSeparator = " ";     
+
             ruCulture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
+
             options.DefaultRequestCulture = new RequestCulture(ruCulture);
             options.SupportedCultures = new List<CultureInfo> { ruCulture };
             options.SupportedUICultures = new List<CultureInfo> { ruCulture };

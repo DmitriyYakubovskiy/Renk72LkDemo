@@ -64,11 +64,9 @@ public class UserModel:IBaseUserData
     public AttachmentFileModel? UserDataAgreementFile { get; set; } = null!;
     
     public int? ActualAddressId { get; set; }
-    [JsonIgnore]
     public AddressModel ActualAddress { get; set; } = null!;
     
     public int? RegistrationAddressId { get; set; }
-    [JsonIgnore]
     public AddressModel RegistrationAddress { get; set; } = null!;
     
     [JsonIgnore]

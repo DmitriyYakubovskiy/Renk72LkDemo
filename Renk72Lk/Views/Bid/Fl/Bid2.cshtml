@@ -9,8 +9,8 @@
         <input type="hidden" name="@nameof(Model.Bid.Step2.Role)" value="@Model?.Bid?.Step2?.Role" />
 
         @await Html.PartialAsync("Items/Bid/2/RepresentativeDetails")
-        @await Html.PartialAsync("Items/Passport", ((IPassportData)Model?.Bid?.Step2!, true))
-        @await Html.PartialAsync("Items/ContactInfo", (IContactData)Model?.Bid?.Step2!)
+        @await Html.PartialAsync("Items/Passport", ((IPassportData)Model?.Bid?.Step2!, true, false))
+        @await Html.PartialAsync("Items/ContactInfo", ((IContactData)Model?.Bid?.Step2!, false))
 
         <div class="lk-block-btn">
             <button type="submit" class="step-next btn">Сохранить и продолжить</button>

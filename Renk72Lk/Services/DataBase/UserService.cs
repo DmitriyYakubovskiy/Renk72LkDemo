@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Renk72Lk.DataAccess.Entities;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
@@ -17,10 +18,11 @@ public class UserService : IUserService
     private readonly IFileService attachmentFileService;
     private readonly IAddressService addressService;
     private readonly IMapper mapper;
+    private readonly ILogger<UserService> logger;   
 
     public UserService(SignInManager<UserEntity> signInManager, RoleManager<IdentityRole<int>> roleManager, 
         IAuthHistoryService authStoryService, IFileService attachmentFileService,
-        IAddressService addressService, IMapper mapper)
+        IAddressService addressService, IMapper mapper, ILogger<UserService> logger)
     {
         this.signInManager = signInManager;
         this.roleManager = roleManager;
@@ -28,6 +30,7 @@ public class UserService : IUserService
         this.attachmentFileService = attachmentFileService;
         this.addressService = addressService;
         this.mapper = mapper;
+        this.logger = logger;
     }
 
     public async Task<ResultModel> ResetPasswordAsync(string email, string token, string password)
@@ -97,15 +100,15 @@ public class UserService : IUserService
             {
                 foreach (var item in result.Errors)
                 {
-                    Console.WriteLine(item.Description);
+                    logger.LogInformation($"Ошибка при регистрации({model.Email}): {item.Description}");
                 }
                 return new ResultModel(false).AddErrors(["Ошибка. Попробуйте позже"], nameof(model.Login));
             }
         }   
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return new ResultModel(false).AddErrors([$"Ошибка: {ex.Message}. Попробуйте позже"], nameof(model.Login)); 
+            logger.LogInformation($"Ошибка при регистрации({model.Email}): {ex.Message}");
+            return new ResultModel(false).AddErrors([$"Ошибка. Попробуйте позже"], nameof(model.Login)); 
         }
     }
 
@@ -166,8 +169,8 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return new ResultModel(false).AddErrors([$"Ошибка: {ex.Message}. Попробуйте позже"], nameof(model.Login));
+            logger.LogInformation($"Ошибка при входе({model.Login}): {ex.Message}");
+            return new ResultModel(false).AddErrors([$"Ошибка. Попробуйте позже"], nameof(model.Login));
         }
     }
 
@@ -200,7 +203,7 @@ public class UserService : IUserService
                 var id = await addressService.CreateAsync(model.ActualAddress);
                 entity.ActualAddressId = id;
             }
-            else
+            else if(model.ActualAddress!=null)
             {
                 model.ActualAddress.Id = entity.ActualAddressId!.Value;
                 addressService.Update(model.ActualAddress);
@@ -210,7 +213,7 @@ public class UserService : IUserService
                 var id = await addressService.CreateAsync(model.RegistrationAddress);
                 entity.RegistrationAddressId = id;
             }
-            else
+            else if(model.RegistrationAddress!=null)
             {
                 model.RegistrationAddress.Id = entity.RegistrationAddressId!.Value;
                 addressService.Update(model.RegistrationAddress);
@@ -222,8 +225,8 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return new ResultModel(false).AddErrors([$"Ошибка: {ex.Message}"], nameof(model.UserName));
+            logger.LogInformation($"Ошибка при обновлении данных пользователя: {ex.Message}");
+            return new ResultModel(false).AddErrors([$"Ошибка"], nameof(model.UserName));
         }
     }
 
@@ -244,28 +247,36 @@ public class UserService : IUserService
         {
             var user = await signInManager.UserManager.FindByIdAsync(userId.ToString());
             if (user == null) return (new ResultModel(false).AddErrors(["Некорректный пользователь"]), 0);
-            if(!roleManager.RoleExistsAsync("Бан").Result) return (new ResultModel(false).AddErrors(["Некорректная роль"]), 0);
-            //TODO
-            //if (roleManager.)
-            //{
-            //    user.Status = 1;
-            //    await signInManager.UserManager.AddToRoleAsync(user, "Бан");
-            //    await signInManager.UserManager.UpdateSecurityStampAsync(user);
-            //    await signInManager.UserManager.UpdateAsync(user);
-            //}
-            //else
-            //{
-            //    user.Status = 0;
-            //    await signInManager.UserManager.RemoveFromRoleAsync(user, "Бан");
-            //    await signInManager.UserManager.UpdateSecurityStampAsync(user);
-            //    await signInManager.UserManager.UpdateAsync(user);
-            //}
 
-            return (new ResultModel(true), 1);
+            var hasBanClaim = (await signInManager.UserManager.GetClaimsAsync(user)).Any(c => c.Type == UserBanned.UserBanned.ToString());
+
+            if (!hasBanClaim)
+            {
+                await signInManager.UserManager.AddClaimAsync(user, new Claim(UserBanned.UserBanned.ToString(), "true"));
+
+                await signInManager.UserManager.UpdateSecurityStampAsync(user);
+                await signInManager.UserManager.UpdateAsync(user);
+
+                logger.LogInformation($"Пользователь {userId} заблокирован");
+                return (new ResultModel(true), 1);
+            }
+            else
+            {
+                var banClaim = (await signInManager.UserManager.GetClaimsAsync(user))
+                    .First(c => c.Type == UserBanned.UserBanned.ToString());
+
+                await signInManager.UserManager.RemoveClaimAsync(user, banClaim);
+
+                await signInManager.UserManager.UpdateSecurityStampAsync(user);
+                await signInManager.UserManager.UpdateAsync(user);
+
+                logger.LogInformation($"Пользователь {userId} разблокирован");
+                return (new ResultModel(true), 0);
+            }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogError($"Ошибка при блокировке/разблокировке пользователя: {ex.Message}");
             return (new ResultModel(false).AddErrors([ex.Message]), 0);
         }
     }

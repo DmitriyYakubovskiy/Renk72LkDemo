@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.ApiEndpoints;
@@ -14,15 +15,17 @@ namespace Renk72Lk.Services.DataBase;
 
 public class FileService : IFileService
 {
-    private readonly IAttachmentFileRepository repository;
-    private readonly IMapper mapper;
     private readonly HttpClient httpClient;
     private readonly ReportingSettings apiSettings;
+    private readonly IAttachmentFileRepository repository;
+    private readonly IMapper mapper;
     private readonly IMinioClient minioClient;
+    private readonly ILogger<FileService> logger;
     private readonly string bucketName;
 
     public FileService(IAttachmentFileRepository repository, IMapper mapper, HttpClient httpClient,
-        IOptions<ReportingSettings> apiSettings, IMinioClient minioClient, IOptions<MinioSettings> minioSettings)
+        IOptions<ReportingSettings> apiSettings, IMinioClient minioClient, IOptions<MinioSettings> minioSettings,
+        ILogger<FileService> logger)
     {
         this.repository = repository;
         this.mapper = mapper;
@@ -30,6 +33,7 @@ public class FileService : IFileService
         this.apiSettings = apiSettings.Value;
         this.minioClient = minioClient;
         bucketName = minioSettings.Value.BucketName;
+        this.logger = logger;
     }
 
     public async Task<AttachmentFileModel> CreateMessageFileAsync(IFormFile formFile)
@@ -62,7 +66,7 @@ public class FileService : IFileService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка отправки файла в сообщении: {ex.Message}");
         }
         return null;
     }
@@ -93,7 +97,7 @@ public class FileService : IFileService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка создания файла заявки({viewBid.Bid.Id}): {ex.Message}");
         }
         return null!;
     }
@@ -134,7 +138,7 @@ public class FileService : IFileService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving formFile: {ex.Message}");
+            logger.LogInformation($"Ошибка сохранения файла на 5 шаге: {ex.Message}");
             return null!;
         }
     }
@@ -160,7 +164,7 @@ public class FileService : IFileService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка сохранения файла согласия на обработку данных: {ex.Message}");
         }
         return null!;
     }
@@ -218,7 +222,7 @@ public class FileService : IFileService
         }
         catch(Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка создания файла в S3: {ex.Message}");
         }
     }
 

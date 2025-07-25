@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Renk72Lk.Models;
 using Renk72Lk.Models.DataBase;
 using Renk72Lk.Services;
@@ -20,10 +21,11 @@ public class BidTechnicalSpecificationsController : Controller
     private readonly IAttachmentsPointService pointService;
     private readonly IAttachmentsStageService stageService;
     private readonly IBidViewModelService bidViewModelService;
+    private readonly ILogger<BidTechnicalSpecificationsController> logger;
 
     public BidTechnicalSpecificationsController(IUserService userService, IBidService bidService, IBidConnectionObjectInfoService bid3Service, 
         IBidTechnicalSpecificationsService bid4Service, IAttachmentsPointService pointService, IAttachmentsStageService stageService, 
-        IBidViewModelService bidViewModelService)
+        IBidViewModelService bidViewModelService, ILogger<BidTechnicalSpecificationsController> logger)
     {
         this.userService = userService;
         this.bidService = bidService;
@@ -32,6 +34,7 @@ public class BidTechnicalSpecificationsController : Controller
         this.pointService = pointService;
         this.stageService = stageService;
         this.bidViewModelService = bidViewModelService;
+        this.logger = logger;
     }
 
     [HttpGet("Bid4")]
@@ -89,7 +92,7 @@ public class BidTechnicalSpecificationsController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.LogInformation($"Ошибка отправки 4 шага заявки: {ex.Message}");
             return BadRequest();
         }
     }

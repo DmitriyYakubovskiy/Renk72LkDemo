@@ -45,7 +45,7 @@
                 </ul>
 
                 <input type="hidden" id="connection_type" name="@nameof(Model.Bid.Step3.ConnectionType)"
-                       value="@Model.Bid.Step3.ConnectionType">
+                value="@Model.Bid.Step3.ConnectionType">
             </div>
         </div>
         @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()) || User.HasClaim(UserType.UserType.GetDescription(), UserType.IndividualEntrepreneur.GetDescription()))
@@ -69,26 +69,26 @@
                         }
                     </ul>
                     <input type="hidden" id="power_device" name="@nameof(Model.Bid.Step3.PowerDevice)"
-                           value="@Model?.Bid.Step3?.PowerDevice">
+                    value="@Model?.Bid.Step3?.PowerDevice">
                 </div>
             </div>
         }
-        else if (User.HasClaim(UserType.UserType.GetDescription(), UserType.LegalPerson.GetDescription()) && Model.bidServiceByInt != 999)
+        else if (User.HasClaim(UserType.UserType.GetDescription(), UserType.LegalPerson.GetDescription()) && Model?.Bid?.Service != TechnologicalConnectionType.Temporary.GetDescription())
         {
             <div class="form-group" name="container-@nameof(Model.Bid.Step3.PowerDevice)">
                 <input type="text" placeholder="Информация об энергопринимающих устройствах"
-                       class="form-group__input" id="power_device"
-                       name="@nameof(Model.Bid.Step3.PowerDevice)"
-                       value="@(Model.bidServiceByInt == 999 ? "" : Model.Bid.Step3.PowerDevice)"
-                       style="@(Model.bidServiceByInt == 999 ? "display: none" : "")" />
+                class="form-group__input" id="power_device"
+                name="@nameof(Model.Bid.Step3.PowerDevice)"
+                       value="@(Model?.Bid?.Service == TechnologicalConnectionType.Temporary.GetDescription() ? "" : Model?.Bid?.Step3?.PowerDevice)"
+                       style="@(Model?.Bid?.Service == TechnologicalConnectionType.Temporary.GetDescription() ? "display: none" : "")" />
             </div>
         }
         <div class="form-group">
             <div class="select-block" name="container-@nameof(Model.Bid.Step3.ObjectName)">
-                @if (Model?.bidServiceByInt != 999)
-                {
+                @if (Model?.Bid?.Service != TechnologicalConnectionType.Temporary.GetDescription())
+                    {
                     <div class="select-block__title">
-                        @if (String.IsNullOrEmpty(Model.Bid.Step3.ObjectName))
+                        @if (String.IsNullOrEmpty(Model?.Bid?.Step3?.ObjectName))
                         {
                             <span>Наименование объекта</span>
                         }

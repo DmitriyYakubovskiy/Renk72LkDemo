@@ -57,12 +57,12 @@ public class BidAttachmentsService : IBidAttachmentsService
         entity.BidId = model.BidId; 
         entity.IsAgreePreviewPDF = model.IsAgreePreviewPDF;
 
-        if (entity.OtherFileId != model.OtherFileId) entity.OtherFileId = model.OtherFileId;
-        if (entity.PassportFileId != model.PassportFileId) entity.PassportFileId = model.PassportFileId;
-        if (entity.SnilsFileId != model.SnilsFileId) entity.SnilsFileId = model.SnilsFileId;
-        if (entity.PowerDevicesPlanFileId != model.PowerDevicesPlanFileId) entity.PowerDevicesPlanFileId = model.PowerDevicesPlanFileId;
-        if (entity.BenefitFileId != model.BenefitFileId) entity.BenefitFileId = model.BenefitFileId;
-        if (model?.OtherFiles?.Length != 0 && model.OtherFiles != null)
+        if (model.OtherFileId == -1) entity.OtherFileId = null;
+        if (model.PassportFileId == -1) entity.PassportFileId = null;
+        if (model.SnilsFileId == -1) entity.SnilsFileId = null;
+        if (model.PowerDevicesPlanFileId == -1) entity.PowerDevicesPlanFileId = null;
+        if (model.BenefitFileId == -1) entity.BenefitFileId = null;
+        if (model?.OtherFiles?.Length != 0 && model.OtherFiles != null  )
         {
             int id = (await fileService.CreateBidAttachmentsFileAsync(model.OtherFiles)).Id;
             entity.OtherFileId = id;

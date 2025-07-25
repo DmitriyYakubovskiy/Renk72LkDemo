@@ -11,7 +11,7 @@ using Renk72Lk.DataAccess.Contexts;
 namespace Renk72Lk.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250707041659_InitialCreate")]
+    [Migration("20250724160849_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -21,23 +21,6 @@ namespace Renk72Lk.DataAccess.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("FriendlyName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Xml")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("data_protection_keys", (string)null);
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
@@ -686,17 +669,17 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<int?>("BidId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CountOfGenerators")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("CountOfGenerators")
+                        .HasColumnType("int");
 
-                    b.Property<string>("CountOfTransformers")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("CountOfTransformers")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("GeneratorsPower")
-                        .HasColumnType("longtext");
+                    b.Property<float?>("GeneratorsPower")
+                        .HasColumnType("float");
 
                     b.Property<string>("JustificationTechMin")
                         .HasColumnType("longtext");
@@ -704,11 +687,11 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<string>("NatureLoad")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("OldPointPower")
-                        .HasColumnType("longtext");
+                    b.Property<float?>("OldPointPower")
+                        .HasColumnType("float");
 
-                    b.Property<string>("OldPointVolt")
-                        .HasColumnType("longtext");
+                    b.Property<float?>("OldPointVolt")
+                        .HasColumnType("float");
 
                     b.Property<string>("PaymentOrder")
                         .HasColumnType("longtext");
@@ -716,11 +699,11 @@ namespace Renk72Lk.DataAccess.Migrations
                     b.Property<string>("ReliabilityCategory")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("TechMin")
-                        .HasColumnType("longtext");
+                    b.Property<float?>("TechMin")
+                        .HasColumnType("float");
 
-                    b.Property<string>("TransformersPower")
-                        .HasColumnType("longtext");
+                    b.Property<float?>("TransformersPower")
+                        .HasColumnType("float");
 
                     b.Property<string>("TypeOfLoad")
                         .HasColumnType("longtext");

@@ -1,4 +1,5 @@
-﻿using Renk72Lk.DataAccess.Enums;
+﻿using Microsoft.Extensions.Logging;
+using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
 using Renk72Lk.Services.DataBase;
 using Renk72Lk.ViewModels;
@@ -9,10 +10,12 @@ namespace Renk72Lk.Services;
 public class BidViewModelService: IBidViewModelService
 {
     private readonly IBidService bidService;
+    private readonly ILogger<BidViewModelService> logger;
 
-    public BidViewModelService(IBidService userBidService)
+    public BidViewModelService(IBidService userBidService, ILogger<BidViewModelService> logger)
     {
         this.bidService = userBidService;
+        this.logger = logger;
     }
 
     public static int Validate(CreateBidViewModel viewModel)
@@ -33,10 +36,10 @@ public class BidViewModelService: IBidViewModelService
             {
                 var properties = error.MemberNames.Any()
                     ? string.Join(", ", error.MemberNames)
-                    : "WholeModel";
+                : "WholeModel";
 
-                Console.WriteLine($"• Свойство: {properties}");
-                Console.WriteLine($"  Сообщение: {error.ErrorMessage}");
+                Console.WriteLine($"Свойство: {properties}");
+                Console.WriteLine($"Сообщение: {error.ErrorMessage}");
             }
             return 1;
         }
@@ -144,8 +147,6 @@ public class BidViewModelService: IBidViewModelService
         {
             viewModel.Bid.Step5.Role = viewModel.Bid.UserRole;
         }
-
-        viewModel.bidServiceByInt = GetServiceByInt(viewModel.Bid.Service!);
 
         return viewModel;
     }

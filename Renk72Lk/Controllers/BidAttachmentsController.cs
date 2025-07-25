@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Renk72Lk.DataAccess.Enums;
 using Renk72Lk.DataAccess.Extensions;
@@ -8,6 +9,7 @@ using Renk72Lk.Models.DataBase;
 using Renk72Lk.Services;
 using Renk72Lk.Services.DataBase;
 using Renk72Lk.Settings;
+using Serilog;
 
 namespace Renk72Lk.Controllers;
 
@@ -21,13 +23,14 @@ public class BidAttachmentsController : Controller
     private readonly IBidAttachmentsService bid5Service;
     private readonly IBidViewModelService bidViewModelService;
     private readonly IFileService fileService;
+    private readonly ILogger<BidAttachmentsController> logger;
 
     private readonly HttpClient httpClient;
     private readonly ReportingSettings apiSettings;
 
     public BidAttachmentsController(IUserService userService, IBidTechnicalSpecificationsService bid4Service, IBidAttachmentsService bid5Service,
         IFileService fileService, IBidViewModelService bidViewModelService, HttpClient httpClient, 
-        IOptions<ReportingSettings> apiSettings
+        IOptions<ReportingSettings> apiSettings, ILogger<BidAttachmentsController> logger
         )
     {
         this.userService = userService;
@@ -37,6 +40,7 @@ public class BidAttachmentsController : Controller
         this.fileService = fileService;
         this.httpClient = httpClient;
         this.apiSettings = apiSettings.Value;
+        this.logger = logger;
     }
 
     [HttpGet("Bid5")]
@@ -92,22 +96,22 @@ public class BidAttachmentsController : Controller
         return View("~/Views/Bid/Bid.cshtml", viewBid);
     }
 
-    [HttpPost("SaveBid5ForPrePdf")]
-    public async Task<IActionResult> SaveBid5ForPrePdf(IFormCollection collection)
+    [HttpPost("SaveBid5ForPreviewPdf")]
+    public async Task<IActionResult> SaveBid5ForPreviewPdf(IFormCollection collection)
     {
         var user = await userService.GetByUserNameAsync(User.Identity.Name);
+        var viewBid = bidViewModelService.GetCreateBidViewModelByUserId(user.Id);
         var model = new BidAttachmentsModel();
+        model.UserId = user.Id;
+        model.BidId = viewBid.Bid.Id;
 
-        model.Id = int.Parse(collection["Id"]);
-        model.UserId = int.Parse(collection["UserId"]);
-        model.BidId = int.Parse(collection["BidId"]);
+        if (user.Id != viewBid.Bid.UserId) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
+
         List<IFormFile> otherFiles = new List<IFormFile>();
         List<IFormFile> passportFiles = new List<IFormFile>();
         List<IFormFile> snilsFiles = new List<IFormFile>();
         List<IFormFile> planFiles = new List<IFormFile>();
         List<IFormFile> benefitFiles = new List<IFormFile>();
-
-        if (user.Id != model.UserId) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
 
         if (collection.Files.Count > 0)
         {
@@ -139,31 +143,29 @@ public class BidAttachmentsController : Controller
             }
         }
 
-        var viewBid = bidViewModelService.GetCreateBidViewModelByUserId(user.Id);
-        model.OtherFiles = otherFiles.ToArray();
-        model.PassportFiles = passportFiles.ToArray();
-        model.SnilsFiles = snilsFiles.ToArray();
-        model.BenefitFiles = benefitFiles.ToArray();
-        model.PlanFiles = planFiles.ToArray();
+        if (otherFiles.Count!=0) model.OtherFiles = otherFiles.ToArray();
+        if (passportFiles.Count!=0) model.PassportFiles = passportFiles.ToArray();
+        if (snilsFiles.Count != 0) model.SnilsFiles = snilsFiles.ToArray();
+        if (benefitFiles.Count != 0) model.BenefitFiles = benefitFiles.ToArray();
+        if (planFiles.Count != 0) model.PlanFiles = planFiles.ToArray();
 
-        if (viewBid.Bid.Id != model.BidId) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
         if (viewBid.Bid.Step5 == null)
         {
             await bid5Service.CreateAsync(model);
         }
         else
         {
-            if (viewBid.Bid.Step5.Id != model.Id) return BadRequest(ResultModel.GetErrors(["Нет доступа"]));
+            model.Id = viewBid.Bid.Step5.Id;
             await bid5Service.UpdateAsync(model);
         }
 
-        var url = Url.Action("PredPDF", new { id = viewBid.Bid.Id });
+        var url = Url.Action("PreviewPDF", new { id = viewBid.Bid.Id });
 
         return Json(new { url = url });
     }
 
-    [HttpGet("PredPDF")]
-    public async Task<IActionResult> PredPDF(int id)
+    [HttpGet("PreviewPDF")]
+    public async Task<IActionResult> PreviewPDF(int id)
     {
         var user = await userService.GetByUserNameAsync(User?.Identity?.Name!);
         var viewBid = bidViewModelService.GetCreateBidViewModelById(id);
@@ -195,31 +197,31 @@ public class BidAttachmentsController : Controller
             switch (fieldType)
             {
                 case "passportFile":
-                    viewBid.Bid.Step5.PassportFileId = null;
+                    viewBid.Bid.Step5.PassportFileId = -1;
                     break;
 
                 case "planFile":
-                    viewBid.Bid.Step5.PowerDevicesPlanFileId = null;
+                    viewBid.Bid.Step5.PowerDevicesPlanFileId = -1;
                     break;
 
                 case "snilsFile":
-                    viewBid.Bid.Step5.SnilsFileId = null;
+                    viewBid.Bid.Step5.SnilsFileId = -1;
                     break;
 
                 case "benefitFile":
-                    viewBid.Bid.Step5.BenefitFileId = null;
+                    viewBid.Bid.Step5.BenefitFileId = -1;
                     break;
 
                 case "otherFile":
-                    viewBid.Bid.Step5.OtherFileId = null;
+                    viewBid.Bid.Step5.OtherFileId = -1;
                     break;
             }
             await bid5Service.UpdateAsync(viewBid.Bid.Step5);
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return BadRequest(ResultModel.GetErrors([ex.Message]));
+            logger.LogInformation($"Ошибка при удалении файлов из 5 шага: {ex.Message}");
+            return BadRequest(ResultModel.GetErrors(["Ошибка"]));
         }
 
         return Ok();

@@ -64,9 +64,15 @@
                                         
                                     </div>
                                     <div class="list_users__function">
-                                        @* <a href="javascript:;" class="list_users__lock @(user.Status == 1 ? "lock-color" : "")" data-id="@user.Id" data-attr="@Url.Action("Lock", new { id = user.Id })"> *@
-                                        @*     @(user.Status == 1 ? "Разблокировать" : "Заблокировать") *@
-                                        @* </a> / *@
+                                        @{
+                                            var isBanned = ViewBag.UserClaims[user.Id] as bool? ?? false;
+                                        }
+                                        <a href="javascript:;"
+                                           class="list_users__lock @(isBanned ? "lock-color" : "")"
+                                           data-id="@user.Id"
+                                           data-attr="@Url.Action("Lock", new { id = user.Id })">
+                                            @(isBanned ? "Разблокировать" : "Заблокировать")
+                                        </a> /
                                         <a href="javascript:;" class="list_users__edit" data-attr="@Url.Action("GetUser", new { id = user.Id })" data-attr-store="@Url.Action("Update", new { id = user.Id })" data-modal-open="edit">Редактировать</a> /
                                         <a href="javascript:;" class="list_users__remove" data-attr="@Url.Action("Delete", new { id = user.Id })">Удалить</a>
                                     </div>
@@ -182,6 +188,7 @@
             contentType: false,
             success: function(data) {
                 console.log("Форма успешно отправлена!");
+                location.reload();
             },
             error: function(xhr, status, error) {
                 console.log("Ошибка при отправке формы!");
