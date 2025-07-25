@@ -114,7 +114,7 @@ $(function () {
 });
 
 //
-// Dadate
+// Dadata
 //
 
 function join(arr /*, separator */) {

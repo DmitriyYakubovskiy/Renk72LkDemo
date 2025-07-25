@@ -1,44 +1,117 @@
-﻿@using Renk72Lk.DataAccess.Extensions
-@model (IPassportData, bool)
+﻿@model (IPassportData, bool)
 
-<div class="lk-block-info @(Model.Item2?"lk-block-info--mod":"")">
-    <div class="lk-block-info__header">Документ удостоверяющий личность</div>
-    <div class="lk-block-info__container">
-        <div class="form-group @(Model.Item2?"form-bid":"")">
-            <div name="container-@nameof(Model.Item1.PassportType)" class="select-block">
-                <div class="select-block__title">
-                    @if (String.IsNullOrEmpty(Model.Item1?.PassportType))
-                    {
-                        <span>Тип документа</span>
-                    }
-                    else
-                    {
-                        <span>@Model.Item1?.PassportType</span>
-                    }
-                </div>
-                <ul class="select-block__list scrollbar">
-                    <li><a href="#">@PassportType.PassportOfCitizenRF.GetDescription()</a></li>
-                    <li><a href="#">@PassportType.PassportOfForeignCitizen.GetDescription()</a></li>
-                </ul>
-                <input type="hidden" id="passport" name="@nameof(Model.Item1.PassportType)" value="@Model.Item1?.PassportType">
-            </div>
+<div class="bg-blue-900 text-white px-4 py-2 rounded-lg font-semibold mb-4">
+    Документ удостоверяющий личность
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div class="relative">
+        <label class="block font-semibold text-gray-600 text-sm mb-1" for="passport-type-title">Тип документа</label>
+        <div class="flex items-center bg-gray-50 border rounded-lg px-3 py-2 cursor-pointer select-none focus-within:outline outline-blue-500
+            @(ViewData.ModelState[nameof(Model.Item1.PassportType)]?.Errors.Count > 0 ? "border-red-500" : "border-gray-300")"
+            onclick="togglePassportTypeDropdown()" id="passport-type-title">
+            <i class="fas fa-id-card text-gray-500 text-sm mr-3"></i>
+            @if (string.IsNullOrEmpty(Model.Item1?.PassportType))
+            {
+                <span class="text-gray-400 text-sm">Тип документа</span>
+            }
+            else
+            {
+                <span class="text-sm text-gray-800">@Model.Item1?.PassportType</span>
+            }
         </div>
-        <div class="lk-block-info__flex">
-            <div name="container-@nameof(Model.Item1.PassportSeries)" class="form-group">
-                <input type="text" placeholder="Серия" class="form-group__input " data-masked-pseries id="passport_series" name="@nameof(Model.Item1.PassportSeries)" value="@Model.Item1?.PassportSeries">
-            </div>
-            <div name="container-@nameof(Model.Item1.PassportNumber)" class="form-group">
-                <input type="text" placeholder="Номер" class="form-group__input " data-masked-pnumber id="passport_number" name="@nameof(Model.Item1.PassportNumber)" value="@Model.Item1?.PassportNumber">
-            </div>
-            <div class="form-group">
-                <div name="container-@nameof(Model.Item1.PassportDate)" class="form-group__box">
-                    <input type="tel" placeholder="01.01.2020" data-position="top right" class="form-group__input datepicker-here" id="passport_date" name="@nameof(Model.Item1.PassportDate)" value="@Model.Item1?.PassportDate">
-                    <i class="form-group__icon fas fa-calendar-alt"></i>
-                </div>
-            </div>
+
+        <ul id="passport-type-options"
+            class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow text-sm max-h-60 overflow-y-auto">
+            <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectPassportType('@PassportType.PassportOfCitizenRF.GetDescription()')">
+                @PassportType.PassportOfCitizenRF.GetDescription()
+            </li>
+            <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="selectPassportType('@PassportType.PassportOfForeignCitizen.GetDescription()')">
+                @PassportType.PassportOfForeignCitizen.GetDescription()
+            </li>
+        </ul>
+
+        <input type="hidden" id="passport" name="@nameof(Model.Item1.PassportType)" value="@Model.Item1?.PassportType" />
+    </div>
+
+
+    <!-- Кем выдан -->
+    <div class="relative">
+        <label class="block font-semibold text-gray-600 text-sm mb-1" for="passport_issued_by">Кем выдан</label>
+        <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg px-3 focus-within:outline outline-blue-500">
+            <i class="fas fa-id-card text-gray-500 text-sm mr-3"></i>
+            <input type="text" required
+                   name="@nameof(Model.Item1.PassportIssuedBy)"
+                   id="passport_issued_by"
+                   placeholder="Кем выдан"
+                   value="@Model.Item1?.PassportIssuedBy"
+                   class="w-full bg-transparent p-3 outline-none text-gray-800 text-sm" />
         </div>
-        <div name="container-@nameof(Model.Item1.PassportIssuedBy)" class="form-group">
-            <input type="text" placeholder="Кем выдан" class="form-group__input" id="passport_issued_by" name="@nameof(Model.Item1.PassportIssuedBy)" value="@Model.Item1?.PassportIssuedBy">
+    </div>
+
+    <!-- Серия -->
+    <div class="relative">
+        <label class="block font-semibold text-gray-600 text-sm mb-1">Серия</label>
+        <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg px-3 focus-within:outline outline-blue-500">
+            <i class="fas fa-hashtag text-gray-500 text-sm mr-3"></i>
+            <input type="text"
+                   name="@nameof(Model.Item1.PassportSeries)"
+                   id="passport_series"
+                   placeholder="Серия"
+                   data-masked-pseries
+                   value="@Model.Item1?.PassportSeries"
+                   class="w-full bg-transparent p-3 outline-none text-gray-800 text-sm" />
+        </div>
+    </div>
+
+    <!-- Номер -->
+    <div class="relative">
+        <label class="block font-semibold text-gray-600 text-sm mb-1">Номер</label>
+        <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg px-3 focus-within:outline outline-blue-500">
+            <i class="fas fa-barcode text-gray-500 text-sm mr-3"></i>
+            <input type="text"
+                   name="@nameof(Model.Item1.PassportNumber)"
+                   id="passport_number"
+                   placeholder="Номер"
+                   data-masked-pnumber
+                   value="@Model.Item1?.PassportNumber"
+                   class="w-full bg-transparent p-3 outline-none text-gray-800 text-sm" />
+        </div>
+    </div>
+
+    <!-- Дата выдачи -->
+    <div class="relative">
+        <label class="block font-semibold text-gray-600 text-sm mb-1">Дата выдачи</label>
+        <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg px-3 focus-within:outline outline-blue-500 relative">
+            <i class="fa fa-calendar-alt text-gray-500 text-sm mr-3"></i>
+            <input type="tel"
+                   name="@nameof(Model.Item1.PassportDate)"
+                   id="passport_date"
+                   placeholder="01.01.2020"
+                   value="@Model.Item1?.PassportDate"
+                   class="w-full bg-transparent p-3 pr-3 outline-none text-gray-800 text-sm datepicker-here"
+                   data-position="top right" />
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassportTypeDropdown() {
+        const dropdown = document.getElementById('passport-type-options');
+        dropdown.classList.toggle('hidden');
+    }
+
+    function selectPassportType(value) {
+        document.getElementById('passport-type-title').querySelector('span').innerText = value;
+        document.getElementById('passport').value = value;
+        document.getElementById('passport-type-options').classList.add('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('passport-type-options');
+        const title = document.getElementById('passport-type-title');
+        if (!title.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>

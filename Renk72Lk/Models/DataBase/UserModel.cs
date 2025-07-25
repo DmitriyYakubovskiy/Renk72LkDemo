@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Renk72Lk.Models.DataBase;
 
-public class UserModel:IBaseUserData
+public class UserModel : IBaseUserData
 {
     public int Id { get; set; } = 0;
 
@@ -62,36 +62,36 @@ public class UserModel:IBaseUserData
     public int? UserDataAgreementFileId { get; set; }
     [JsonIgnore]
     public AttachmentFileModel? UserDataAgreementFile { get; set; } = null!;
-    
+
     public int? ActualAddressId { get; set; }
     [JsonIgnore]
     public AddressModel ActualAddress { get; set; } = null!;
-    
+
     public int? RegistrationAddressId { get; set; }
     [JsonIgnore]
     public AddressModel RegistrationAddress { get; set; } = null!;
-    
+
     [JsonIgnore]
     public List<AuthHistoryModel> Stories { get; set; } = new List<AuthHistoryModel>();
-    
+
     [JsonIgnore]
     public List<BidModel> Bids { get; set; } = new List<BidModel>();
-    
+
     [JsonIgnore]
     public List<MessageModel> Messages { get; set; } = new List<MessageModel>();
 
     [JsonIgnore]
     public List<BidPersonalInfoModel> PersonalInfo { get; set; } = new List<BidPersonalInfoModel>();
-    
+
     [JsonIgnore]
     public List<BidRepresentativeInfoModel> RepresentativeInfo { get; set; } = new List<BidRepresentativeInfoModel>();
-    
+
     [JsonIgnore]
     public List<BidConnectionObjectInfoModel> ConnectionObjectInfo { get; set; } = new List<BidConnectionObjectInfoModel>();
-    
+
     [JsonIgnore]
     public List<BidTechnicalSpecificationsModel> TechnicalSpecifications { get; set; } = new List<BidTechnicalSpecificationsModel>();
-    
+
     [JsonIgnore]
     public List<BidAttachmentsModel> Attachments { get; set; } = new List<BidAttachmentsModel>();
 }

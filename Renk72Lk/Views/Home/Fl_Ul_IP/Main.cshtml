@@ -1,119 +1,198 @@
 ﻿@using Renk72Lk.DataAccess.Extensions
 @model UserModel
 
-<section class="section">
-    @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
-    {
-        <h1 class="section__title">Личный кабинет Физического лица</h1>
-    }
+@{
+    ViewBag.Title = "Настройка профиля";
+}
 
-    <div class="section__row">
-        <div class="sidebar">
-            <div class="sidebar__box">
-                <div class="sidebar__list">
-                    @await Html.PartialAsync("Sidebar/SidebarMenu")
-                </div>
-                <div class="authorizing">
-                    <div class="authorizing__title">Последние авторизации</div>
-                    <div class="authorizing__note">
-                        <i class="fas fa-question-circle"></i>
-                        Измените пароль, если заметили авторизацию с чужого IP адреса!
-                    </div>
-                    @await Html.PartialAsync("Sidebar/SidebarStories", Model)
-                </div>
+<div class="min-h-screen flex w-full bg-page">
+    @await Html.PartialAsync("Sidebar/SidebarMenu")
+
+    <div class="flex-1">
+        <header class="flex h-16 shrink-0 items-center justify-between border-b px-4">
+            <div class="md:hidden">
+                <button class="p-2" onclick="toggleSidebar()">
+                    <i class="fas fa-bars w-5 h-5"></i>
+                </button>
             </div>
-        </div>
-        <div class="content">
-            <h2 class="content__title">Настройка профиля</h2>
-            @if (TempData["Status"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Status"]
-                </div>
-            }
-            <form class="form-profile" role="form" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input class="hidden" asp-for="UserName" value="@Model.UserName" />
-                <input class="hidden" asp-for="Email" value="@Model.Email" />
+            <h1 class="text-md font-semibold text-gray-900">
+                Личный кабинет Физического лица
+            </h1>
+        </header>
 
-                @await Html.PartialAsync("Items/Profile/PhonePassword")
-                @await Html.PartialAsync("Items/Profile/SNP", Model)
-                @await Html.PartialAsync("Items/Passport", ((IPassportData)Model, true))
-                @await Html.PartialAsync("Items/AddressMore", (new AddressesViewModel() { ActualAddress = Model.ActualAddress, RegistrationAddress = Model.RegistrationAddress }, true))
+        <div class="flex-1 md:ml-64 p-6 transition-all duration-300">
+            <form id="form" enctype="multipart/form-data">
+                <div class="bg-white shadow rounded-xl p-6 relative">
 
-                <div class="lk-block-btn">
-                    <button type="submit" name="modal_1" value="modal_1" class="btn">Сохранить</button>
+                @if (TempData["Status"] != null)
+                {
+                    <div class="alert alert-success mb-4">
+                        <i class="fas fa-check-circle mr-2"></i>@TempData["Status"]
+                    </div>
+                }
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="UserName" value="@Model.UserName" />
+                    <input type="hidden" name="Email" value="@Model.Email" />
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 mt-4">
+                        <div>
+                            <label class="block font-semibold mb-1">Мобильный телефон:</label>
+                            <div class="relative ">
+                                <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 pl-10"
+                                    type="text"
+                                    name="@nameof(Model.PhoneNumber)"
+                                    value="@Model.PhoneNumber" data-masked-phone />
+                                <i class="fa fa-phone absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1">Пароль:</label>
+                            <div class="relative">
+                                <input
+                                    class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 pl-10"
+                                    type="password"
+                                    name="@nameof(Model.Password)" />
+                                <i class="fa fa-lock absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-900 text-white px-4 py-2 rounded-lg font-semibold mb-4">
+                        ФИО
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block font-semibold text-gray-600 text-sm mb-1">Фамилия</label>
+                            <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                                type="text"
+                                name="@nameof(Model.Surname)"
+                                placeholder="Фамилия"
+                                value="@Model?.Surname" />
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-600 text-sm mb-1">Имя</label>
+                            <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                                type="text"
+                                name="@nameof(Model.Name)"
+                                placeholder="Имя"
+                                value="@Model?.Name" />
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-600 text-sm mb-1">Отчество</label>
+                            <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                                type="text"
+                                name="@nameof(Model.Patronymic)"
+                                placeholder="Отчество"
+                                value="@Model?.Patronymic" />
+                        </div>
+                        @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()))
+                        {
+                            <div>
+                                <label class="block font-semibold text-gray-600 text-sm mb-1">СНИЛС</label>
+                                <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                                    type="text"
+                                    name="@nameof(Model.Snils)"
+                                    placeholder="СНИЛС"
+                                    data-masked-snils
+                                    value="@Model?.Snils" />
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 text-sm mb-1">Дата рождения</label>
+                                <div class="relative">
+                                    <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm datepicker-here"
+                                        type="tel"
+                                        name="@nameof(Model.DateOfBirth)"
+                                        placeholder="Дата рождения"
+                                        id="date_of_birth"
+                                        value="@Model?.DateOfBirth" />
+                                    <i class="fa fa-calendar-alt absolute right-3 top-3 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-semibold text-gray-600 text-sm mb-1">Место рождения</label>
+                                <input class="edit-field w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                                    type="text"
+                                    name="@nameof(Model.PlaceOfBirth)"
+                                    placeholder="Место рождения"
+                                    value="@Model?.PlaceOfBirth" />
+                            </div>
+                        }
+                    </div>
+                    @await Html.PartialAsync("Items/Passport", ((IPassportData)Model, true))
+                    @await Html.PartialAsync("Items/AddressMore", (new AddressesViewModel() { ActualAddress = Model.ActualAddress, RegistrationAddress = Model.RegistrationAddress }, true))
+
+                    <div class="mt-6 text-right text-sm">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg">
+                            <i class="fa fa-save mr-2 text-sm"></i>Сохранить изменения
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
-</section>
+</div>
 
 <script>
-    $('.form-profile').on('submit',function(event){
+    $('#form').on('submit', function (event) {
         event.preventDefault();
-        var formData = new FormData(this);
+        var formData = $(this);
+        console.log(formData.serialize())
+        $('.login-error-message').remove();
+        $('.floating-error').remove();
+        $('.input-error-border').removeClass('ring-2 ring-red-500');
 
         $.ajaxSetup({
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 var token = $('input[name="__RequestVerificationToken"]').val();
-                xhr.setRequestHeader("RequestVerificationToken", token);
+                if (token) {
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
             }
         });
         $.ajax({
-            url: "/Home/UpdateProfile",
-            type:"POST",
-            data:formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success:function(data){
-                console.log('Успешно')
-                $('.lk-block-btn .btn').before('<div class="alert alert-success alert-profile"><i class="fas fa-check-circle"></i> Изменения сохранены</div>');
-                setTimeout(() => {
-                    $('.alert').slideUp('400', function(){
-                        $(this).remove();
-                    });
-                }, 3000);
+            url: "UpdateProfile",
+            type: "POST",
+            data: formData.serialize(),
+            success: function (data) {
+                showMessage("Данные сохранены", "success");
             },
             error: function (err) {
-                console.log(err.responseJSON);
-                if (err.responseJSON.errors) {
-                    $.each(err.responseJSON.errors, function(fieldName, messages) {
-                        $.each(messages, function(index, message) {
-                            if(fieldName === "mainError"){
-                                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
-                                setTimeout(() => {
-                                    $('.alert').slideUp('500', function(){
-                                        $(this).remove();
-                                    });
-                                }, 5000);
-                                return true;
-                            }
-                            $(`[name='container-${fieldName}']`).each(function() {
+                if (err.responseJSON?.errors) {
+                    const errors = err.responseJSON.errors;
 
-                                $(this).find('.form-group__error').remove();
-                                $(this).find('.form-group__error form-group__error_home').remove();
+                    if (errors.mainError) {
+                        showMessage(errors.mainError[0], "error");
+                    }
 
-                                if($(this).find('.lk-block-info__hellp').length > 0) $(this).find('.lk-block-info__hellp').after(`<div class="form-group__error form-group__error_home">${message}</div>`);
-                                else if($(this).find('.lk-block-user__lock').length > 0) $(this).find('.lk-block-user__lock').prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
-                                else if($(this).attr('id')==="date_of_birth_box") $(this).prepend(`<div class="form-group__error form-group__error_home">${message}</div>`);
-                                else $(this).append(`<div class="form-group__error">${message}</div>`);
+                    for (const field in errors) {
+                        if (field === "mainError") continue;
 
-                                $(this).removeClass('error').addClass('error');
-                                if ($(this).find('.form-group__input').length>0) $(this).find('.form-group__input').removeClass('is-active').addClass('is-active')
-                                else $(this).find(".select-block__title").removeClass('is-active').addClass('is-active')
+                        const input = $(`[name="${field}"]`);
+                        const wrapper = input.parent();
+
+                        wrapper.css('position', 'relative');
+
+                        const errorTooltip = $(`
+                            <div class="floating-error absolute top-full left-0 mt-1 z-50 bg-red-600 text-white text-sm rounded px-3 py-2 shadow">
+                                ${errors[field][0]}
+                                <div class="arrow-down absolute -top-1 left-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-red-600"></div>
+                            </div>
+                        `);
+
+                        wrapper.append(errorTooltip);
+
+                        wrapper.addClass('ring-2 ring-red-500');
+                        setTimeout(() => {
+                            errorTooltip.fadeOut(300, function () {
+                                $(this).remove();
+                                wrapper.removeClass('ring-2 ring-red-500');
                             });
-                        });
-                    });
+                        }, 5000);
+                    }
+                } else {
+                    showMessage("Произошла ошибка на сервере. Повторите позже.", "error");
                 }
-
-                $('.lk-block-btn .btn').before('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> Неверные данные</div>');
-                    setTimeout(() => {
-                        $('.alert').slideUp('400', function(){
-                            $(this).remove();
-                        });
-                    }, 3000);
             }
         });
     });

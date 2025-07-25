@@ -8,8 +8,50 @@
 }
 else
 {
-    <a class="sidebar__link" href="@Url.Action("Profile", "Home")">Настройка профиля</a>
-    <a class="sidebar__link" href="@Url.Action("List", "Bid")">Все заявки</a>
-    <div class="sidebar__link sidebar__link_bid" data-modal-open="create_an_application">Создать заявку</div>
-    <a class="sidebar__link" href="@Url.Action("Representative", "Home")">Данные представителя</a>
+    <div id="sidebar" class="md:flex md:w-64 flex-col border-r bg-white border-b">
+        <div class="flex h-16 items-center border-b px-4">
+            <h2 class="text-md font-semibold">Личный кабинет</h2>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            <a href="@Url.Action("Profile", "Home")"
+                class="@(Context.Request.Path.Value.Contains("Profile") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50")
+                    flex items-center gap-1 rounded-lg px-4 py-3 text-sm w-full">
+                <i class="fas fa-user w-5 h-5 flex-shrink-0"></i>
+                <span class="font-medium">Профиль</span>
+            </a>
+
+            <a
+                href="@Url.Action("List", "Bid")"
+                class="@(Context.Request.Path.Value.Contains("Bid") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50")
+                    flex items-center gap-1 rounded-lg px-4 py-3 text-sm w-full">
+                <i class="fas fa-file-alt w-5 h-5 flex-shrink-0"></i>
+                <span class="font-medium">Все заявки</span>
+            </a>
+
+            <a
+                href="@Url.Action("Create", "Bid")"
+                class="@(Context.Request.Path.Value.Contains("Create") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50")
+                    flex items-center gap-1 rounded-lg px-4 py-3 text-sm w-full">
+                <i class="fas fa-plus w-5 h-5 flex-shrink-0"></i>
+                <span class="font-medium">Создать заявку</span>
+            </a>
+
+            <a
+                href="@Url.Action("Representative", "Home")"
+                class="@(Context.Request.Path.Value.Contains("Representative") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50")
+                    flex items-center gap-1 rounded-lg px-4 py-3 text-sm w-full">
+                <i class="fas fa-users w-5 h-5 flex-shrink-0"></i>
+                <span class="font-medium">Данные представителя</span>
+            </a>
+        </nav>
+    </div>
 }
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('hidden'); 
+        }
+    }
+</script>

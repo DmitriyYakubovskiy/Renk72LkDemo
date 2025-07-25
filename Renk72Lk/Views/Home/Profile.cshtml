@@ -1,21 +1,17 @@
 ﻿@using Renk72Lk.DataAccess.Extensions
 @model UserModel
 
-<div class="container">
-    <div class="row">
-        @if (TempData["Status"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["Status"]
-            </div>
-        }
-        @if (User.IsInRole(UserRole.Admin.GetDescription()))
-        {
-            @await Html.PartialAsync("Admin/Main", Model)
-        }
-        else
-        {
-            @await Html.PartialAsync("Fl_Ul_IP/Main", Model)
-        }
+@if (TempData["Status"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Status"]
     </div>
-</div>
+}
+@if (User.IsInRole(UserRole.Admin.GetDescription()))
+{
+    @await Html.PartialAsync("Admin/Main", Model)
+}
+else
+{
+    @await Html.PartialAsync("Fl_Ul_IP/Main", Model)
+}

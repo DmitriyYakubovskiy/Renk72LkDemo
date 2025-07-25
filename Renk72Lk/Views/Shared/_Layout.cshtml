@@ -17,169 +17,167 @@
 
     <title>@ViewData["Title"]</title>
     @await Html.PartialAsync("_Favicons")
+    <script src="~/js/jquery-3.7.0.min.js"></script>
+    <link rel="stylesheet" href="~/css/newstyle.css?v=56" />
+    <link rel="stylesheet" href="~/css/output.css?v=1.0.3" />
+    <link href="~/css/suggestions.min.css?v=1.11.2" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    @* <link href="~/css/suggestions.min.css" rel="stylesheet" />
     <link rel="stylesheet" media="all" href="~/css/default.css?v=230532" />
     <link rel="stylesheet" media="all" href="~/css/lk.css?v=0706" />
     <link rel="stylesheet" media="all" href="~/css/modules/list_users.css" />
     <link rel="stylesheet" media="all" href="~/css/modules/lk-block-info.css?v=2301271" />
     <link rel="stylesheet" href="~/css/modules/authorizing.css" />
     <link rel="stylesheet" media="all" href="~/css/oformlenie_zayavki.css?v=2501" />
-    <link rel="stylesheet" href="~/css/modules/chat.css?v=220805" />
-    <script src="~/js/jquery-3.7.0.min.js"></script>
-
-    <style>
-        @@font-face {
-        font-family: "DejaVu Sans";
-        font-style: normal;
-        font-weight: 400;
-        src: local("DejaVu Sans"), local("DejaVu Sans"), url("~/fonts/dejavusans.woff") format("truetype");
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/modules/chat.css?v=220805" /> *@
 </head>
-<body>
-    <div class="preloader">
-        <div class="lds-spinner">
-            @for (int i = 0; i < 12; i++)
-            {
-                <div></div>
-            }
-        </div>
-    </div>
-    <header class="header">
-        <div class="header__container container">
-            <a href="/" class="header__logo">
-                <picture>
-                    <source media="(max-width: 1024px)" srcset="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")">
-                    <source media="(min-width: 1025px)" srcset="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")">
-                    <img src="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")" alt="Региональная энергетическая компания">
-                </picture>
-            </a>
-            <div class="header__col sm_hidden">
-                <div class="header__address">
-                    <i class="fas fa-map-marker-alt"></i> г. Тюмень, ул. Осипенко 19
+<body class="min-h-screen overflow-x-hidden bg-page-100">
+    <header class="bg-white border-b border-gray-200 py-3">
+        <div class="max-w-screen-xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+
+            <!-- Левая часть -->
+            <a href="/" class="flex items-center gap-3 no-underline text-black whitespace-nowrap">
+                <img src="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")" alt="Региональная энергетическая компания" class="h-10 w-auto" />
+                <div class="flex flex-col leading-tight">
+                    <span class="text-md font-bold">Региональная</span>
+                    <span class="text-sm text-gray-600">энергетическая компания</span>
                 </div>
-                <div class="header__note">пн. - пт.: 8:30 - 17:30 (обед 12:30 - 13:30)</div>
-            </div>
-            <div class="header__col header__col--mg">
-                <a href="tel:+73452500854" class="header__phone">
-                    <i class="fas fa-phone-alt"></i> +7 (3452) 50-08-54
-                </a>
-                <div class="header__note">Телефон офиса</div>
-            </div>
-            <div class="header__account">
-                <i class="fas fa-user-circle"></i>
-                @if (User.Identity!.IsAuthenticated!)
-                {
-                    <a href="@Url.Action("Index", "Home")" class="header__reg">@User.Identity.Name</a>
-                    <span>|</span>
-                    <a href = "@Url.Action("Logout", "Account")" class="header__reg">Выйти</a>
-                }
-                else
-                {
-                    <a href="@Url.Action("Register", "Account")" class="header__reg">Регистрация</a>
-                    <span>|</span>
-                    <a href = "@Url.Action("Login", "Account")" class="header__entry">Вход</a>
-                }
+            </a>
+
+            <div class="hidden lg:flex items-center justify-end gap-8 text-sm text-black flex-wrap">
+        
+                <!-- Адрес -->
+                <div class="flex flex-col items-start text-left">
+                    <div class="flex items-center gap-2 font-semibold">
+                        <i class="fas fa-map-marker-alt text-gray-600"></i>
+                        г. Тюмень, ул. Осипенко 19
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        пн. - пт.: 8:30 - 17:30 (обед 12:30 - 13:30)
+                    </div>
+                </div>
+
+                <!-- Телефон -->
+                <div class="flex flex-col items-start text-left">
+                    <div class="flex items-center gap-2 font-medium">
+                        <i class="fas fa-phone text-gray-600"></i>
+                        +7 (3452) 50-08-54
+                    </div>
+                    <div class="text-xs text-gray-500">телефон офиса</div>
+                </div>
+
+                <!-- Авторизация -->
+                <div class="flex items-center gap-2 text-blue-600 font-medium">
+                    @if (User.Identity!.IsAuthenticated!)
+                    {
+                        <i class="fas fa-user"></i>
+                        <a href="@Url.Action("Index", "Home")" class="hover:underline">@User.Identity.Name</a>
+                        <span class="text-gray-300">|</span>
+                        <a href="@Url.Action("Logout", "Account")" class="hover:underline">Выход</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Register", "Account")" class="hover:underline">Регистрация</a>
+                        <span class="text-gray-300">|</span>
+                        <a href="@Url.Action("Login", "Account")" class="hover:underline flex items-center gap-1">
+                            <i class="fas fa-user"></i> Вход
+                        </a>
+                    }
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="main">
-        @if (User.Identity.IsAuthenticated) {
-            <form asp-controller="BidPersonalInfo" asp-action="Bid1" class="form-bid-modal" role="form" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <div class="modal" data-modal="create_an_application" >
-                    <div class="modal__inner" data-modal-inner="create_an_application">
-                        <div class="modal__close" data-modal-close="create_an_application">
-                            <i class="fas fa-times"></i>
-                        </div>
-                        <div class="modal__main">
-                            <div class="modal__title">Онлайн заявка</div>
-                            <div class="modal__content" data-step="1">
-                                <div class="form-group">
-                                    <div class="select-block">
-                                        <div class="select-block__title">
-
-                                            <span>Услуга</span>
-
-                                        </div>
-                                        <ul class="select-block__list scrollbar">
-                                            @if (User.HasClaim(UserType.UserType.GetDescription(), UserType.NaturalPerson.GetDescription()) || User.HasClaim(UserType.UserType.GetDescription(), UserType.IndividualEntrepreneur.GetDescription()))
-                                            {
-                                                <li><a href="#">Технологическое присоединение энергопринимающих устройств до 15 кВт</a></li> 
-                                            }
-                                            else if (User.HasClaim(UserType.UserType.GetDescription(), UserType.LegalPerson.GetDescription()))
-                                            {
-                                                <li><a href="#">Временное технологическое присоединение</a></li> 
-                                                <li><a href="#">Технологическое присоединение энергопринимающих устройств свыше 150 кВт</a></li>                                 
-                                            }                                      
-                                            <li><a href="#">Технологическое присоединение энергопринимающих устройств до 150 кВт</a></li>                                         
-                                        </ul>
-
-                                        <input type="hidden" id="service" name="service">
-                                    </div>
-                                </div>
-                                <div class="modal__btn">
-                                    <button type="submit" class="step-next btn" data-next-step="2">Продолжить</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        }
+    <main>
         @RenderBody()
     </main>
 
-    <footer class="footer">
-        <div class="footer__container container">
-            <a href="/" class="footer__logo">
-                <picture>
-                    <source media="(max-width: 1024px)" srcset="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")">
-                    <source media="(min-width: 1025px)" srcset="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")">
-                    <img src="@Url.Content("~/img/RENK_Full_Gradient_10_Cut.png")" alt="Региональная энергетическая компания">
-                </picture>
-            </a>
-            <div class="footer__wrap">
-                <div class="footer__top">
-                    <div class="footer__col">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span class="footer__col_text">г. Тюмень, ул. Осипенко 19</span>
-                        <div class="footer__note">Офис компании</div>
-                    </div>
-                    <div class="footer__col">
-                        <i class="fas fa-clock"></i>
-                        <span class="footer__col_text">Режим работы</span>
-                        <div class="footer__note">Пн-Пт: 08:30-17:30 (Обед 12:30-13:30)</div>
-                    </div>
+    <footer class="bg-white border-b border-gray-200 py-3">
+        <div class="max-w-screen-xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <!-- Левая часть: логотип + название -->
+            <div class="flex items-center gap-3 text-center sm:text-left">
+                <img src="@Url.Content("~/img/RENK_Sign_Gradient_40_Cut.png")"
+                    alt="Региональная Энергетическая Компания"
+                    class="h-10 w-auto" />
+                <span class="text-black font-medium text-sm">Региональная Энергетическая Компания</span>
+            </div>
+
+            <!-- Правая часть: адрес + статус -->
+            <div class="flex flex-col sm:flex-row items-center gap-1 text-gray-700 text-sm text-center sm:text-right">
+
+                <!-- Адрес -->
+                <div class="flex items-center gap-2 font-medium">
+                    <i class="fas fa-map-marker-alt text-gray-600"></i>
+                    <span>г. Тюмень, ул. Осипенко 19</span>
+                </div>
+
+                <!-- Статус -->
+                <div class="flex items-center gap-2 ">
+                    <span class="w-3 h-3 rounded-full status-dot" title="Проверка статуса"></span>
+                    <span class="status-label">Статус</span>
                 </div>
             </div>
         </div>
 
-        <div class="footer__bottom">
-            <div class="container footer__flex">
-                <div class="footer__text">
-                    <a href="@Url.Action("PrivacyPolicy", "Home")">Политика конфиденциальности</a>
-                    <span class="sm_hidden">|</span>
-                    <a href="@Url.Action("TermsOfUse", "Home")">Пользовательское соглашение</a>
-                </div>
-            </div>
-        </div>
 
-        <link href="~/css/suggestions.min.css" rel="stylesheet" />
+        <!-- Скрипты -->
         <script src="~/js/jquery.suggestions.min.js"></script>
-        <script src="//kit.fontawesome.com/885a98d041.js" crossorigin="anonymous"></script>
-        <script>
-            window.tokendadata = "@ViewBag.DadataToken";
-        </script>
         <script src="@Url.Content("~/js/modules/masked.js")"></script>
-        <script src="@Url.Content("~/js/modules/datepicker.js")"></script>
+        @* <script src="@Url.Content("~/js/modules/datepicker.js")"></script> *@
         <script src="@Url.Content("~/js/modules/select-block.js")"></script>
         <script src="@Url.Content("~/js/modules/policy.js?v=0002")"></script>
         <script src="@Url.Content("~/js/modules/sidebarStiky.js?v=0003")"></script>
         <script src="@Url.Content("~/js/modules/modal.js")"></script>
         <script src="@Url.Content("~/js/modules/form-step.js?v=220826")"></script>
-        <script src="@Url.Content("~/js/script.js?v=23034")"></script>
-    </footer>
+        <script src="@Url.Content("~/js/script.js?v=23037")"></script>
 
+        <script>
+            window.tokendadata = "@ViewBag.DadataToken";
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const statusDot = document.querySelector(".status-dot");
+                const statusLabel = document.querySelector(".status-label");
+
+                const now = new Date(
+                    new Date().toLocaleString("en-US", { timeZone: "Asia/Yekaterinburg" })
+                );
+
+                const day = now.getDay(); // 0 = Sunday
+                const hour = now.getHours();
+                let isOpen = (day >= 1 && day <= 5 && hour >= 9 && hour < 18);
+
+                if (statusDot && statusLabel) {
+                    if (isOpen) {
+                        statusDot.style.backgroundColor = "#23c16b"; // зелёный
+                        statusLabel.textContent = "Открыто";
+                        statusDot.title = "Офис открыт";
+                    } else {
+                        statusDot.style.backgroundColor = "#d33"; // красный
+                        statusLabel.textContent = "Закрыто";
+                        statusDot.title = "Офис закрыт";
+                    }
+                }
+            });
+        </script>
+    </footer>
 </body>
 </html>
+
+<script>
+    function showMessage(message, type) {
+        const bg = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+
+        const msg = $(`
+            <div class="global-message fixed top-6 left-1/2 -translate-x-1/2 ${bg} text-white px-6 py-3 rounded shadow z-50 animate-fadeIn">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i>
+                ${message}
+            </div>
+        `);
+
+        $('body').append(msg);
+
+        setTimeout(() => {
+            msg.fadeOut(300, () => msg.remove());
+        }, 2500);
+    }
+</script>

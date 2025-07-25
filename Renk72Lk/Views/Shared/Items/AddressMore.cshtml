@@ -1,86 +1,136 @@
 ﻿@model (AddressesViewModel, bool)
 
-<div class="lk-block-info @(Model.Item2 ? "" : "lk-block-info--mod")">
-    <div class="lk-block-info__header">Адрес физического лица</div>
-    <div class="lk-block-info__container">
-        <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.FullAddress)}")">
-            <input type="text" placeholder="Введите адрес в свободной форме до дома" onfocus="dadate(this.id)" class="form-group__input" id="address_reg" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.FullAddress)}")" value="@Model.Item1?.RegistrationAddress?.FullAddress">
-        </div>
-        <div class="form-group form-bid">Регистрационный адрес:</div>
-        <div id="address_reg_full" dadate-input-container>
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Region)}")">
-                <input type="text" placeholder="Регион/район" dadate-input-manual class="form-group__input" id="adrreg_obl" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Region)}")" value="@Model.Item1?.RegistrationAddress?.Region">
-            </div>
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.City)}")">
-                <input type="text" placeholder="Населенный пункт" dadate-input-manual class="form-group__input" id="adrreg_city" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.City)}")" value="@Model.Item1?.RegistrationAddress?.City">
-            </div>
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Street)}")">
-                <input type="text" placeholder="Улица" dadate-input-manual class="form-group__input" id="adrreg_str" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Street)}")" value="@Model.Item1?.RegistrationAddress?.Street">
-            </div>
-            <div class="lk-block-info flex">
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.House)}")">
-                    <input type="text" placeholder="Дом" dadate-input-manual class="form-group__input" id="adrreg_house" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.House)}")" value="@Model.Item1?.RegistrationAddress?.House">
-                </div>
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Office)}")">
-                    <input type="text" placeholder="Офис/кв" dadate-input-manual class="form-group__input" id="adrreg_office" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Office)}")" value="@Model.Item1?.RegistrationAddress?.Office">
-                </div>
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Index)}")">
+<div class="bg-blue-900 text-white px-4 py-2 rounded-lg font-semibold mb-4">
+    Адрес физического лица
+</div>
 
-                    <input type="text" placeholder="ИНДЕКС" dadate-input-manual class="form-group__input" id="adrreg_index" name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Index)}")" value="@Model.Item1?.RegistrationAddress?.Index">
+<div class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <div class="space-y-4">
+            <div class="text-sm font-semibold text-gray-700">Регистрационный адрес</div>
+
+            <div class="space-y-2">
+                <label for="address_reg" class="text-sm font-medium text-gray-700">Адрес в свободной форме</label>
+                <input
+                    type="text"
+                    placeholder="Введите адрес до дома"
+                    onfocus="dadate(this.id)"
+                    id="address_reg"
+                    name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.FullAddress)}")"
+                    value="@Model.Item1?.RegistrationAddress?.FullAddress"
+                    dadate-input-manual
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"
+                />
+            </div>
+
+            <div id="address_reg_full" dadate-input-container class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Регион/район" dadate-input-manual
+                           id="adrreg_obl"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Region)}")"
+                           value="@Model.Item1?.RegistrationAddress?.Region"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="Населенный пункт" dadate-input-manual
+                           id="adrreg_city"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.City)}")"
+                           value="@Model.Item1?.RegistrationAddress?.City"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Улица" dadate-input-manual
+                           id="adrreg_str"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Street)}")"
+                           value="@Model.Item1?.RegistrationAddress?.Street"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="ИНДЕКС" dadate-input-manual
+                           id="adrreg_index"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Index)}")"
+                           value="@Model.Item1?.RegistrationAddress?.Index"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Дом" dadate-input-manual
+                           id="adrreg_house"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.House)}")"
+                           value="@Model.Item1?.RegistrationAddress?.House"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="Офис/кв" dadate-input-manual
+                           id="adrreg_office"
+                           name="@($"{nameof(Model.Item1.RegistrationAddress)}.{nameof(Model.Item1.RegistrationAddress.Office)}")"
+                           value="@Model.Item1?.RegistrationAddress?.Office"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="checkbox ">
-                <input type="checkbox" id="copy_block" class="checkbox__input" checked>
-                <label for="copy_block" class="checkbox__label">
-                    <span class="checkbox__icon">
-                        <i class="fas fa-check" aria-hidden="true"></i>
-                    </span>
-                    <span class="checkbox__text"> Адреса совпадают</span>
-                </label>
+
+        <div class="space-y-4">
+            <div class="text-sm font-semibold text-gray-700">Фактический адрес</div>
+
+            <div class="space-y-2">
+                <label for="address_actual" class="text-sm font-medium text-gray-700">Адрес в свободной форме</label>
+                <input
+                    type="text"
+                    placeholder="Введите адрес до дома"
+                    onfocus="dadate(this.id)"
+                    id="address_actual"
+                    name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.FullAddress)}")"
+                    value="@Model.Item1?.ActualAddress?.FullAddress"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+            </div>
+
+            <div style="display:none" id="address_actual_full" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Регион/район"
+                           id="adract_obl"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Region)}")"
+                           value="@Model.Item1?.ActualAddress?.Region"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="Населенный пункт"
+                           id="adract_city"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.City)}")"
+                           value="@Model.Item1?.ActualAddress?.City"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Улица"
+                           id="adract_str"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Street)}")"
+                           value="@Model.Item1?.ActualAddress?.Street"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="ИНДЕКС"
+                           id="adract_index"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Index)}")"
+                           value="@Model.Item1?.ActualAddress?.Index"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Дом"
+                           id="adract_house"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.House)}")"
+                           value="@Model.Item1?.ActualAddress?.House"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                    <input type="text" placeholder="Офис/кв"
+                           id="adract_office"
+                           name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Office)}")"
+                           value="@Model.Item1?.ActualAddress?.Office"
+                           class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm"/>
+                </div>
             </div>
         </div>
-        <div class="form-group form-bid">Фактический адрес:</div>
-        <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.FullAddress)}")">
-            <input type="text" placeholder="Введите адрес в свободной форме до дома" onfocus="dadate(this.id)" class="form-group__input" id="address_actual" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.FullAddress)}")" value="@Model.Item1?.ActualAddress?.FullAddress">
-        </div>
-        <div style="display:none" id="address_actual_full">
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Region)}")">
-                <input type="text" placeholder="Регион/район" class="form-group__input" id="adract_obl" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Region)}")" value="@Model.Item1?.ActualAddress?.Region">
-            </div>
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.City)}")">
-                <input type="text" placeholder="Населенный пункт" class="form-group__input" id="adract_city" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.City)}")" value="@Model.Item1?.ActualAddress?.City">
-            </div>
-            <div class="form-group form-bid" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Street)}")">
-                <input type="text" placeholder="Улица" class="form-group__input" id="adract_str" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Street)}")" value="@Model.Item1?.ActualAddress?.Street">
-            </div>
-            <div class="lk-block-info flex">
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.House)}")">
-                    <input type="text" placeholder="Дом" class="form-group__input" id="adract_house" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.House)}")" value="@Model.Item1?.ActualAddress?.House">
-                </div>
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Office)}")">
-                    <input type="text" placeholder="Офис/кв" class="form-group__input" id="adract_office" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Office)}")" value="@Model.Item1?.ActualAddress?.Office">
-                </div>
-                <div class="form-group form-bid col-33" name="container-@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Index)}")">
-                    <input type="text" placeholder="ИНДЕКС" class="form-group__input" id="adract_index" name="@($"{nameof(Model.Item1.ActualAddress)}.{nameof(Model.Item1.ActualAddress.Index)}")" value="@Model.Item1?.ActualAddress?.Index">
-                </div>
-            </div>
+
+        <div class="col-span-full flex items-center space-x-2 mt-2">
+            <input type="checkbox" id="copy_block" class="w-4 h-4 text-blue-600 border-gray-300 rounded" checked />
+            <label for="copy_block" class="text-sm text-gray-700">Адреса совпадают</label>
         </div>
     </div>
 </div>
 
+
 <script>
-        function ChooseInfo (id,st) {
-        var elem = document.getElementById(id);
-
-        if (st != '0') {
-            elem.style.display = "block";
-        } else {
-            elem.style.display = "none";
-        }
-    }
-
     function copyaddress() {
         elem =  document.getElementById('copy_block');
         if(elem.checked){

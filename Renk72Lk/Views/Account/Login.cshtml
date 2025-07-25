@@ -3,89 +3,127 @@
     ViewData["Title"] = "Вход в личный кабинет";
 }
 
-<div class="container container--vh">
-    <section class="section section--center">
-        <form id="loginForm" method="post" role="form" class="form">
-            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
-            <h1 class="form__title">Вход в личный кабинет</h1>
+<div class="flex items-center justify-center min-h-screen bg-page px-4">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-10 text-center">
+        <h2 class="text-2xl font-bold mb-2">Вход в личный кабинет</h2>
+        <p class="text-gray-600 mb-6">Введите ваши данные для входа в систему</p>
 
-            @if (TempData["Status"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Status"]
-                </div>
-            }
-            @Html.AntiForgeryToken()
-
-            <div id="container-@nameof(Model.Login)" class="form-group">
-                <input type="text" placeholder="Логин или почта" class="form-group__input" id="login" name="login" value="@Html.DisplayFor(m => m.Login)">
+        <form id="form">
+            <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg mb-4 px-3 focus-within:outline outline-blue-500">
+                <i class="fas fa-envelope text-gray-500 text-sm mr-3"></i>
+                <input type="text" name="@nameof(Model.Login)" class="w-full bg-transparent p-3 outline-none text-gray-800 text-sm" placeholder="Логин или почта" required />
             </div>
 
-            <div id="container-@nameof(Model.Password)" class="form-group">
-                <input type="password" placeholder="Пароль" class="form-group__input" id="password" name="password">
+            <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg mb-4 px-3 relative focus-within:outline outline-blue-500">
+                <i class="fas fa-lock text-gray-500 text-sm mr-3"></i>
+                <input type="password" id="password" name="@nameof(Model.Password)" class="w-full bg-transparent p-3 outline-none text-gray-800 text-sm" placeholder="Пароль" required />
+                <button type="button" class="toggle-password absolute right-3 text-gray-500" onclick="togglePasswordVisibility()">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn">Отправить</button>
-            </div>
-
-            <div class="form-group" style="margin: 0">
-                <a class="form__note" href="@Url.Action("ForgotPassword", "Account")">Напомнить пароль и логин?</a>
-            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">
+                Войти →
+            </button>
         </form>
 
-        <br>
-        <p>
-            <a href="@Url.Action("Register", "Account")">Зарегистрируйтесь</a>, если Вы ранее не пользовались Личным кабинетом.<br>
-            <a href="#">Инструкция по работе с Личным кабинетом <i class="fas fa-arrow-alt-circle-down"></i></a>
-        </p>
-        <p>Личный кабинет клиента ООО «РЭНК» предназначен для управления услугами и получения необходимой информации. Для доступа в Личный кабинет необходимо пройти процедуру регистрации на сайте и активации полученной учетной записи путем получения идентификатора и пароля.</p>
-    </section>
+        <div class="mt-6 text-sm text-gray-700 space-y-2">
+            <a href="@Url.Action("ForgotPassword", "Account")" class="text-blue-600 hover:underline block">
+                Напомнить пароль и логин?
+            </a>
+            <p>
+                <a href="@Url.Action("Register", "Account")" class="font-bold text-blue-600 hover:underline">Зарегистрируйтесь</a>,
+                если Вы ранее не пользовались Личным кабинетом.
+            </p>
+            <a href="#" class="text-blue-600 hover:underline inline-flex items-center">
+                Инструкция по работе с Личным кабинетом <span class="ml-1">ℹ️</span>
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>
-    $('.form').on('submit',function(event){
+    $('#form').on('submit', function (event) {
         event.preventDefault();
         var formData = $(this);
 
+        // Очистка предыдущих ошибок
+        $('.login-error-message').remove();
+        $('.floating-error').remove();
+        $('.input-error-border').removeClass('ring-2 ring-red-500');
+
+        // Установка токена (если используется AntiForgeryToken)
         $.ajaxSetup({
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 var token = $('input[name="__RequestVerificationToken"]').val();
-                xhr.setRequestHeader("RequestVerificationToken", token);
+                if (token) {
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+                }
             }
         });
+
+        // Отправка AJAX-запроса
         $.ajax({
             url: "login",
-            type:"POST",
-            data:formData.serialize(),
-            success:function(data){
-                $('.form').append('<div class="alert alert-success alert-profile"><i class="fas fa-exclamation-circle"></i> Успешно</div>');
-                setTimeout(() => {
-                    $('.alert').slideUp('500', function(){
-                        $(this).remove();
-                    });
-                }, 5000);
+            type: "POST",
+            data: formData.serialize(),
+            success: function (data) {
+                showMessage("Успешный вход. Перенаправление...", "success");
                 window.location = '/';
             },
             error: function (err) {
-                if (err.responseJSON.errors) {
-                    $.each(err.responseJSON.errors, function(fieldName, messages) {
-                        $.each(messages, function(index, message) {
-                            if(fieldName === "mainError"){
-                                $('.form').append('<div class="alert alert-dunger alert-profile"><i class="fas fa-exclamation-circle"></i> ' + message + '</div>');
-                                setTimeout(() => {
-                                    $('.alert').slideUp('500', function(){
-                                        $(this).remove();
-                                    });
-                                }, 5000);
-                            }
-                            $(`#container-${fieldName} .form-group__error`).remove();
-                            $(`#container-${fieldName}`).append(`<div class="form-group__error">${message}</div>`);
-                            $(`#container-${fieldName}`).find('.form-group__input').removeClass('is-active').addClass('is-active');
-                        });
-                    });
+                if (err.responseJSON?.errors) {
+                    const errors = err.responseJSON.errors;
+
+                    if (errors.mainError) {
+                        showMessage(errors.mainError[0], "error");
+                    }
+
+                    for (const field in errors) {
+                        if (field === "mainError") continue;
+
+                        const input = $(`[name="${field}"]`);
+                        const wrapper = input.parent();
+
+                        wrapper.css('position', 'relative');
+
+                        const errorTooltip = $(`
+                            <div class="floating-error absolute top-full left-0 mt-1 z-50 bg-red-600 text-white text-sm rounded px-3 py-2 shadow">
+                                ${errors[field][0]}
+                                <div class="arrow-down absolute -top-1 left-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-red-600"></div>
+                            </div>
+                        `);
+
+                        wrapper.append(errorTooltip);
+
+                        // Подсветка рамки
+                        wrapper.addClass('ring-2 ring-red-500');
+
+                        // Удаление подсказки через 2 секунды
+                        setTimeout(() => {
+                            errorTooltip.fadeOut(300, function () {
+                                $(this).remove();
+                                wrapper.removeClass('ring-2 ring-red-500');
+                            });
+                        }, 2000);
+                    }
+                } else {
+                    showMessage("Произошла ошибка на сервере. Повторите позже.", "error");
                 }
             }
         });
     });
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("password");
+        const toggleButton = document.querySelector(".toggle-password");
+        const icon = toggleButton.querySelector("i");
+
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+
+        // Переключаем иконку
+        icon.classList.toggle("fa-eye", !isPassword);
+        icon.classList.toggle("fa-eye-slash", isPassword);
+    }
 </script>

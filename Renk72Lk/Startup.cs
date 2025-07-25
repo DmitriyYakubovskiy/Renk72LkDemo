@@ -143,6 +143,7 @@ public class Startup
 
         services.AddSingleton<IAuthorizationHandler, NotBannedHandler>();
 
+        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddHttpContextAccessor();
         services.AddMvc();
